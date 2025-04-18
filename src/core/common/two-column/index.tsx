@@ -100,7 +100,7 @@ const TwoColumnSidebar = () => {
                     </Link>
                 </div>
                 <div className="sidebar-scroll">
-                    <h6 className="mb-3">Welcome to SmartHR</h6>
+                    <h6 className="mb-3">Welcome to Centram</h6>
                     <div className="text-center rounded bg-light p-3 mb-4">
                         <div className="avatar avatar-lg online mb-3">
                             <ImageWithBasePath src="assets/img/profiles/avatar-02.jpg" alt="Img" className="img-fluid rounded-circle"/>

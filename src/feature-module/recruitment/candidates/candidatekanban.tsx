@@ -1876,11 +1876,11 @@ const CandidateKanban = () => {
                     {/* /Candidates Kanban */}
                 </div>
                 <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
-                    <p className="mb-0">2014 - 2025 © SmartHR.</p>
+                    <p className="mb-0">2014 - 2025 © Centram.</p>
                     <p>
                         Designed &amp; Developed By{" "}
                         <Link to="#" className="text-primary">
-                            Dreams
+                            Centram
                         </Link>
                     </p>
                 </div>

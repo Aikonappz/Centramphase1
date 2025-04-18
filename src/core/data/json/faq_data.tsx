@@ -13,8 +13,8 @@ export const faq_data = [
   },
   {
     key: "3",
-    questions: "Is the data stored in an SmartHR secure?",
-    answers: "Yes, SmartHR is design with advanced security measures, including data encryption",
+    questions: "Is the data stored in an Centram secure?",
+    answers: "Yes, Centram is design with advanced security measures, including data encryption",
     category: "Feature",
   },
   {
@@ -25,7 +25,7 @@ export const faq_data = [
   },
   {
     key: "5",
-    questions: "How do I generate custom reports in the SmartHR?",
+    questions: "How do I generate custom reports in the Centram?",
     answers: "Custom reports can be generated using the reporting module within the HRMS",
     category: "Reports",
   },
@@ -37,7 +37,7 @@ export const faq_data = [
   },
   {
     key: "7",
-    questions: "How do I process payroll in the SmartHR?",
+    questions: "How do I process payroll in the Centram?",
     answers: "Reviewing employee hours and deductions and executing payments.",
     category: "Payroll",
   },

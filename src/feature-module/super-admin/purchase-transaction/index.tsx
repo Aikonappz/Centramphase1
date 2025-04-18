@@ -292,11 +292,11 @@ const PurchaseTransaction = () => {
           </div>
         </div>
         <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
-          <p className="mb-0">2014 - 2025 © SmartHR.</p>
+          <p className="mb-0">2014 - 2025 © Centram.</p>
           <p>
             Designed &amp; Developed By{" "}
             <Link to="#" className="text-primary">
-              Dreams
+              Centram
             </Link>
           </p>
         </div>
@@ -339,11 +339,11 @@ const PurchaseTransaction = () => {
                 <div className="col-md-7">
                   <p className="text-dark mb-2 fw-medium fs-16">Invoice From :</p>
                   <div>
-                    <p className="mb-1">SmartHR</p>
+                    <p className="mb-1">Centram</p>
                     <p className="mb-1">
                       367 Hillcrest Lane, Irvine, California, United States
                     </p>
-                    <p className="mb-1">smarthr@example.com</p>
+                    <p className="mb-1">Centram@example.com</p>
                   </div>
                 </div>
                 <div className="col-md-5">

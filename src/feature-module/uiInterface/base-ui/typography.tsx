@@ -324,7 +324,7 @@ const Typography = () => {
                                             <blockquote className="blockquote custom-blockquote primary mb-3 text-center">
                                                 <h6>
                                                     The future belongs to those who believe in the beauty of
-                                                    their dreams..
+                                                    their Centram..
                                                 </h6>
                                                 <footer className="blockquote-footer mt-3 fs-14 text-muted op-7 mb-0">
                                                     Someone famous as{" "}
@@ -336,7 +336,7 @@ const Typography = () => {
                                             <blockquote className="blockquote custom-blockquote secondary mb-3 text-center">
                                                 <h6>
                                                     The future belongs to those who believe in the beauty of
-                                                    their dreams..
+                                                    their Centram..
                                                 </h6>
                                                 <footer className="blockquote-footer mt-3 fs-14 text-muted op-7 mb-0">
                                                     Someone famous as{" "}
@@ -348,7 +348,7 @@ const Typography = () => {
                                             <blockquote className="blockquote custom-blockquote info mb-3 text-center">
                                                 <h6>
                                                     The future belongs to those who believe in the beauty of
-                                                    their dreams..
+                                                    their Centram..
                                                 </h6>
                                                 <footer className="blockquote-footer mt-3 fs-14 text-muted op-7 mb-0">
                                                     Someone famous as{" "}
@@ -360,7 +360,7 @@ const Typography = () => {
                                             <blockquote className="blockquote custom-blockquote warning mb-3 text-center">
                                                 <h6>
                                                     The future belongs to those who believe in the beauty of
-                                                    their dreams..
+                                                    their Centram..
                                                 </h6>
                                                 <footer className="blockquote-footer mt-3 fs-14 text-muted op-7 mb-0">
                                                     Someone famous as{" "}
@@ -372,7 +372,7 @@ const Typography = () => {
                                             <blockquote className="blockquote custom-blockquote success mb-3 text-center">
                                                 <h6>
                                                     The future belongs to those who believe in the beauty of
-                                                    their dreams..
+                                                    their Centram..
                                                 </h6>
                                                 <footer className="blockquote-footer mt-3 fs-14 text-muted op-7 mb-0">
                                                     Someone famous as{" "}
@@ -384,7 +384,7 @@ const Typography = () => {
                                             <blockquote className="blockquote custom-blockquote danger mb-3 text-center">
                                                 <h6>
                                                     The future belongs to those who believe in the beauty of
-                                                    their dreams..
+                                                    their Centram..
                                                 </h6>
                                                 <footer className="blockquote-footer mt-3 fs-14 text-muted op-7 mb-0">
                                                     Someone famous as{" "}

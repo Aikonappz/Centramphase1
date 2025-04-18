@@ -41,7 +41,7 @@ const SearchResult = () => {
                   <input
                     type="text"
                     className="form-control flex-fill me-3"
-                    defaultValue="SmartHR"
+                    defaultValue="Centram"
                   />
                   <button type="submit" className="btn btn-primary">
                     Search
@@ -52,16 +52,16 @@ const SearchResult = () => {
           </div>
           <div className="card">
             <div className="card-body">
-              <h5 className="mb-3">Search result for "SmartHR"</h5>
+              <h5 className="mb-3">Search result for "Centram"</h5>
               <div className="row">
                 <div className="col-md-6">
                   <div className="card shadow-none">
                     <div className="card-body">
                       <Link to="#" className="text-info text-truncate mb-2">
-                        https://themeforest.net/search/smarthr
+                        https://themeforest.net/search/Centram
                       </Link>
                       <p className="text-truncate line-clamb-2 mb-2">
-                        SmartHR - Html, Vue 3, Angular 17+ &amp; Node HR Project
+                        Centram - Html, Vue 3, Angular 17+ &amp; Node HR Project
                         Management &amp; CRM Admin Dashboard Template
                       </p>
                       <div className="d-flex align-items-center flex-wrap row-gap-2">
@@ -85,10 +85,10 @@ const SearchResult = () => {
                   <div className="card shadow-none">
                     <div className="card-body">
                       <Link to="#" className="text-info text-truncate mb-2">
-                        https://themeforest.net/item/smarthr-react-admin-template/28253842
+                        https://themeforest.net/item/Centram-react-admin-template/28253842
                       </Link>
                       <p className="text-truncate line-clamb-2 mb-2">
-                        SmartHR - React 18+ &amp; Html HRMS, Payroll, CRM and HR
+                        Centram - React 18+ &amp; Html HRMS, Payroll, CRM and HR
                         Project Management Admin Dashboard Template
                       </p>
                       <div className="d-flex align-items-center flex-wrap row-gap-2">
@@ -112,10 +112,10 @@ const SearchResult = () => {
                   <div className="card shadow-none">
                     <div className="card-body">
                       <Link to="#" className="text-info text-truncate mb-2">
-                        https://themeforest.net/item/smarthr-laravel-admin-template/27532539
+                        https://themeforest.net/item/Centram-laravel-admin-template/27532539
                       </Link>
                       <p className="text-truncate line-clamb-2 mb-2">
-                        SmartHR - Laravel 10 + Html HRMS, Payroll, CRM and HR
+                        Centram - Laravel 10 + Html HRMS, Payroll, CRM and HR
                         Project Management Admin Dashboard Template
                       </p>
                       <div className="d-flex align-items-center flex-wrap row-gap-2">
@@ -142,7 +142,7 @@ const SearchResult = () => {
                         https://themeforest.net/item/dhr-html-mobile-template/22227174
                       </Link>
                       <p className="text-truncate line-clamb-2 mb-2">
-                        SmartHR - HRMS, Payroll, and HR Project Management Mobile
+                        Centram - HRMS, Payroll, and HR Project Management Mobile
                         Template (Framework7 + Bootstrap + PWA)
                       </p>
                       <div className="d-flex align-items-center">
@@ -326,11 +326,11 @@ const SearchResult = () => {
           </div>
         </div>
         <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
-          <p className="mb-0">2014 - 2025 © SmartHR.</p>
+          <p className="mb-0">2014 - 2025 © Centram.</p>
           <p>
             Designed &amp; Developed By{" "}
             <Link to="#" className="text-primary">
-              Dreams
+              Centram
             </Link>
           </p>
         </div>
