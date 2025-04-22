@@ -671,7 +671,7 @@ const Modals = () => {
                             >
                               <span className="logo-lg">
                                 <ImageWithBasePath
-                                  src="assets/img/logo.png"
+                                  src="assets/img/logo.svg"
                                   alt="Logo"
                                   height={42}
                                 />
@@ -764,7 +764,7 @@ const Modals = () => {
                             >
                               <span className="logo-lg">
                                 <ImageWithBasePath
-                                  src="assets/img/logo.png"
+                                  src="assets/img/logo.svg"
                                   alt="Logo"
                                   height={42}
                                 />
