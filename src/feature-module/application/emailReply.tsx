@@ -486,9 +486,9 @@ const EmailReply = () => {
                                         open={open1}
                                         close={() => setOpen1(false)}
                                         slides={[
-                                            { src: "/react/template/assets/img/media/email-attach-big-01.jpg" },
-                                            { src: "/react/template/assets/img/media/email-attach-big-02.jpg" },
-                                            { src: "/react/template/assets/img/media/email-attach-big-03.jpg" },
+                                            { src: "/assets/img/media/email-attach-big-01.jpg" },
+                                            { src: "/assets/img/media/email-attach-big-02.jpg" },
+                                            { src: "/assets/img/media/email-attach-big-03.jpg" },
                                         ]}
                                     />
                             <Link

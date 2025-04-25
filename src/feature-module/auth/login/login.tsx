@@ -4,6 +4,8 @@ import { all_routes } from "../../router/all_routes";
 import ImageWithBasePath from "../../../core/common/imageWithBasePath";
 import api from "../../../core/data/api";
 import { e } from "react-router/dist/development/route-data-BmvbmBej";
+import { userSignIn } from "../../../core/data/redux/actions/userActions";
+import { useAppDispatch } from "../../../core/data/redux/store";
 type PasswordField = "password";
 
 const Login = () => {
@@ -12,8 +14,9 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const routes = all_routes;
   const navigation = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const signIn = () => {
+  const signIn = async () => {
     const data = {
       username: email,
       password: password,
@@ -22,10 +25,15 @@ const Login = () => {
     if (!data.username || !data.password) {
       return false;
     } else {
-      api.post("/user/sign-in", data).then((res) => {
-        console.log(res);
-        // navigation(routes.adminDashboard);
-      });
+      const response: any = await dispatch(userSignIn(data));
+      console.log(response)
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.jwtToken);
+        setTimeout(() => {
+          // navigation(routes.adminDashboard);
+          window.location.href = routes.adminDashboard
+        }, 1000);
+      }
     }
   };
   const [passwordVisibility, setPasswordVisibility] = useState({

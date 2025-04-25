@@ -2,13 +2,39 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import rootReducer from './reducers'; // Your combined reducers
 
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
-    // Add any other middleware here
-  ),
-  devTools: process.env.NODE_ENV !== 'production',
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // defaults to localStorage
+import { loadState, saveState } from '../../../utils/storage';
+
+const preloadedState = loadState();
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  // Only persist these reducers:
+  whitelist: ['user'],
+  preloadedState
+};
+
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'], // Ignore redux-persist actions
+      },
+    }),
 });
+
+// Subscribe to store changes
+store.subscribe(() => {
+  saveState(store.getState());
+});
+
+export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -11,6 +11,8 @@ import ProjectModals from "../../../core/modals/projectModal";
 import RequestModals from "../../../core/modals/requestModal";
 import TodoModal from "../../../core/modals/todoModal";
 import CollapseHeader from "../../../core/common/collapse-header/collapse-header";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../core/data/redux/store";
 
 const AdminDashboard = () => {
   const routes = all_routes;
@@ -18,6 +20,10 @@ const AdminDashboard = () => {
   const [isTodo, setIsTodo] = useState([false, false, false]);
 
   const [date, setDate] = useState(new Date());
+
+  const user = useSelector((state: RootState) => state.user);
+
+  console.log(user);
 
   //New Chart
   const [empDepartment] = useState<any>({

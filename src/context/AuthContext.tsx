@@ -22,7 +22,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkAuth = async () => {
     setIsLoading(true);
     const token = localStorage.getItem('token');
-    console.log(token);
+
+    if (token) {
+      setIsAuthenticated(true);
+      setIsLoading(false);
+      return;
+    }
+
     if (!token) {
       setIsAuthenticated(false);
       setIsLoading(false);
@@ -30,29 +36,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Optional: Verify token structure before making API call
-    if (!isValidToken(token)) {
-      localStorage.removeItem('token');
-      setIsAuthenticated(false);
-      setIsLoading(false);
-      return;
-    }
+    // if (!isValidToken(token)) {
+    //   localStorage.removeItem('token');
+    //   setIsAuthenticated(false);
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     // Set auth true temporarily while we verify with the server
     setIsAuthenticated(true);
     
-    try {
-      // Verify token with server (optional - can remove if you want pure client-side check)
-      await api.get('/auth/verify', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setIsAuthenticated(true);
-    } catch (error) {
-      localStorage.removeItem('token');
-      setIsAuthenticated(false);
-      dispatch(logout());
-    } finally {
-      setIsLoading(false);
-    }
+    // try {
+    //   // Verify token with server (optional - can remove if you want pure client-side check)
+    //   await api.get('/auth/verify', {
+    //     headers: { Authorization: `Bearer ${token}` }
+    //   });
+    //   setIsAuthenticated(true);
+    // } catch (error) {
+    //   localStorage.removeItem('token');
+    //   setIsAuthenticated(false);
+    //   dispatch(logout());
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   // Simple token validation (check structure only)

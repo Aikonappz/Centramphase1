@@ -8,7 +8,10 @@ import HorizontalSidebar from "../core/common/horizontal-sidebar";
 import TwoColumnSidebar from "../core/common/two-column";
 import StackedSidebar from "../core/common/stacked-sidebar";
 import DeleteModal from "../core/modals/deleteModal";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from 'react-router-dom';
 const Feature = () => {
+  const { isAuthenticated, isLoading } = useAuth();
   const [showLoader, setShowLoader] = useState(true);
   const headerCollapse = useSelector((state: any) => state.themeSetting.headerCollapse);
   const mobileSidebar = useSelector(
@@ -60,7 +63,7 @@ const Feature = () => {
     );
   };
   return (
-    <>
+    isAuthenticated ? <>
       <style>
         {`
       :root {
@@ -124,7 +127,7 @@ const Feature = () => {
 
         <div className="sidebar-overlay"></div>
       </div>
-    </>
+    </> : !isLoading ? <Navigate to="/login" replace /> : <></>
   );
 };
 

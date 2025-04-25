@@ -60,13 +60,13 @@ export interface User {
 export const userSignIn = (data: any) => {
   return async (dispatch: Dispatch<UserActionTypes>) => {
     dispatch({ type: USER_SIGNIN_REQUEST });
-    
     try {
-      const response = await api.get<User>(`/user/sign-in`);
+      const response = await api.post(`/user/sign-in`, data);
       dispatch({
         type: USER_SIGNIN_SUCCESS,
         payload: response.data
       });
+      return response;
     } catch (error) {
       let errorMessage = 'Failed to login';
       if (error instanceof Error) {
@@ -76,6 +76,7 @@ export const userSignIn = (data: any) => {
         type: USER_SIGNIN_FAILURE,
         payload: errorMessage
       });
+      return error;
     }
   };
 };
