@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { all_routes } from '../../router/all_routes'
 import { Link } from 'react-router-dom'
 import PredefinedDateRanges from '../../../core/common/datePicker'
@@ -6,8 +6,11 @@ import ImageWithBasePath from '../../../core/common/imageWithBasePath'
 import { DatePicker } from "antd";
 import CommonSelect from '../../../core/common/commonSelect'
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header'
+import { useAppDispatch } from '../../../core/data/redux/store'
+import { postJob } from '../../../core/data/redux/actions/requisitionActions'
 
 const JobGrid = () => {
+    const dispatch = useAppDispatch();
 
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
@@ -48,12 +51,12 @@ const JobGrid = () => {
         { value: "Male", label: "Male" },
         { value: "Female", label: "Female" },
     ];
-    const sallary = [
+    const salary = [
         { value: "Select", label: "Select" },
         { value: "10k - 15k", label: "10k - 15k" },
         { value: "15k -20k", label: "15k -20k" },
     ];
-    const maxsallary = [
+    const maxsalary = [
         { value: "Select", label: "Select" },
         { value: "40k - 50k", label: "40k - 50k" },
         { value: "50k - 60k", label: "50k - 60k" },
@@ -79,6 +82,25 @@ const JobGrid = () => {
         { value: "Fresno", label: "Fresno" },
         { value: "San Francisco", label: "San Francisco" },
     ];
+
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log('Form data:');
+        if (formRef.current) {
+        const formData = new FormData(formRef.current);
+        const data = Object.fromEntries(formData.entries());
+        
+        console.log('Form data:', data);
+        // Type assertion if needed
+        const response: any = await dispatch(postJob(data));
+              console.log(response)
+              if (response.status === 200) {
+                
+              }
+        }
+    };
 
     return (
         <>
@@ -1009,7 +1031,7 @@ const JobGrid = () => {
                                 <i className="ti ti-x" />
                             </button>
                         </div>
-                        <form>
+                        <form ref={formRef} onSubmit={handleSubmit}>
                             <div className="modal-body pb-0">
                                 <div className="row">
                                     <div className="contact-grids-tab pt-0">
@@ -1089,7 +1111,7 @@ const JobGrid = () => {
                                                         <label className="form-label">
                                                             Job Title <span className="text-danger"> *</span>
                                                         </label>
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" className="form-control" id='jobTitle' name='jobTitle' />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-12">
@@ -1102,6 +1124,7 @@ const JobGrid = () => {
                                                             rows={3}
                                                             className="form-control"
                                                             defaultValue={""}
+                                                            name='jobDescription'
                                                         />
                                                     </div>
                                                 </div>
@@ -1114,6 +1137,7 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={jobCategory}
                                                             defaultValue={jobCategory[0]}
+                                                            name='jobCategory'
                                                         />
                                                     </div>
                                                 </div>
@@ -1126,6 +1150,7 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={jobtype}
                                                             defaultValue={jobtype[0]}
+                                                            name='jobType'
                                                         />
                                                     </div>
                                                 </div>
@@ -1138,6 +1163,7 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={joblevel}
                                                             defaultValue={joblevel[0]}
+                                                            name='jobLevel'
                                                         />
                                                     </div>
                                                 </div>
@@ -1150,6 +1176,7 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={experience}
                                                             defaultValue={experience[0]}
+                                                            name='experience'
                                                         />
                                                     </div>
                                                 </div>
@@ -1162,6 +1189,7 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={qualification}
                                                             defaultValue={qualification[0]}
+                                                            name='qualification'
                                                         />
                                                     </div>
                                                 </div>
@@ -1174,30 +1202,33 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={genderChoose}
                                                             defaultValue={genderChoose[0]}
+                                                            name='gender'
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="mb-3">
                                                         <label className="form-label">
-                                                            Min. Sallary <span className="text-danger"> *</span>
+                                                            Min. Salary <span className="text-danger"> *</span>
                                                         </label>
                                                         <CommonSelect
                                                             className='select'
-                                                            options={sallary}
-                                                            defaultValue={sallary[0]}
+                                                            options={salary}
+                                                            defaultValue={salary[0]}
+                                                            name='minsalary'
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="mb-3">
                                                         <label className="form-label">
-                                                            Max. Sallary <span className="text-danger"> *</span>
+                                                            Max. Salary <span className="text-danger"> *</span>
                                                         </label>
                                                         <CommonSelect
                                                             className='select'
-                                                            options={maxsallary}
-                                                            defaultValue={maxsallary[0]}
+                                                            options={maxsalary}
+                                                            defaultValue={maxsalary[0]}
+                                                            name='maxsalary'
                                                         />
                                                     </div>
                                                 </div>
@@ -1216,6 +1247,7 @@ const JobGrid = () => {
                                                                 }}
                                                                 getPopupContainer={getModalContainer}
                                                                 placeholder="DD-MM-YYYY"
+                                                                name='jobexpired'
                                                             />
                                                             <span className="input-icon-addon">
                                                                 <i className="ti ti-calendar text-gray-7" />
@@ -1226,7 +1258,7 @@ const JobGrid = () => {
                                                 <div className="col-md-6">
                                                     <div className="mb-3">
                                                         <label className="form-label">Required Skills</label>
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" className="form-control" name='skills' />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1239,7 +1271,7 @@ const JobGrid = () => {
                                                     Cancel
                                                 </button>
                                                 <button
-                                                    type="button"
+                                                    type="submit"
                                                     className="btn btn-primary"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#success_modal"
