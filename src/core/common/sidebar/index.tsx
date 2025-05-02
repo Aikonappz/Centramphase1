@@ -228,7 +228,7 @@ const Sidebar = () => {
               {SidebarDataTest?.map((mainLabel, index) => (
                 <React.Fragment key={`main-${index}`}>
                     <li className="menu-title">
-                        <span>{mainLabel?.tittle}</span>
+                        <span>{mainLabel?.title}</span>
                     </li>
                     <li>
                     <ul>

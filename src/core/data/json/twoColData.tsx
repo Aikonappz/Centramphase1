@@ -3,7 +3,7 @@ const routes = all_routes;
 
 export const TowColData = [
     {
-        tittle: 'Main',
+        title: 'Main',
         icon: 'airplay',
         showAsTab: true,
         showMyTab:true,
@@ -203,7 +203,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Layout',
+        title: 'Layout',
         icon: 'file',
         showAsTab: false,
         separateRoute: false,
@@ -320,7 +320,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Projects',
+        title: 'Projects',
         icon: 'layers',
         showAsTab: false,
         separateRoute: false,
@@ -366,7 +366,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Crm',
+        title: 'Crm',
         icon: 'file',
         showAsTab: false,
         separateRoute: false,
@@ -426,7 +426,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Hrm',
+        title: 'Hrm',
         icon: 'file',
         showAsTab: false,
         separateRoute: false,
@@ -664,7 +664,7 @@ export const TowColData = [
       },
   
       {
-        tittle: 'Finance & Accounts',
+        title: 'Finance & Accounts',
         icon: 'file',
         showAsTab: false,
         separateRoute: false,
@@ -777,7 +777,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Administration',
+        title: 'Administration',
         showAsTab: false,
         separateRoute: false,
         menu: [
@@ -1145,7 +1145,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Content',
+        title: 'Content',
         showAsTab: false,
         separateRoute: false,
         menu: [
@@ -1244,7 +1244,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Pages',
+        title: 'Pages',
         showAsTab: false,
         showMyTab:true,
         icon: 'airplay',
@@ -1333,7 +1333,7 @@ export const TowColData = [
         ],
       },
       {
-        tittle: 'Authentication',
+        title: 'Authentication',
         showAsTab: false,
         separateRoute: false,
         menu: [

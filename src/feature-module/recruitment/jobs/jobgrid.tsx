@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { all_routes } from '../../router/all_routes'
 import { Link } from 'react-router-dom'
 import PredefinedDateRanges from '../../../core/common/datePicker'
@@ -7,7 +7,7 @@ import { DatePicker } from "antd";
 import CommonSelect from '../../../core/common/commonSelect'
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header'
 import { useAppDispatch } from '../../../core/data/redux/store'
-import { postJob } from '../../../core/data/redux/actions/requisitionActions'
+import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions'
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
@@ -111,6 +111,10 @@ const JobGrid = () => {
         }
     };
 
+    useEffect(() => {
+        dispatch(getJobLists());
+    }, []);
+
     return (
         <>
             {/* Page Wrapper */}
@@ -200,7 +204,7 @@ const JobGrid = () => {
                     <div className="card">
                         <div className="card-body p-3">
                             <div className="d-flex align-items-center justify-content-between">
-                                <h5>Job Grid</h5>
+                                <h5>Requisition</h5>
                                 <div className="d-flex my-xl-auto right-content align-items-center flex-wrap row-gap-3">
                                     <div className="me-3">
                                         <div className="input-icon-end position-relative">
@@ -1285,7 +1289,7 @@ const JobGrid = () => {
                                                     // data-bs-toggle="modal"
                                                     // data-bs-target="#success_modal"
                                                 >
-                                                    Save &amp; Next
+                                                    Post
                                                 </button>
                                             </div>
                                         </div>

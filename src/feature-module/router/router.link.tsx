@@ -297,7 +297,7 @@ export const publicRoutes = [
   {
     path: "/",
     name: "Root",
-    element: <Navigate to="/index" />,
+    element: <Navigate to="/dashboard" />,
     route: Route,
   },
   {

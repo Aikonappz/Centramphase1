@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { all_routes } from '../../router/all_routes';
 import { Link } from 'react-router-dom';
 import PredefinedDateRanges from '../../../core/common/datePicker';
@@ -9,7 +9,7 @@ import { joblistdetails } from './joblistdetails';
 import Table from "../../../core/common/dataTable/index";
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header';
 import { useAppDispatch } from '../../../core/data/redux/store';
-import { postJob } from '../../../core/data/redux/actions/requisitionActions';
+import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions';
 
 
 const JobList = () => {
@@ -173,6 +173,10 @@ const JobList = () => {
           }
   };
 
+  useEffect(() => {
+          dispatch(getJobLists());
+  }, []);
+
   return (
     <>
       {/* Page Wrapper */}
@@ -261,7 +265,7 @@ const JobList = () => {
           {/* /Breadcrumb */}
           <div className="card">
             <div className="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
-              <h5>Job List</h5>
+              <h5>Requisition</h5>
               <div className="d-flex my-xl-auto right-content align-items-center flex-wrap row-gap-3">
                 <div className="me-3">
                   <div className="input-icon-end position-relative">
@@ -679,7 +683,7 @@ const JobList = () => {
                           // data-bs-toggle="modal"
                           // data-bs-target="#success_modal"
                         >
-                          Save &amp; Next
+                          Post
                         </button>
                       </div>
                     </div>
