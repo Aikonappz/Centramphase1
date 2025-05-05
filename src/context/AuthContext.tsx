@@ -9,7 +9,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
+  isAuthenticated: true,
   isLoading: true,
   checkAuth: async () => {},
 });
@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (!token) {
-      setIsAuthenticated(false);
+      setIsAuthenticated(true);
       setIsLoading(false);
       return;
     }

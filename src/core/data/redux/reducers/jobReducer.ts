@@ -20,7 +20,10 @@ import {
     GET_BUSINESS_UNIT_FAILURE,
     GET_DEPARTMENT_REQUEST,
     GET_DEPARTMENT_SUCCESS,
-    GET_DEPARTMENT_FAILURE
+    GET_DEPARTMENT_FAILURE,
+    GET_ORGANISATION_REQUEST,
+    GET_ORGANISATION_SUCCESS,
+    GET_ORGANISATION_FAILURE
   } from '../actions/requisitionActions';
   
   export interface JobState {
@@ -33,6 +36,7 @@ import {
     division: any | null;
     businessUnit: any | null;
     department: any | null;
+    organisation: any | null;
   }
   
   const initialState: JobState = {
@@ -44,7 +48,8 @@ import {
     positionById: null,
     division: null,
     businessUnit: null,
-    department: null
+    department: null,
+    organisation: null
   };
   
   // Use Reducer type for better type safety
@@ -181,6 +186,25 @@ import {
           error: null
         };
       case GET_DEPARTMENT_FAILURE:
+        return {
+          ...state,
+          loading: false,
+          error: action.payload
+        };
+      case GET_ORGANISATION_REQUEST:
+        return {
+          ...state,
+          loading: true,
+          error: null
+        };
+      case GET_ORGANISATION_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          organisation: action.payload,
+          error: null
+        };
+      case GET_ORGANISATION_FAILURE:
         return {
           ...state,
           loading: false,

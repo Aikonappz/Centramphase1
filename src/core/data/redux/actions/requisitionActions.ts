@@ -38,9 +38,13 @@ export const GET_BUSINESS_UNIT_REQUEST = 'GET_BUSINESS_UNIT_REQUEST';
 export const GET_BUSINESS_UNIT_SUCCESS = 'GET_BUSINESS_UNIT_SUCCESS';
 export const GET_BUSINESS_UNIT_FAILURE = 'GET_BUSINESS_UNIT_FAILURE';
 
+export const GET_ORGANISATION_REQUEST = 'GET_ORGANISATION_REQUEST';
+export const GET_ORGANISATION_SUCCESS = 'GET_ORGANISATION_SUCCESS';
+export const GET_ORGANISATION_FAILURE = 'GET_ORGANISATION_FAILURE';
 
-
-
+export const SAVE_ORGANISATION_REQUEST = 'SAVE_ORGANISATION_REQUEST';
+export const SAVE_ORGANISATION_SUCCESS = 'SAVE_ORGANISATION_SUCCESS';
+export const SAVE_ORGANISATION_FAILURE = 'SAVE_ORGANISATION_FAILURE';
 
 interface PostJobRequestAction {
   type: typeof POST_JOB_REQUEST;
@@ -140,6 +144,34 @@ interface GetBusinessUnitFailureAction {
   payload: string;
 }
 
+interface GetOrganisationRequestAction {
+  type: typeof GET_ORGANISATION_REQUEST;
+}
+
+interface GetOrganisationSuccessAction {
+  type: typeof GET_ORGANISATION_SUCCESS;
+  payload: any;
+}
+
+interface GetOrganisationFailureAction {
+  type: typeof GET_ORGANISATION_FAILURE;
+  payload: string;
+}
+
+interface SaveOrganisationRequestAction {
+  type: typeof SAVE_ORGANISATION_REQUEST;
+}
+
+interface SaveOrganisationSuccessAction {
+  type: typeof SAVE_ORGANISATION_SUCCESS;
+  payload: any;
+}
+
+interface SaveOrganisationFailureAction {
+  type: typeof SAVE_ORGANISATION_FAILURE;
+  payload: string;
+}
+
 
 
 export type JobActionTypes = 
@@ -163,7 +195,13 @@ export type JobActionTypes =
   | GetDepartmentFailureAction
   | GetBusinessUnitRequestAction 
   | GetBusinessUnitSuccessAction 
-  | GetBusinessUnitFailureAction;
+  | GetBusinessUnitFailureAction
+  | GetOrganisationRequestAction 
+  | GetOrganisationSuccessAction 
+  | GetOrganisationFailureAction
+  | SaveOrganisationRequestAction 
+  | SaveOrganisationSuccessAction 
+  | SaveOrganisationFailureAction;
 
 // Async action creator with TypeScript
 
@@ -328,6 +366,54 @@ export const getPositionById = (id: any) => {
       }
       dispatch({
         type: GET_POSITION_BY_ID_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getOrganisation = () => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_ORGANISATION_REQUEST });
+    try {
+      const response = await api.get(`/organisation/`);
+      dispatch({
+        type: GET_ORGANISATION_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_ORGANISATION_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const saveOrganisation = (data: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: SAVE_ORGANISATION_REQUEST });
+    try {
+      const response = await api.post(`/organisation/`, data);
+      dispatch({
+        type: SAVE_ORGANISATION_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: SAVE_ORGANISATION_FAILURE,
         payload: errorMessage
       });
       return error;

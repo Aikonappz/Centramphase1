@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux'
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
-    const positionList: any = useSelector((state: RootState) => state.positionList);
+    const positionList: any = useSelector((state: RootState) => state.positionList) || [];
 
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
