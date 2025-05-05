@@ -6,11 +6,13 @@ import ImageWithBasePath from '../../../core/common/imageWithBasePath'
 import { DatePicker } from "antd";
 import CommonSelect from '../../../core/common/commonSelect'
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header'
-import { useAppDispatch } from '../../../core/data/redux/store'
+import { RootState, useAppDispatch } from '../../../core/data/redux/store'
 import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions'
+import { useSelector } from 'react-redux'
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
+    const positionList: any = useSelector((state: RootState) => state.positionList);
 
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
@@ -1174,8 +1176,8 @@ const JobGrid = () => {
                                                         </label>
                                                         <CommonSelect
                                                             className='select'
-                                                            options={joblevel}
-                                                            defaultValue={joblevel[0]}
+                                                            options={positionList}
+                                                            defaultValue={positionList[0]}
                                                             name='jobLevel'
                                                         />
                                                     </div>

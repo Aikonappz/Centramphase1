@@ -6,6 +6,7 @@ import api from "../../../core/data/api";
 import { e } from "react-router/dist/development/route-data-BmvbmBej";
 import { userSignIn } from "../../../core/data/redux/actions/userActions";
 import { useAppDispatch } from "../../../core/data/redux/store";
+import { getBusinessUnit, getDepartmentLists, getPositions } from "../../../core/data/redux/actions/requisitionActions";
 type PasswordField = "password";
 
 const Login = () => {
@@ -33,8 +34,10 @@ const Login = () => {
       return false;
     } else {
       const response: any = await dispatch(userSignIn(data));
-      console.log(response)
       if (response.status === 200) {
+        await dispatch(getPositions());
+        await dispatch(getDepartmentLists());
+        await dispatch(getBusinessUnit());
         localStorage.setItem("token", response.data.jwtToken);
         setTimeout(() => {
           // navigation(routes.adminDashboard);
