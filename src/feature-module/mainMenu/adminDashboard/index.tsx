@@ -21,9 +21,7 @@ const AdminDashboard = () => {
 
   const [date, setDate] = useState(new Date());
 
-  const user = useSelector((state: RootState) => state.user);
-
-  console.log(user);
+  const user: any = useSelector((state: RootState) => state.user);
 
   //New Chart
   const [empDepartment] = useState<any>({
@@ -334,7 +332,7 @@ const AdminDashboard = () => {
                 </span>
                 <div className="ms-3">
                   <h3 className="mb-2">
-                    Welcome Back, Adrian{" "}
+                    Welcome Back, {`${user?.userSession?.name}`}{" "}
                     <Link to="#" className="edit-icon">
                       <i className="ti ti-edit fs-14" />
                     </Link>

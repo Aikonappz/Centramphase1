@@ -35,9 +35,9 @@ const Login = () => {
     } else {
       const response: any = await dispatch(userSignIn(data));
       if (response.status === 200) {
-        await dispatch(getPositions());
-        await dispatch(getDepartmentLists());
-        await dispatch(getBusinessUnit());
+        // await dispatch(getPositions());
+        // await dispatch(getDepartmentLists());
+        // await dispatch(getBusinessUnit());
         localStorage.setItem("token", response.data.jwtToken);
         setTimeout(() => {
           // navigation(routes.adminDashboard);

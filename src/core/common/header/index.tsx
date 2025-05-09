@@ -11,10 +11,12 @@ import {
 } from "../../data/redux/sidebarSlice";
 import { all_routes } from "../../../feature-module/router/all_routes";
 import { HorizontalSidebarData } from '../../data/json/horizontalSidebar'
+import { RootState } from '../../data/redux/store';
 const Header = () => {
   const routes = all_routes;
   const dispatch = useDispatch();
   const dataLayout = useSelector((state: any) => state.themeSetting.dataLayout);
+  const user: any = useSelector((state: RootState) => state.user);
   const Location = useLocation();
 
   const [subOpen, setSubopen] = useState<any>("");
@@ -413,8 +415,8 @@ const Header = () => {
 													<ImageWithBasePath src="assets/img/profiles/avatar-12.jpg" alt="img"/>
 												</span>
 												<div>
-													<h5 className="mb-0">Kevin Larry</h5>
-													<p className="fs-12 fw-medium mb-0">warren@example.com</p>
+													<h5 className="mb-0">{user?.userSession?.name}</h5>
+													<p className="fs-12 fw-medium mb-0">{user?.userSession?.email}</p>
 												</div>
 											</div>
 										</div>

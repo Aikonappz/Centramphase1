@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { all_routes } from "../../router/all_routes";
 import CommonSelect from "../../../core/common/commonSelect";
 import CollapseHeader from "../../../core/common/collapse-header/collapse-header";
+import { RootState } from "../../../core/data/redux/store";
+import { useSelector } from "react-redux";
 type PasswordField =
   | "oldPassword"
   | "newPassword"
@@ -10,6 +12,31 @@ type PasswordField =
   | "currentPassword";
 
 const Profile = () => {
+  const user: any = useSelector((state: RootState) => state.user);
+  const [password, setPassword] = useState("");
+  const [passwordFields, setPasswordFields] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordFieldsError, setPasswordFieldsError] = useState({
+    oldPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+  const [passwordFieldsErrorText, setPasswordFieldsErrorText] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [firstName, setFirstName] = useState(user.userSession.name);
+  const [lastName, setLastName] = useState(user.last_name);
+  const [email, setEmail] = useState(user.userSession.email);
+  const [phone, setPhone] = useState(user.phone);
+  const [country, setCountry] = useState(user.country);
+  const [state, setState] = useState(user.state);
+  const [city, setCity] = useState(user.city);
+
   const route = all_routes;
   const [passwordVisibility, setPasswordVisibility] = useState({
     oldPassword: false,
@@ -124,7 +151,7 @@ const Profile = () => {
                           <label className="form-label mb-md-0">First Name</label>
                         </div>
                         <div className="col-md-8">
-                          <input type="text" className="form-control" />
+                          <input type="text" className="form-control" value={firstName}/>
                         </div>
                       </div>
                     </div>
@@ -144,7 +171,7 @@ const Profile = () => {
                           <label className="form-label mb-md-0">Email</label>
                         </div>
                         <div className="col-md-8">
-                          <input type="text" className="form-control" />
+                          <input type="text" className="form-control" value={email}/>
                         </div>
                       </div>
                     </div>

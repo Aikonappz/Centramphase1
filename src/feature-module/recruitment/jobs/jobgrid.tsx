@@ -7,13 +7,16 @@ import { DatePicker } from "antd";
 import CommonSelect from '../../../core/common/commonSelect'
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header'
 import { RootState, useAppDispatch } from '../../../core/data/redux/store'
-import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions'
+import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPositions, postJob } from '../../../core/data/redux/actions/requisitionActions'
 import { useSelector } from 'react-redux'
+import { transformArrayToLabelValue } from '../../../utils/misc'
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
-    const positionList: any = useSelector((state: RootState) => state.positionList) || [];
-
+    const jobs: any = useSelector((state: RootState) => state.jobs) || [];
+    const [jobLevel, setJobLevel] = React.useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
+    const [jobDepartment, setJobDepartment] = React.useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
+    
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
         return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
@@ -30,11 +33,10 @@ const JobGrid = () => {
         { value: "Full Time", label: "Full Time" },
         { value: "Part Time", label: "Part Time" },
     ];
-    const joblevel = [
+    const requisitionStatus = [
         { value: "Select", label: "Select" },
-        { value: "Team Lead", label: "Team Lead" },
-        { value: "Manager", label: "Manager" },
-        { value: "Senior", label: "Senior" },
+        { value: "Open", label: "Open" },
+        { value: "Closed", label: "Closed" },
     ];
     const experience = [
         { value: "Select", label: "Select" },
@@ -95,13 +97,6 @@ const JobGrid = () => {
         const data: any = Object.fromEntries(formData.entries());
         data.jobStartDate = new Date();
         data.reasonForVacancy = "New Position";
-        data.organisationId = 1;
-        data.businessUnitId = 1;
-        data.divisionId = 2;
-        data.departmentId = 13;
-        data.positionId = 1;
-        data.currencyId = 1;
-        data.requisitionStatus = "Open";
         
         console.log('Form data:', data);
         // Type assertion if needed
@@ -115,6 +110,10 @@ const JobGrid = () => {
 
     useEffect(() => {
         dispatch(getJobLists());
+        dispatch(getPositions());
+        dispatch(getDepartmentLists());
+        dispatch(getBusinessUnit());
+        dispatch(getDivision());
     }, []);
 
     return (
@@ -334,7 +333,9 @@ const JobGrid = () => {
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-xl-3 col-lg-4 col-md-6">
+                        {/* Job Card */}
+                        {jobs && jobs.jobList?.content.map((job: any) => (
+                            <div className="col-xl-3 col-lg-4 col-md-6">
                             <div className="card">
                                 <div className="card-body">
                                     <div className="card bg-light">
@@ -350,8 +351,8 @@ const JobGrid = () => {
                                                     </span>
                                                 </Link>
                                                 <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Senior IOS Developer</Link>
+                                                    <h6 className="fw-medium mb-1 text-truncate" title={`${job.jobTitle}`}>
+                                                        <Link to="#">{job.jobTitle}</Link>
                                                     </h6>
                                                     <p className="fs-12 text-gray fw-normal">25 Applicants</p>
                                                 </div>
@@ -365,7 +366,7 @@ const JobGrid = () => {
                                         </p>
                                         <p className="text-dark d-inline-flex align-items-center mb-2">
                                             <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            30, 000 - 35, 000 / month
+                                            {`${job.payRangeMin}`} - {`${job.payRangeMax}`} / month
                                         </p>
                                         <p className="text-dark d-inline-flex align-items-center">
                                             <i className="ti ti-briefcase text-gray-5 me-2" />2 years of
@@ -374,7 +375,7 @@ const JobGrid = () => {
                                     </div>
                                     <div className="mb-3">
                                         <span className="badge badge-pink-transparent me-1">
-                                            Full Time
+                                            {job.fte}
                                         </span>
                                         <span className="badge bg-secondary-transparent">Expert</span>
                                     </div>
@@ -391,633 +392,7 @@ const JobGrid = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/php.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Junior PHP Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Los Angeles, USA
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            20, 000 - 25, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />4 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/black.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Network Engineer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Bristol, UK
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            30, 000 - 35, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />1 year of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/react.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">React Developer </Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Birmingham, UK
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            28, 000 - 32, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />3 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/laravel.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Laravel Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Washington, USA
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            32, 000 - 36, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />1 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/devops.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">DevOps Engineer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Coventry, UK
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            25, 000 - 35, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />6 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/android.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Android Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Chicago, USA
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            28, 000 - 32, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />5 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/html.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">HTML Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Carlisle, UK
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            25, 000 - 28, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />3 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/ui.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">UI/UX Designer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            UI/UX Designer
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            20, 000 - 25, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />4 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/grafic.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Senior IOS Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            San Diego, USA
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            22, 000 - 28, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />3 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/angular.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Angular Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Sheffield, UK
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            28, 000 - 30, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />2 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray-100">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/nodejs.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate">
-                                                        <Link to="#">Node js Developer</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            Boston, USA
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            25, 000 - 28, 000 / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />3 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            Full Time
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
                 <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
@@ -1146,12 +521,25 @@ const JobGrid = () => {
                                                 <div className="col-md-6">
                                                     <div className="mb-3">
                                                         <label className="form-label">
-                                                            Job Category <span className="text-danger"> *</span>
+                                                        Requisition Status <span className="text-danger"> *</span>
                                                         </label>
                                                         <CommonSelect
                                                             className='select'
-                                                            options={jobCategory}
-                                                            defaultValue={jobCategory[0]}
+                                                            options={requisitionStatus}
+                                                            defaultValue={requisitionStatus[0]}
+                                                            name='requisitionStatus'
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <div className="mb-3">
+                                                        <label className="form-label">
+                                                            Department <span className="text-danger"> *</span>
+                                                        </label>
+                                                        <CommonSelect
+                                                            className='select'
+                                                            options={jobDepartment}
+                                                            defaultValue={jobDepartment[0]}
                                                             name='jobClassification'
                                                         />
                                                     </div>
@@ -1165,7 +553,7 @@ const JobGrid = () => {
                                                             className='select'
                                                             options={jobtype}
                                                             defaultValue={jobtype[0]}
-                                                            name='jobType'
+                                                            name='fte'
                                                         />
                                                     </div>
                                                 </div>
@@ -1176,9 +564,9 @@ const JobGrid = () => {
                                                         </label>
                                                         <CommonSelect
                                                             className='select'
-                                                            options={positionList}
-                                                            defaultValue={positionList[0]}
-                                                            name='jobLevel'
+                                                            options={jobLevel}
+                                                            defaultValue={jobLevel[0]}
+                                                            name='positionId'
                                                         />
                                                     </div>
                                                 </div>

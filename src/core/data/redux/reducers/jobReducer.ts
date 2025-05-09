@@ -27,10 +27,10 @@ import {
   } from '../actions/requisitionActions';
   
   export interface JobState {
-    user: any | null;
+    jobList: any | null;
     loading: boolean;
     error: string | null;
-    userSession: any | null;
+    postJOB: any | null;
     positionList: any | null;
     positionById: any | null;
     division: any | null;
@@ -40,10 +40,10 @@ import {
   }
   
   const initialState: JobState = {
-    user: null,
+    jobList: null,
     loading: false,
     error: null,
-    userSession: null,
+    postJOB: null,
     positionList: null,
     positionById: null,
     division: null,
@@ -68,7 +68,7 @@ import {
         return {
           ...state,
           loading: false,
-          userSession: action.payload,
+          postJOB: action.payload,
           error: null
         };
       case POST_JOB_FAILURE:
@@ -87,7 +87,7 @@ import {
         return {
           ...state,
           loading: false,
-          user: action.payload,
+          jobList: action.payload,
           error: null
         };
       case GET_JOB_FAILURE:
