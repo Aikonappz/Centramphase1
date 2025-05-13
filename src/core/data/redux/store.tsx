@@ -12,7 +12,7 @@ const persistConfig = {
   key: 'root',
   storage,
   // Only persist these reducers:
-  whitelist: ['user'],
+  whitelist: ['user', 'themeSetting', 'sidebarSlice', 'jobs'],
   preloadedState
 };
 

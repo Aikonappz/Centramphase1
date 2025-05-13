@@ -5,49 +5,56 @@ import PredefinedDateRanges from '../../../core/common/datePicker';
 import ImageWithBasePath from '../../../core/common/imageWithBasePath';
 import { DatePicker } from "antd";
 import CommonSelect from '../../../core/common/commonSelect';
-import { joblistdetails } from './joblistdetails';
 import Table from "../../../core/common/dataTable/index";
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header';
-import { useAppDispatch } from '../../../core/data/redux/store';
+import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions';
+import { useSelector } from 'react-redux';
+import { transformArrayToLabelValue } from '../../../utils/misc';
+import PostJobModal from '../../../components/PostJobModal';
 
 
 const JobList = () => {
- const dispatch = useAppDispatch();
-  const data = joblistdetails;
+  const dispatch = useAppDispatch();
+  const jobs: any = useSelector((state: RootState) => state.jobs) || [];
+  const [jobLevel, setJobLevel] = React.useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
+  const [jobDepartment, setJobDepartment] = React.useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
+  const [businessUnit, setBusinessUnit] = React.useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
+  const [organisation, setOrganisation] = React.useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
+  const data = jobs.jobList?.content || [];
   const columns = [
     {
       title: "Job ID",
-      dataIndex: "Job_ID",
-      sorter: (a: any, b: any) => a.Job_ID.length - b.Job_ID.length,
+      dataIndex: "id",
+      sorter: (a: any, b: any) => a.id.length - b.id.length,
     },
     {
       title: "Job Title",
-      dataIndex: "Job_Title",
+      dataIndex: "jobTitle",
       render: (text: string, record: any) => (
         <div className="d-flex align-items-center file-name-icon">
-          <Link to="#" className="avatar avatar-md bg-light rounded">
+          {/* <Link to="#" className="avatar avatar-md bg-light rounded">
             <ImageWithBasePath
               src={`assets/img/icons/${record.Image}`}
               className="img-fluid rounded-circle"
               alt="img"
             />
-          </Link>
+          </Link> */}
           <div className="ms-2">
             <h6 className="fw-medium">
-              <Link to="#">{record.Job_Title}</Link>
+              <Link to="#">{record.jobTitle}</Link>
             </h6>
             <span className="d-block mt-1">{record.Roll}</span>
           </div>
         </div>
 
       ),
-      sorter: (a: any, b: any) => a.Job_Title.length - b.Job_Title.length,
+      sorter: (a: any, b: any) => a.jobTitle.length - b.jobTitle.length,
     },
     {
       title: "Category",
-      dataIndex: "Category",
-      sorter: (a: any, b: any) => a.Category.length - b.Category.length,
+      dataIndex: "jobClassification",
+      sorter: (a: any, b: any) => a.jobClassification.length - b.jobClassification.length,
     },
     {
       title: "Location",
@@ -56,13 +63,13 @@ const JobList = () => {
     },
     {
       title: "Salary Range",
-      dataIndex: "Salary_Range",
-      sorter: (a: any, b: any) => a.Salary_Range.length - b.Salary_Range.length,
+      dataIndex: "payRangeMax",
+      sorter: (a: any, b: any) => a.payRangeMax.length - b.payRangeMax.length,
     },
     {
       title: "Posted Date",
-      dataIndex: "Posted_Date",
-      sorter: (a: any, b: any) => a.Posted_Date.length - b.Posted_Date.length,
+      dataIndex: "jobPostingStartDate",
+      sorter: (a: any, b: any) => a.jobPostingStartDate.length - b.jobPostingStartDate.length,
     },
     {
       title: "",
@@ -101,11 +108,19 @@ const JobList = () => {
     { value: "Full Time", label: "Full Time" },
     { value: "Part Time", label: "Part Time" },
   ];
-  const joblevel = [
+  const jobposttype = [
     { value: "Select", label: "Select" },
-    { value: "Team Lead", label: "Team Lead" },
-    { value: "Manager", label: "Manager" },
-    { value: "Senior", label: "Senior" },
+    { value: "Internal", label: "Internal" },
+    { value: "External", label: "External" },
+  ];
+  const jobpostBoard = [
+    { value: "Select", label: "Select" },
+    { value: "LinkedIn", label: "LinkedIn" },
+  ];
+  const requisitionStatus = [
+    { value: "Select", label: "Select" },
+    { value: "Open", label: "Open" },
+    { value: "Closed", label: "Closed" },
   ];
   const experience = [
     { value: "Select", label: "Select" },
@@ -156,26 +171,11 @@ const JobList = () => {
     { value: "San Francisco", label: "San Francisco" },
   ];
 
-  const formRef = useRef<HTMLFormElement>(null);
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-          e.preventDefault();
-          if (formRef.current) {
-          const formData = new FormData(formRef.current);
-          const data = Object.fromEntries(formData.entries());
-          
-          console.log('Form data:', data);
-          const response: any = await dispatch(postJob(data));
-              console.log(response)
-              if (response.status === 200) {
-                
-              }
-          }
-  };
-
   useEffect(() => {
-          dispatch(getJobLists());
+    dispatch(getJobLists());
   }, []);
+
+  console.log(jobs)
 
   return (
     <>
@@ -437,351 +437,20 @@ const JobList = () => {
                 <i className="ti ti-x" />
               </button>
             </div>
-            <form ref={formRef} onSubmit={handleSubmit}>
-              <div className="modal-body pb-0">
-                <div className="row">
-                  <div className="contact-grids-tab pt-0">
-                    <ul className="nav nav-underline" id="myTab" role="tablist">
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link active"
-                          id="info-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#basic-info"
-                          type="button"
-                          role="tab"
-                          aria-selected="true"
-                        >
-                          Basic Information
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="address-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#address"
-                          type="button"
-                          role="tab"
-                          aria-selected="false"
-                        >
-                          Location
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="tab-content" id="myTabContent">
-                    <div
-                      className="tab-pane fade show active"
-                      id="basic-info"
-                      role="tabpanel"
-                      aria-labelledby="info-tab"
-                      tabIndex={0}
-                    >
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="d-flex align-items-center flex-wrap row-gap-3 bg-light w-100 rounded p-3 mb-4">
-                            <div className="d-flex align-items-center justify-content-center avatar avatar-xxl rounded-circle border border-dashed me-2 flex-shrink-0 text-dark frames">
-                              <ImageWithBasePath
-                                src="assets/img/profiles/avatar-30.jpg"
-                                alt="img"
-                                className="rounded-circle"
-                              />
-                            </div>
-                            <div className="profile-upload">
-                              <div className="mb-2">
-                                <h6 className="mb-1">Upload Profile Image</h6>
-                                <p className="fs-12">Image should be below 4 mb</p>
-                              </div>
-                              <div className="profile-uploader d-flex align-items-center">
-                                <div className="drag-upload-btn btn btn-sm btn-primary me-2">
-                                  Upload
-                                  <input
-                                    type="file"
-                                    className="form-control image-sign"
-                                    multiple
-                                  />
-                                </div>
-                                <Link
-                                  to="#"
-                                  className="btn btn-light btn-sm"
-                                >
-                                  Cancel
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Title <span className="text-danger"> *</span>
-                            </label>
-                            <input type="text" className="form-control" name='jobTitle' id='jobTitle' />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Description{" "}
-                              <span className="text-danger"> *</span>
-                            </label>
-                            <textarea
-                              rows={3}
-                              className="form-control"
-                              defaultValue={""}
-                              id='jobDescription'
-                              name='jobDescription'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Category <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={jobCategory}
-                              defaultValue={jobCategory[0]}
-                              name='jobCategory'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Type <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={jobtype}
-                              defaultValue={jobtype[0]}
-                              name='jobPostingType'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Level <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={joblevel}
-                              defaultValue={joblevel[0]}
-                              name='jobLevel'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Experience <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={experience}
-                              defaultValue={experience[0]}
-                              name='experience'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Qualification <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={qualification}
-                              defaultValue={qualification[0]}
-                              name='qualification'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Gender <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={genderChoose}
-                              defaultValue={genderChoose[0]}
-                              name='gender'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Min. Salary <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={salary}
-                              defaultValue={salary[0]}
-                              name='minSalary'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Max. Salary <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={maxsalary}
-                              defaultValue={maxsalary[0]}
-                              name='maxSalary'
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3 ">
-                            <label className="form-label">
-                              Job Expired Date{" "}
-                              <span className="text-danger"> *</span>
-                            </label>
-                            <div className="input-icon-end position-relative">
-                              <DatePicker
-                                className="form-control datetimepicker"
-                                format={{
-                                  format: "DD-MM-YYYY",
-                                  type: "mask",
-                                }}
-                                getPopupContainer={getModalContainer}
-                                placeholder="DD-MM-YYYY"
-                                name='jobExpiredDate'
-                              />
-                              <span className="input-icon-addon">
-                                <i className="ti ti-calendar text-gray-7" />
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">Required Skills</label>
-                            <input type="text" className="form-control" name='requiredSkills' />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          className="btn btn-light me-2"
-                          data-bs-dismiss="modal"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary"
-                          // data-bs-toggle="modal"
-                          // data-bs-target="#success_modal"
-                        >
-                          Post
-                        </button>
-                      </div>
-                    </div>
-                    <div
-                      className="tab-pane fade"
-                      id="address"
-                      role="tabpanel"
-                      aria-labelledby="address-tab"
-                      tabIndex={0}
-                    >
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Address <span className="text-danger"> *</span>
-                            </label>
-                            <input type="text" className="form-control" />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Country <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={country}
-                              defaultValue={country[0]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              State <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={state}
-                              defaultValue={state[0]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              City <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={city}
-                              defaultValue={city[0]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Zip Code <span className="text-danger"> *</span>
-                            </label>
-                            <input type="text" className="form-control" />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="map-grid mb-3">
-                            <iframe
-                              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6509170.989457427!2d-123.80081967108484!3d37.192957227641294!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x8b5109a227086f55!2sCalifornia%2C%20USA!5e0!3m2!1sen!2sin!4v1669181581381!5m2!1sen!2sin"
-                              style={{ border: 0 }}
-                              allowFullScreen
-                              loading="lazy"
-                              referrerPolicy="no-referrer-when-downgrade"
-                              className="w-100"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          className="btn btn-light me-2"
-                          data-bs-dismiss="modal"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#success_modal"
-                        >
-                          Post
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
+            <PostJobModal
+              requisitionStatus={requisitionStatus}
+              jobDepartment={jobDepartment}
+              jobposttype={jobposttype}
+              jobpostBoard={jobpostBoard}
+              jobtype={jobtype}
+              organisation={organisation}
+              businessUnit={businessUnit}
+              jobLevel={jobLevel}
+              getModalContainer={getModalContainer}
+              country={country}
+              state={state}
+              city={city}
+            />
           </div>
         </div>
       </div>
@@ -826,344 +495,20 @@ const JobList = () => {
                 <i className="ti ti-x" />
               </button>
             </div>
-            <form>
-              <div className="modal-body pb-0">
-                <div className="row">
-                  <div className="contact-grids-tab pt-0">
-                    <ul className="nav nav-underline" id="myTabs" role="tablist">
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link active"
-                          id="info-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#basic-infos"
-                          type="button"
-                          role="tab"
-                          aria-selected="true"
-                        >
-                          Basic Information
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="address-tabs"
-                          data-bs-toggle="tab"
-                          data-bs-target="#addresss"
-                          type="button"
-                          role="tab"
-                          aria-selected="false"
-                        >
-                          Location
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="tab-content" id="myTabContents">
-                    <div
-                      className="tab-pane fade show active"
-                      id="basic-infos"
-                      role="tabpanel"
-                      aria-labelledby="info-tab"
-                      tabIndex={0}
-                    >
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="d-flex align-items-center flex-wrap row-gap-3 bg-light w-100 rounded p-3 mb-4">
-                            <div className="d-flex align-items-center justify-content-center avatar avatar-xxl rounded-circle border border-dashed me-2 flex-shrink-0 text-dark frames">
-                              <ImageWithBasePath
-                                src="assets/img/profiles/avatar-30.jpg"
-                                alt="img"
-                                className="rounded-circle"
-                              />
-                            </div>
-                            <div className="profile-upload">
-                              <div className="mb-2">
-                                <h6 className="mb-1">Upload Profile Image</h6>
-                                <p className="fs-12">Image should be below 4 mb</p>
-                              </div>
-                              <div className="profile-uploader d-flex align-items-center">
-                                <div className="drag-upload-btn btn btn-sm btn-primary me-2">
-                                  Upload
-                                  <input
-                                    type="file"
-                                    className="form-control image-sign"
-                                    multiple
-                                  />
-                                </div>
-                                <Link
-                                  to="#"
-                                  className="btn btn-light btn-sm"
-                                >
-                                  Cancel
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Title <span className="text-danger"> *</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              defaultValue="Senior IOS Developer"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Description{" "}
-                              <span className="text-danger"> *</span>
-                            </label>
-                            <textarea
-                              rows={3}
-                              className="form-control"
-                              defaultValue={""}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Category <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={jobCategory}
-                              defaultValue={jobCategory[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Type <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={jobtype}
-                              defaultValue={jobtype[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Job Level <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={joblevel}
-                              defaultValue={joblevel[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Experience <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={experience}
-                              defaultValue={experience[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Qualification <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={qualification}
-                              defaultValue={qualification[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Gender <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={genderChoose}
-                              defaultValue={genderChoose[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Min. Salary <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={salary}
-                              defaultValue={salary[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Max. Salary <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={maxsalary}
-                              defaultValue={maxsalary[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3 ">
-                            <label className="form-label">
-                              Job Expired Date{" "}
-                              <span className="text-danger"> *</span>
-                            </label>
-                            <div className="input-icon-end position-relative">
-                              <DatePicker
-                                className="form-control datetimepicker"
-                                format={{
-                                  format: "DD-MM-YYYY",
-                                  type: "mask",
-                                }}
-                                getPopupContainer={getModalContainer}
-                                placeholder="DD-MM-YYYY"
-                              />
-                              <span className="input-icon-addon">
-                                <i className="ti ti-calendar text-gray-7" />
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">Required Skills</label>
-                            <input type="text" className="form-control" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          className="btn btn-light me-2"
-                          data-bs-dismiss="modal"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary"
-                          // data-bs-toggle="modal"
-                          // data-bs-target="#success_modal"
-                        >
-                          Save &amp; Next
-                        </button>
-                      </div>
-                    </div>
-                    <div
-                      className="tab-pane fade"
-                      id="addresss"
-                      role="tabpanel"
-                      aria-labelledby="address-tab"
-                      tabIndex={0}
-                    >
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Address <span className="text-danger"> *</span>
-                            </label>
-                            <input type="text" className="form-control" />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Country <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={country}
-                              defaultValue={country[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              State <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={state}
-                              defaultValue={state[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              City <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={city}
-                              defaultValue={city[1]}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Zip Code <span className="text-danger"> *</span>
-                            </label>
-                            <input type="text" className="form-control" />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="map-grid mb-3">
-                            <iframe
-                              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6509170.989457427!2d-123.80081967108484!3d37.192957227641294!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x8b5109a227086f55!2sCalifornia%2C%20USA!5e0!3m2!1sen!2sin!4v1669181581381!5m2!1sen!2sin"
-                              style={{ border: 0 }}
-                              allowFullScreen
-                              loading="lazy"
-                              referrerPolicy="no-referrer-when-downgrade"
-                              className="w-100"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          className="btn btn-light me-2"
-                          data-bs-dismiss="modal"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#success_modal"
-                        >
-                          Post
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
+            <PostJobModal
+              requisitionStatus={requisitionStatus}
+              jobDepartment={jobDepartment}
+              jobposttype={jobposttype}
+              jobpostBoard={jobpostBoard}
+              jobtype={jobtype}
+              organisation={organisation}
+              businessUnit={businessUnit}
+              jobLevel={jobLevel}
+              getModalContainer={getModalContainer}
+              country={country}
+              state={state}
+              city={city}
+            />
           </div>
         </div>
       </div>

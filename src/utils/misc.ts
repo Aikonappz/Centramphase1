@@ -1,9 +1,7 @@
-const transformArrayToLabelValue = (array: any) => {
+const transformArrayToLabelValue = (array: any, islabel?: any) => {
     return array.map((item: any) => ({
       label: item.name,
-      value: item.id,
-      organisationId: item.organisationId,
-      businessUnitId: item.businessUnitId
+      value: islabel ? item.name : Number(item.id)
     }));
 }
 // const transformMultipleArrays = (arraysObj: any) => {

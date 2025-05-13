@@ -6,13 +6,14 @@ import api from "../../../core/data/api";
 import { e } from "react-router/dist/development/route-data-BmvbmBej";
 import { userSignIn } from "../../../core/data/redux/actions/userActions";
 import { useAppDispatch } from "../../../core/data/redux/store";
-import { getBusinessUnit, getDepartmentLists, getPositions } from "../../../core/data/redux/actions/requisitionActions";
+import { getBusinessUnit, getDepartmentLists, getDivision, getOrganisation, getPositions } from "../../../core/data/redux/actions/requisitionActions";
 type PasswordField = "password";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const routes = all_routes;
   const navigation = useNavigate();
   const dispatch = useAppDispatch();
@@ -33,16 +34,28 @@ const Login = () => {
     if (!data.username || !data.password) {
       return false;
     } else {
+      setIsLoading(true);
       const response: any = await dispatch(userSignIn(data));
       if (response.status === 200) {
-        // await dispatch(getPositions());
-        // await dispatch(getDepartmentLists());
-        // await dispatch(getBusinessUnit());
-        localStorage.setItem("token", response.data.jwtToken);
-        setTimeout(() => {
-          // navigation(routes.adminDashboard);
-          window.location.href = routes.adminDashboard
-        }, 1000);
+        const promise1 = dispatch(getPositions());
+        const promise2 = dispatch(getDepartmentLists());
+        const promise3 = dispatch(getBusinessUnit());
+        const promise4 = dispatch(getOrganisation());
+        const promise5 = dispatch(getDivision());
+        
+        // Wait for all promises to resolve
+        const results = await Promise.all([promise1, promise2, promise3, promise4, promise5]);
+        if (results) {
+          console.log(results);
+          localStorage.setItem("token", response.data.jwtToken);
+          setIsLoading(false);
+          setTimeout(() => {
+            // navigation(routes.adminDashboard);
+            window.location.href = routes.adminDashboard
+          }, 1000);
+        }
+      } else {
+        setIsLoading(false);
       }
     }
   };
@@ -165,6 +178,7 @@ const Login = () => {
                           type="submit"
                           className="btn btn-primary w-100"
                         >
+                          {isLoading && <i className="fas fa-spinner fa-spin me-2"/>}
                           Sign In
                         </button>
                       </div>

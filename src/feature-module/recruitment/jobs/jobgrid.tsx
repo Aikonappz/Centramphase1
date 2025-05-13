@@ -10,13 +10,16 @@ import { RootState, useAppDispatch } from '../../../core/data/redux/store'
 import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPositions, postJob } from '../../../core/data/redux/actions/requisitionActions'
 import { useSelector } from 'react-redux'
 import { transformArrayToLabelValue } from '../../../utils/misc'
+import PostJobModal from '../../../components/PostJobModal';
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
     const [jobLevel, setJobLevel] = React.useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
     const [jobDepartment, setJobDepartment] = React.useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
-    
+    const [businessUnit, setBusinessUnit] = React.useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
+    const [organisation, setOrganisation] = React.useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
+
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
         return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
@@ -32,6 +35,15 @@ const JobGrid = () => {
         { value: "Select", label: "Select" },
         { value: "Full Time", label: "Full Time" },
         { value: "Part Time", label: "Part Time" },
+    ];
+    const jobposttype = [
+        { value: "Select", label: "Select" },
+        { value: "Internal", label: "Internal" },
+        { value: "External", label: "External" },
+    ];
+    const jobpostBoard = [
+        { value: "Select", label: "Select" },
+        { value: "LinkedIn", label: "LinkedIn" },
     ];
     const requisitionStatus = [
         { value: "Select", label: "Select" },
@@ -87,33 +99,8 @@ const JobGrid = () => {
         { value: "San Francisco", label: "San Francisco" },
     ];
 
-    const formRef = useRef<HTMLFormElement>(null);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Form data:');
-        if (formRef.current) {
-        const formData = new FormData(formRef.current);
-        const data: any = Object.fromEntries(formData.entries());
-        data.jobStartDate = new Date();
-        data.reasonForVacancy = "New Position";
-        
-        console.log('Form data:', data);
-        // Type assertion if needed
-        const response: any = await dispatch(postJob(data));
-              console.log(response)
-              if (response.status === 200) {
-                
-              }
-        }
-    };
-
     useEffect(() => {
         dispatch(getJobLists());
-        dispatch(getPositions());
-        dispatch(getDepartmentLists());
-        dispatch(getBusinessUnit());
-        dispatch(getDivision());
     }, []);
 
     return (
@@ -197,7 +184,7 @@ const JobGrid = () => {
                                 </Link>
                             </div>
                             <div className="head-icons ms-2">
-                            <CollapseHeader />
+                                <CollapseHeader />
                             </div>
                         </div>
                     </div>
@@ -336,62 +323,62 @@ const JobGrid = () => {
                         {/* Job Card */}
                         {jobs && jobs.jobList?.content.map((job: any) => (
                             <div className="col-xl-3 col-lg-4 col-md-6">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="card bg-light">
-                                        <div className="card-body p-3">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="me-2">
-                                                    <span className="avatar avatar-lg bg-gray">
-                                                        <ImageWithBasePath
-                                                            src="assets/img/icons/apple.svg"
-                                                            className="w-auto h-auto"
-                                                            alt="icon"
-                                                        />
-                                                    </span>
-                                                </Link>
-                                                <div>
-                                                    <h6 className="fw-medium mb-1 text-truncate" title={`${job.jobTitle}`}>
-                                                        <Link to="#">{job.jobTitle}</Link>
-                                                    </h6>
-                                                    <p className="fs-12 text-gray fw-normal">25 Applicants</p>
+                                <div className="card">
+                                    <div className="card-body">
+                                        <div className="card bg-light">
+                                            <div className="card-body p-3">
+                                                <div className="d-flex align-items-center">
+                                                    <Link to="#" className="me-2">
+                                                        <span className="avatar avatar-lg bg-gray">
+                                                            <ImageWithBasePath
+                                                                src="assets/img/icons/apple.svg"
+                                                                className="w-auto h-auto"
+                                                                alt="icon"
+                                                            />
+                                                        </span>
+                                                    </Link>
+                                                    <div>
+                                                        <h6 className="fw-medium mb-1 text-truncate" title={`${job.jobTitle}`}>
+                                                            <Link to="#">{job.jobTitle}</Link>
+                                                        </h6>
+                                                        <p className="fs-12 text-gray fw-normal">25 Applicants</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="d-flex flex-column mb-3">
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-map-pin-check text-gray-5 me-2" />
-                                            New York, USA
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center mb-2">
-                                            <i className="ti ti-currency-dollar text-gray-5 me-2" />
-                                            {`${job.payRangeMin}`} - {`${job.payRangeMax}`} / month
-                                        </p>
-                                        <p className="text-dark d-inline-flex align-items-center">
-                                            <i className="ti ti-briefcase text-gray-5 me-2" />2 years of
-                                            experience
-                                        </p>
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="badge badge-pink-transparent me-1">
-                                            {job.fte}
-                                        </span>
-                                        <span className="badge bg-secondary-transparent">Expert</span>
-                                    </div>
-                                    <div className="progress progress-xs mb-2">
-                                        <div
-                                            className="progress-bar bg-warning"
-                                            role="progressbar"
-                                            style={{ width: "30%" }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
+                                        <div className="d-flex flex-column mb-3">
+                                            <p className="text-dark d-inline-flex align-items-center mb-2">
+                                                <i className="ti ti-map-pin-check text-gray-5 me-2" />
+                                                New York, USA
+                                            </p>
+                                            <p className="text-dark d-inline-flex align-items-center mb-2">
+                                                <i className="ti ti-currency-dollar text-gray-5 me-2" />
+                                                {`${job.payRangeMin}`} - {`${job.payRangeMax}`} / month
+                                            </p>
+                                            <p className="text-dark d-inline-flex align-items-center">
+                                                <i className="ti ti-briefcase text-gray-5 me-2" />2 years of
+                                                experience
+                                            </p>
+                                        </div>
+                                        <div className="mb-3">
+                                            <span className="badge badge-pink-transparent me-1">
+                                                {job.fte}
+                                            </span>
+                                            <span className="badge bg-secondary-transparent">Expert</span>
+                                        </div>
+                                        <div className="progress progress-xs mb-2">
+                                            <div
+                                                className="progress-bar bg-warning"
+                                                role="progressbar"
+                                                style={{ width: "30%" }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         ))}
                     </div>
                 </div>
@@ -421,363 +408,20 @@ const JobGrid = () => {
                                 <i className="ti ti-x" />
                             </button>
                         </div>
-                        <form ref={formRef} onSubmit={handleSubmit}>
-                            <div className="modal-body pb-0">
-                                <div className="row">
-                                    <div className="contact-grids-tab pt-0">
-                                        <ul className="nav nav-underline" id="myTab" role="tablist">
-                                            <li className="nav-item" role="presentation">
-                                                <button
-                                                    className="nav-link active"
-                                                    id="info-tab"
-                                                    data-bs-toggle="tab"
-                                                    data-bs-target="#basic-info"
-                                                    type="button"
-                                                    role="tab"
-                                                    aria-selected="true"
-                                                >
-                                                    Basic Information
-                                                </button>
-                                            </li>
-                                            <li className="nav-item" role="presentation">
-                                                <button
-                                                    className="nav-link"
-                                                    id="address-tab"
-                                                    data-bs-toggle="tab"
-                                                    data-bs-target="#address"
-                                                    type="button"
-                                                    role="tab"
-                                                    aria-selected="false"
-                                                >
-                                                    Location
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="tab-content" id="myTabContent">
-                                        <div
-                                            className="tab-pane fade show active"
-                                            id="basic-info"
-                                            role="tabpanel"
-                                            aria-labelledby="info-tab"
-                                            tabIndex={0}
-                                        >
-                                            <div className="row">
-                                                <div className="col-md-12">
-                                                    <div className="d-flex align-items-center flex-wrap row-gap-3 bg-light w-100 rounded p-3 mb-4">
-                                                        <div className="d-flex align-items-center justify-content-center avatar avatar-xxl rounded-circle border border-dashed me-2 flex-shrink-0 text-dark frames">
-                                                            <ImageWithBasePath
-                                                                src="assets/img/profiles/avatar-30.jpg"
-                                                                alt="img"
-                                                                className="rounded-circle"
-                                                            />
-                                                        </div>
-                                                        <div className="profile-upload">
-                                                            <div className="mb-2">
-                                                                <h6 className="mb-1">Upload Profile Image</h6>
-                                                                <p className="fs-12">Image should be below 4 mb</p>
-                                                            </div>
-                                                            <div className="profile-uploader d-flex align-items-center">
-                                                                <div className="drag-upload-btn btn btn-sm btn-primary me-2">
-                                                                    Upload
-                                                                    <input
-                                                                        type="file"
-                                                                        className="form-control image-sign"
-                                                                        multiple
-                                                                    />
-                                                                </div>
-                                                                <Link
-                                                                    to="#"
-                                                                    className="btn btn-light btn-sm"
-                                                                >
-                                                                    Cancel
-                                                                </Link>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Job Title <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <input type="text" className="form-control" id='jobTitle' name='jobTitle' />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Job Description{" "}
-                                                            <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <textarea
-                                                            rows={3}
-                                                            className="form-control"
-                                                            defaultValue={""}
-                                                            name='jobDescription'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                        Requisition Status <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={requisitionStatus}
-                                                            defaultValue={requisitionStatus[0]}
-                                                            name='requisitionStatus'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Department <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={jobDepartment}
-                                                            defaultValue={jobDepartment[0]}
-                                                            name='jobClassification'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Job Type <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={jobtype}
-                                                            defaultValue={jobtype[0]}
-                                                            name='fte'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Job Level <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={jobLevel}
-                                                            defaultValue={jobLevel[0]}
-                                                            name='positionId'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Experience <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={experience}
-                                                            defaultValue={experience[0]}
-                                                            name='experience'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Qualification <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={qualification}
-                                                            defaultValue={qualification[0]}
-                                                            name='qualification'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Gender <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={genderChoose}
-                                                            defaultValue={genderChoose[0]}
-                                                            name='gender'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Min. Salary <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={salary}
-                                                            defaultValue={salary[0]}
-                                                            name='payRangeMin'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Max. Salary <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={maxsalary}
-                                                            defaultValue={maxsalary[0]}
-                                                            name='payRangeMax'
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3 ">
-                                                        <label className="form-label">
-                                                            Job Expired Date{" "}
-                                                            <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <div className="input-icon-end position-relative">
-                                                            <DatePicker
-                                                                className="form-control datetimepicker"
-                                                                format={{
-                                                                    format: "DD-MM-YYYY",
-                                                                    type: "mask",
-                                                                }}
-                                                                getPopupContainer={getModalContainer}
-                                                                placeholder="DD-MM-YYYY"
-                                                                name='jobPostingEndDate'
-                                                            />
-                                                            <span className="input-icon-addon">
-                                                                <i className="ti ti-calendar text-gray-7" />
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Required Skills</label>
-                                                        <input type="text" className="form-control" name='interviewingCompetencies' />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="modal-footer">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-light me-2"
-                                                    data-bs-dismiss="modal"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="btn btn-primary"
-                                                    // data-bs-toggle="modal"
-                                                    // data-bs-target="#success_modal"
-                                                >
-                                                    Post
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div
-                                            className="tab-pane fade"
-                                            id="address"
-                                            role="tabpanel"
-                                            aria-labelledby="address-tab"
-                                            tabIndex={0}
-                                        >
-                                            <div className="row">
-                                                <div className="col-md-12">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Address <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <input type="text" className="form-control" name='locationId' />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Country <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={country}
-                                                            defaultValue={country[0]}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            State <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={state}
-                                                            defaultValue={state[0]}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            City <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <CommonSelect
-                                                            className='select'
-                                                            options={city}
-                                                            defaultValue={city[0]}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            Zip Code <span className="text-danger"> *</span>
-                                                        </label>
-                                                        <input type="text" className="form-control" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="map-grid mb-3">
-                                                        <iframe
-                                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6509170.989457427!2d-123.80081967108484!3d37.192957227641294!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x8b5109a227086f55!2sCalifornia%2C%20USA!5e0!3m2!1sen!2sin!4v1669181581381!5m2!1sen!2sin"
-                                                            style={{ border: 0 }}
-                                                            allowFullScreen
-                                                            loading="lazy"
-                                                            referrerPolicy="no-referrer-when-downgrade"
-                                                            className="w-100"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="modal-footer">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-light me-2"
-                                                    data-bs-dismiss="modal"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-primary"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#success_modal"
-                                                >
-                                                    Post
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                        <PostJobModal
+                            requisitionStatus={requisitionStatus}
+                            jobDepartment={jobDepartment}
+                            jobposttype={jobposttype}
+                            jobpostBoard={jobpostBoard}
+                            jobtype={jobtype}
+                            organisation={organisation}
+                            businessUnit={businessUnit}
+                            jobLevel={jobLevel}
+                            getModalContainer={getModalContainer}
+                            country={country}
+                            state={state}
+                            city={city}
+                        />
                     </div>
                 </div>
             </div>
