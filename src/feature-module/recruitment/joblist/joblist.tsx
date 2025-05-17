@@ -12,6 +12,8 @@ import { getJobLists, postJob } from '../../../core/data/redux/actions/requisiti
 import { useSelector } from 'react-redux';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import PostJobModal from '../../../components/PostJobModal';
+import { Spinner } from 'react-bootstrap';
+import EnhancedTableSkeleton from '../../../components/TableSkeleton';
 
 
 const JobList = () => {
@@ -21,6 +23,8 @@ const JobList = () => {
   const [jobDepartment, setJobDepartment] = React.useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
   const [businessUnit, setBusinessUnit] = React.useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
   const [organisation, setOrganisation] = React.useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
+  const [division, setDivision] = React.useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
+  const [isLoading, setIsLoading] = React.useState<any>(false);
   const data = jobs.jobList?.content || [];
   const columns = [
     {
@@ -105,8 +109,8 @@ const JobList = () => {
   ];
   const jobtype = [
     { value: "Select", label: "Select" },
-    { value: "Full Time", label: "Full Time" },
-    { value: "Part Time", label: "Part Time" },
+    { value: "Full-Time", label: "Full Time" },
+    { value: "Part-Time", label: "Part Time" },
   ];
   const jobposttype = [
     { value: "Select", label: "Select" },
@@ -172,10 +176,14 @@ const JobList = () => {
   ];
 
   useEffect(() => {
-    dispatch(getJobLists());
-  }, []);
+    getJobs();
+  }, [dispatch]);
 
-  console.log(jobs)
+  const getJobs = async () => {
+    setIsLoading(true);
+    await dispatch(getJobLists());
+    setIsLoading(false);
+  }
 
   return (
     <>
@@ -407,7 +415,7 @@ const JobList = () => {
               </div>
             </div>
             <div className="card-body p-0">
-              <Table dataSource={data} columns={columns} Selection={true} />
+              {!isLoading ? <Table dataSource={data} columns={columns} Selection={true} /> : <EnhancedTableSkeleton  />}
             </div>
           </div>
         </div>
@@ -445,6 +453,7 @@ const JobList = () => {
               jobtype={jobtype}
               organisation={organisation}
               businessUnit={businessUnit}
+              division={division}
               jobLevel={jobLevel}
               getModalContainer={getModalContainer}
               country={country}
@@ -468,7 +477,7 @@ const JobList = () => {
                 <div>
                   <div className="row g-2">
                     <div className="col-12">
-                      <Link to={all_routes.jobgrid} data-bs-dismiss="modal" className="btn btn-dark w-100">
+                      <Link to={all_routes.jobgrid} data-bs-dismiss="modal" className="btn btn-dark w-100" onClick={() => getJobs()}>
                         Back to List
                       </Link>
                     </div>
@@ -503,6 +512,7 @@ const JobList = () => {
               jobtype={jobtype}
               organisation={organisation}
               businessUnit={businessUnit}
+              division={division}
               jobLevel={jobLevel}
               getModalContainer={getModalContainer}
               country={country}

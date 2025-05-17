@@ -15,4 +15,17 @@ const transformArrayToLabelValue = (array: any, islabel?: any) => {
 //     return result;
 // }
 
-export { transformArrayToLabelValue };
+const formatDate = (date: any) => {
+  return date.toISOString().split('T')[0];
+}
+
+const toNumber = (value: number, precision: number | undefined) => {
+        precision = precision || 0;
+        if (precision === 0) {
+          return value * 1;
+        } else {
+          return Number((value * 1).toFixed(precision));
+        }
+      }
+
+export { transformArrayToLabelValue, formatDate, toNumber };

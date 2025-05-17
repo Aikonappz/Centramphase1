@@ -1,8 +1,9 @@
 import { DatePicker } from "antd";
 import CommonSelect from "../core/common/commonSelect";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useAppDispatch } from "../core/data/redux/store";
 import { postJob } from "../core/data/redux/actions/requisitionActions";
+import { formatDate, toNumber } from "../utils/misc";
 
 interface postJobModal {
     requisitionStatus: any;
@@ -12,6 +13,7 @@ interface postJobModal {
     jobtype: any;
     organisation: any;
     businessUnit: any;
+    division: any;
     jobLevel: any;
     getModalContainer: any;
     country: any;
@@ -22,35 +24,48 @@ interface postJobModal {
 const PostJobModal = (props: postJobModal) => {
     const dispatch = useAppDispatch();
     const { requisitionStatus, jobDepartment, jobposttype, jobpostBoard, jobtype, organisation,
-        businessUnit, jobLevel, getModalContainer, country, state, city
+        businessUnit, division, jobLevel, getModalContainer, country, state, city
     } = props;
 
     const formRef = useRef<HTMLFormElement>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
         if (formRef.current) {
             const formData = new FormData(formRef.current);
             const data: any = Object.fromEntries(formData.entries());
             formData.forEach((value: any, key) => {
-                data[key] = isNaN(value) ? value : Number(value);
+                if(key === "payRangeMin" || key === "payRangeMid" || key === "payRangeMax" || key === "approvedBudget"){
+                    data[key] = toNumber(value, 2);
+                } else {
+                    data[key] = isNaN(value) ? value : Number(value);
+                }
             });
-            data.jobStartDate = new Date();
+            data.jobStartDate = formatDate(new Date());
             data.reasonForVacancy = "New Position";
-            data.jobEndDate = new Date();
+            data.jobPostingStartDate = formatDate(new Date());
+            data.jobPostingEndDate = formatDate(new Date());
+            data.jobClassification = "IT";
             data.locationId = 1;
             data.currencyId = 1;
+            data.payGrade = "G5";
             data.recruiter = "John Doe";
             data.hiringManager = "Jane Smith";
             data.headOfBusinessUnit = "Michael Johnson";
             data.headOfRecruitment = "Sarah Williams";
-            console.log(data)
             const response: any = await dispatch(postJob(data));
-            console.log(response)
             if (response.status === 200) {
-
+                resetForm();
+                document.getElementById("post_job_success")?.click();
+                setIsLoading(false);
             }
         }
+    };
+
+    const resetForm = () => {
+        formRef.current?.reset();
     };
     return (
         <form ref={formRef} onSubmit={handleSubmit}>
@@ -231,6 +246,19 @@ const PostJobModal = (props: postJobModal) => {
                                 <div className="col-md-6">
                                     <div className="mb-3">
                                         <label className="form-label">
+                                            Division<span className="text-danger"> *</span>
+                                        </label>
+                                        <CommonSelect
+                                            className='select'
+                                            options={division}
+                                            defaultValue={division[0]}
+                                            name='divisionId'
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="mb-3">
+                                        <label className="form-label">
                                             Job Level <span className="text-danger"> *</span>
                                         </label>
                                         <CommonSelect
@@ -280,7 +308,15 @@ const PostJobModal = (props: postJobModal) => {
                                         <label className="form-label">
                                             Min. Salary <span className="text-danger"> *</span>
                                         </label>
-                                        <input type="number" className="form-control" name='payRangeMin' />
+                                        <input type="number" className="form-control" name='payRangeMin' step={0.01} />
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="mb-3">
+                                        <label className="form-label">
+                                            Mid. Salary <span className="text-danger"> *</span>
+                                        </label>
+                                        <input type="number" className="form-control" name='payRangeMid' step={0.01}/>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
@@ -288,7 +324,15 @@ const PostJobModal = (props: postJobModal) => {
                                         <label className="form-label">
                                             Max. Salary <span className="text-danger"> *</span>
                                         </label>
-                                        <input type="number" className="form-control" name='payRangeMax' />
+                                        <input type="number" className="form-control" name='payRangeMax' step={0.01}/>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="mb-3">
+                                        <label className="form-label">
+                                            Approved Budget <span className="text-danger"> *</span>
+                                        </label>
+                                        <input type="number" className="form-control" name='approvedBudget' step={0.01} />
                                     </div>
                                 </div>
                                 <div className="col-md-6">
@@ -340,15 +384,24 @@ const PostJobModal = (props: postJobModal) => {
                                     type="button"
                                     className="btn btn-light me-2"
                                     data-bs-dismiss="modal"
+                                    onClick={() => resetForm()}
                                 >
                                     Cancel
+                                </button>
+                                 <button
+                                    id="post_job_success"
+                                    type="button"
+                                    hidden
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#success_modal"
+                                >
+                                    Post
                                 </button>
                                 <button
                                     type="submit"
                                     className="btn btn-primary"
-                                // data-bs-toggle="modal"
-                                // data-bs-target="#success_modal"
                                 >
+                                    {isLoading && <i className="fas fa-spinner fa-spin me-2"/>}
                                     Post
                                 </button>
                             </div>

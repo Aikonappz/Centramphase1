@@ -11,6 +11,7 @@ import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPosit
 import { useSelector } from 'react-redux'
 import { transformArrayToLabelValue } from '../../../utils/misc'
 import PostJobModal from '../../../components/PostJobModal';
+import CardGridSkeleton from '../../../components/CardGridSkeleton'
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
@@ -19,7 +20,9 @@ const JobGrid = () => {
     const [jobDepartment, setJobDepartment] = React.useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
     const [businessUnit, setBusinessUnit] = React.useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
     const [organisation, setOrganisation] = React.useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
-
+    const [division, setDivision] = React.useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
+    const [isLoading, setIsLoading] = React.useState<any>(jobs.loading);
+    console.log(isLoading)
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
         return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
@@ -33,8 +36,8 @@ const JobGrid = () => {
     ];
     const jobtype = [
         { value: "Select", label: "Select" },
-        { value: "Full Time", label: "Full Time" },
-        { value: "Part Time", label: "Part Time" },
+        { value: "Full-Time", label: "Full Time" },
+        { value: "Part-Time", label: "Part Time" },
     ];
     const jobposttype = [
         { value: "Select", label: "Select" },
@@ -100,8 +103,14 @@ const JobGrid = () => {
     ];
 
     useEffect(() => {
-        dispatch(getJobLists());
-    }, []);
+       getJobs();
+    }, [dispatch]);
+
+    const getJobs = async () => {
+        setIsLoading(true);
+        await dispatch(getJobLists());
+        setIsLoading(false);
+    }
 
     return (
         <>
@@ -321,7 +330,7 @@ const JobGrid = () => {
                     </div>
                     <div className="row">
                         {/* Job Card */}
-                        {jobs && jobs.jobList?.content.map((job: any) => (
+                        {!isLoading ? jobs && jobs.jobList?.content.map((job: any) => (
                             <div className="col-xl-3 col-lg-4 col-md-6">
                                 <div className="card">
                                     <div className="card-body">
@@ -379,7 +388,7 @@ const JobGrid = () => {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        )) : <CardGridSkeleton count={4} /> }
                     </div>
                 </div>
                 <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
@@ -416,6 +425,7 @@ const JobGrid = () => {
                             jobtype={jobtype}
                             organisation={organisation}
                             businessUnit={businessUnit}
+                            division={division}
                             jobLevel={jobLevel}
                             getModalContainer={getModalContainer}
                             country={country}
@@ -439,7 +449,7 @@ const JobGrid = () => {
                                 <div>
                                     <div className="row g-2">
                                         <div className="col-12">
-                                            <Link to={all_routes.jobgrid} data-bs-dismiss="modal" className="btn btn-dark w-100">
+                                            <Link to={all_routes.jobgrid} data-bs-dismiss="modal" className="btn btn-dark w-100" onClick={() => getJobs()}>
                                                 Back to List
                                             </Link>
                                         </div>
