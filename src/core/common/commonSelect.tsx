@@ -59,6 +59,8 @@ const CommonSelect: React.FC<SelectProps> =({ options, defaultValue, className, 
       noOptionsMessage={({ inputValue }) => 
         inputValue ? 'No options found' : 'Type to search'
       }
+      className={className}
+      name={name}
     />
   );
 };
