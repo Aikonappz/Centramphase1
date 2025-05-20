@@ -26,6 +26,7 @@ const JobList = () => {
   const [division, setDivision] = React.useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
   const [isLoading, setIsLoading] = React.useState<any>(false);
   const data = jobs.jobList?.content || [];
+  const [jobData, setJobData] = React.useState<any>({});
   const columns = [
     {
       title: "Job ID",
@@ -78,13 +79,16 @@ const JobList = () => {
     {
       title: "",
       dataIndex: "actions",
-      render: () => (
+      render: (text: string, record: any) => (
         <div className="action-icon d-inline-flex">
           <Link
             to="#"
             className="me-2"
             data-bs-toggle="modal"
             data-bs-target="#edit_post"
+            onClick={() => {
+              setJobData(record)
+            }}
           >
             <i className="ti ti-edit" />
           </Link>
@@ -518,6 +522,7 @@ const JobList = () => {
               country={country}
               state={state}
               city={city}
+              jobData={jobData}
             />
           </div>
         </div>

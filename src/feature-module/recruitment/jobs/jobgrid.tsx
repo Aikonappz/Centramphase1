@@ -22,7 +22,8 @@ const JobGrid = () => {
     const [organisation, setOrganisation] = React.useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = React.useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [isLoading, setIsLoading] = React.useState<any>(jobs.loading);
-    console.log(isLoading)
+    const [jobData, setJobData] = React.useState<any>({});
+
     const getModalContainer = () => {
         const modalElement = document.getElementById('modal-datepicker');
         return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
@@ -103,7 +104,7 @@ const JobGrid = () => {
     ];
 
     useEffect(() => {
-       getJobs();
+        getJobs();
     }, [dispatch]);
 
     const getJobs = async () => {
@@ -348,7 +349,8 @@ const JobGrid = () => {
                                                     </Link>
                                                     <div>
                                                         <h6 className="fw-medium mb-1 text-truncate" title={`${job.jobTitle}`}>
-                                                            <Link to="#">{job.jobTitle}</Link>
+                                                            <Link to="#" data-bs-toggle="modal"
+                                                                data-bs-target="#edit_post" onClick={() => setJobData(job)}>{job.jobTitle}</Link>
                                                         </h6>
                                                         <p className="fs-12 text-gray fw-normal">25 Applicants</p>
                                                     </div>
@@ -388,7 +390,7 @@ const JobGrid = () => {
                                     </div>
                                 </div>
                             </div>
-                        )) : <CardGridSkeleton count={4} /> }
+                        )) : <CardGridSkeleton count={4} />}
                     </div>
                 </div>
                 <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
@@ -461,6 +463,40 @@ const JobGrid = () => {
                 </div>
             </div>
             {/* /Add Client Success */}
+            {/* Edit Post */}
+            <div className="modal fade" id="edit_post">
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h4 className="modal-title">Edit Job</h4>
+                            <button
+                                type="button"
+                                className="btn-close custom-btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <i className="ti ti-x" />
+                            </button>
+                        </div>
+                        <PostJobModal
+                            requisitionStatus={requisitionStatus}
+                            jobDepartment={jobDepartment}
+                            jobposttype={jobposttype}
+                            jobpostBoard={jobpostBoard}
+                            jobtype={jobtype}
+                            organisation={organisation}
+                            businessUnit={businessUnit}
+                            division={division}
+                            jobLevel={jobLevel}
+                            getModalContainer={getModalContainer}
+                            country={country}
+                            state={state}
+                            city={city}
+                            jobData={jobData}
+                        />
+                    </div>
+                </div>
+            </div>
         </>
 
     )

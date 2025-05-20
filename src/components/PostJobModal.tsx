@@ -1,6 +1,6 @@
 import { DatePicker } from "antd";
 import CommonSelect from "../core/common/commonSelect";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../core/data/redux/store";
 import { postJob } from "../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber } from "../utils/misc";
@@ -19,16 +19,43 @@ interface postJobModal {
     country: any;
     state: any;
     city: any;
+    jobData?: any;
 }
 
 const PostJobModal = (props: postJobModal) => {
     const dispatch = useAppDispatch();
     const { requisitionStatus, jobDepartment, jobposttype, jobpostBoard, jobtype, organisation,
-        businessUnit, division, jobLevel, getModalContainer, country, state, city
+        businessUnit, division, jobLevel, getModalContainer, country, state, city, jobData
     } = props;
-
+    
     const formRef = useRef<HTMLFormElement>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (jobData) {
+            setFormValues(jobData);
+        }
+    }, [jobData]);
+
+    const setFormValues = (data: any) => {
+        console.log(data)
+        const form: any = formRef.current;
+        Object.entries(data).forEach(([key, value]) => {
+            const element = form.elements[key];
+            if (!element) return;
+            switch (element.type) {
+                case 'checkbox':
+                    element.checked = Boolean(value);
+                    break;
+                case 'radio':
+                    const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
+                    if (radio) radio.checked = true;
+                    break;
+                default:
+                    element.value = value;
+            }
+        });
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +64,7 @@ const PostJobModal = (props: postJobModal) => {
             const formData = new FormData(formRef.current);
             const data: any = Object.fromEntries(formData.entries());
             formData.forEach((value: any, key) => {
-                if(key === "payRangeMin" || key === "payRangeMid" || key === "payRangeMax" || key === "approvedBudget"){
+                if (key === "payRangeMin" || key === "payRangeMid" || key === "payRangeMax" || key === "approvedBudget") {
                     data[key] = toNumber(value, 2);
                 } else {
                     data[key] = isNaN(value) ? value : Number(value);
@@ -68,7 +95,7 @@ const PostJobModal = (props: postJobModal) => {
         formRef.current?.reset();
     };
     return (
-        <form ref={formRef} onSubmit={handleSubmit}>
+        <form ref={formRef} onSubmit={handleSubmit} id="requisitionForm">
             <div className="modal-body pb-0">
                 <div className="row">
                     <div className="contact-grids-tab pt-0">
@@ -173,7 +200,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={requisitionStatus}
-                                            defaultValue={requisitionStatus[0]}
+                                            defaultValue={jobData?.requisitionStatus || requisitionStatus[0]}
                                             name='requisitionStatus'
                                         />
                                     </div>
@@ -186,7 +213,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={jobDepartment}
-                                            defaultValue={jobDepartment[0]}
+                                            defaultValue={jobData?.departmentId ||jobDepartment[0]}
                                             name='departmentId'
                                         />
                                     </div>
@@ -199,7 +226,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={jobposttype}
-                                            defaultValue={jobposttype[0]}
+                                            defaultValue={jobData?.jobPostingType || jobposttype[0]}
                                             name='jobPostingType'
                                         />
                                     </div>
@@ -212,7 +239,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={jobtype}
-                                            defaultValue={jobtype[0]}
+                                            defaultValue={jobData?.fte || jobtype[0]}
                                             name='fte'
                                         />
                                     </div>
@@ -225,7 +252,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={organisation}
-                                            defaultValue={organisation[0]}
+                                            defaultValue={jobData?.organisationId || organisation[0]}
                                             name='organisationId'
                                         />
                                     </div>
@@ -238,7 +265,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={businessUnit}
-                                            defaultValue={businessUnit[0]}
+                                            defaultValue={jobData?.businessUnitId || businessUnit[0]}
                                             name='businessUnitId'
                                         />
                                     </div>
@@ -251,7 +278,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={division}
-                                            defaultValue={division[0]}
+                                            defaultValue={jobData?.divisionId || division[0]}
                                             name='divisionId'
                                         />
                                     </div>
@@ -264,7 +291,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={jobLevel}
-                                            defaultValue={jobLevel[0]}
+                                            defaultValue={jobData?.positionId || jobLevel[0]}
                                             name='positionId'
                                         />
                                     </div>
@@ -316,7 +343,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <label className="form-label">
                                             Mid. Salary <span className="text-danger"> *</span>
                                         </label>
-                                        <input type="number" className="form-control" name='payRangeMid' step={0.01}/>
+                                        <input type="number" className="form-control" name='payRangeMid' step={0.01} />
                                     </div>
                                 </div>
                                 <div className="col-md-6">
@@ -324,7 +351,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <label className="form-label">
                                             Max. Salary <span className="text-danger"> *</span>
                                         </label>
-                                        <input type="number" className="form-control" name='payRangeMax' step={0.01}/>
+                                        <input type="number" className="form-control" name='payRangeMax' step={0.01} />
                                     </div>
                                 </div>
                                 <div className="col-md-6">
@@ -343,7 +370,7 @@ const PostJobModal = (props: postJobModal) => {
                                         <CommonSelect
                                             className='select'
                                             options={jobpostBoard}
-                                            defaultValue={jobpostBoard[0]}
+                                            defaultValue={jobData?.jobPostingBoard || jobpostBoard[0]}
                                             name='jobPostingBoard'
                                         />
                                     </div>
@@ -388,7 +415,7 @@ const PostJobModal = (props: postJobModal) => {
                                 >
                                     Cancel
                                 </button>
-                                 <button
+                                <button
                                     id="post_job_success"
                                     type="button"
                                     hidden
@@ -401,7 +428,7 @@ const PostJobModal = (props: postJobModal) => {
                                     type="submit"
                                     className="btn btn-primary"
                                 >
-                                    {isLoading && <i className="fas fa-spinner fa-spin me-2"/>}
+                                    {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
                                     Post
                                 </button>
                             </div>
