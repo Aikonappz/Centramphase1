@@ -16,18 +16,9 @@ import CardGridSkeleton from '../../../components/CardGridSkeleton'
 const JobGrid = () => {
     const dispatch = useAppDispatch();
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
-    const [jobLevel, setJobLevel] = React.useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
-    const [jobDepartment, setJobDepartment] = React.useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
-    const [businessUnit, setBusinessUnit] = React.useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
-    const [organisation, setOrganisation] = React.useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
-    const [division, setDivision] = React.useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
+    
     const [isLoading, setIsLoading] = React.useState<any>(jobs.loading);
     const [jobData, setJobData] = React.useState<any>({});
-
-    const getModalContainer = () => {
-        const modalElement = document.getElementById('modal-datepicker');
-        return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
-    };
 
     useEffect(() => {
         getJobs();
@@ -110,9 +101,7 @@ const JobGrid = () => {
                             </div>
                             <div className="mb-2">
                                 <Link
-                                    to="#"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#add_post"
+                                    to="/create/job-requisition"
                                     className="btn btn-primary d-flex align-items-center"
                                 >
                                     <i className="ti ti-circle-plus me-2" />
@@ -365,7 +354,7 @@ const JobGrid = () => {
             </div> */}
             {/* /Post Job */}
             {/* Add Job Success */}
-            <div className="modal fade" id="success_modal" role="dialog">
+            {/* <div className="modal fade" id="success_modal" role="dialog">
                 <div className="modal-dialog modal-dialog-centered modal-xm">
                     <div className="modal-content">
                         <div className="modal-body">
@@ -387,7 +376,7 @@ const JobGrid = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             {/* /Add Client Success */}
             {/* Edit Post */}
             {/* <div className="modal fade" id="edit_post">
