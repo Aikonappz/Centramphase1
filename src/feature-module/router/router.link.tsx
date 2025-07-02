@@ -291,6 +291,7 @@ import Promotion from "../hrm/promotion";
 import Trainers from "../training/trainers";
 import TrainingList from "../training/trainingList";
 import Invoices from "../finance-accounts/sales/invoices";
+import RequisitionPage from "../recruitment/create/jobRequisition";
 const routes = all_routes;
 
 export const publicRoutes = [
@@ -1337,6 +1338,11 @@ export const publicRoutes = [
   {
     path: routes.jobgrid,
     element: <JobGrid />,
+    route: Route,
+  },
+  {
+    path: routes.jobrequsition,
+    element: <RequisitionPage />,
     route: Route,
   },
   {

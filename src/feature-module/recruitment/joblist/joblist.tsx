@@ -11,7 +11,7 @@ import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions';
 import { useSelector } from 'react-redux';
 import { transformArrayToLabelValue } from '../../../utils/misc';
-import PostJobModal from '../../../components/PostJobModal';
+import PostJobModal from '../../../components/CreateRequisition';
 import { Spinner } from 'react-bootstrap';
 import EnhancedTableSkeleton from '../../../components/TableSkeleton';
 
@@ -435,7 +435,7 @@ const JobList = () => {
       </div>
       {/* /Page Wrapper */}
       {/* Add Post */}
-      <div className="modal fade" id="add_post">
+      {/* <div className="modal fade" id="add_post">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -466,7 +466,7 @@ const JobList = () => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
       {/* /Post Job */}
       {/* Add Job Success */}
       <div className="modal fade" id="success_modal" role="dialog">
@@ -494,7 +494,7 @@ const JobList = () => {
       </div>
       {/* /Add Client Success */}
       {/* Edit Post */}
-      <div className="modal fade" id="edit_post">
+      {/* <div className="modal fade" id="edit_post">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -526,7 +526,7 @@ const JobList = () => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
       {/* /Post Job */}
     </>
 

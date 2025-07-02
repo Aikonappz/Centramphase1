@@ -701,7 +701,7 @@ export const SidebarDataTest = [
     separateRoute: false,
     submenuItems: [
       {
-        label: 'Jobs',
+        label: 'Jobs Requisitions',
         link: routes.jobgrid,
         submenu: false,
         showSubRoute: false,

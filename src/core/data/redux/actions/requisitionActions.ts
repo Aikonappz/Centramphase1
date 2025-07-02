@@ -209,7 +209,7 @@ export const postJob = (data: any) => {
   return async (dispatch: Dispatch<JobActionTypes>) => {
     dispatch({ type: POST_JOB_REQUEST });
     try {
-      const response = await api.post(`/requisition/`, data);
+      const response = await api.post(`/requisition/add`, data);
       dispatch({
         type: POST_JOB_SUCCESS,
         payload: response.data

@@ -10,7 +10,7 @@ import { RootState, useAppDispatch } from '../../../core/data/redux/store'
 import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPositions, postJob } from '../../../core/data/redux/actions/requisitionActions'
 import { useSelector } from 'react-redux'
 import { transformArrayToLabelValue } from '../../../utils/misc'
-import PostJobModal from '../../../components/PostJobModal';
+import PostJobModal from '../../../components/CreateRequisition';
 import CardGridSkeleton from '../../../components/CardGridSkeleton'
 
 const JobGrid = () => {
@@ -28,80 +28,6 @@ const JobGrid = () => {
         const modalElement = document.getElementById('modal-datepicker');
         return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
     };
-
-    const jobCategory = [
-        { value: "Select", label: "Select" },
-        { value: "IOS", label: "IOS" },
-        { value: "Web & Application", label: "Web & Application" },
-        { value: "Networking", label: "Networking" },
-    ];
-    const jobtype = [
-        { value: "Select", label: "Select" },
-        { value: "Full-Time", label: "Full Time" },
-        { value: "Part-Time", label: "Part Time" },
-    ];
-    const jobposttype = [
-        { value: "Select", label: "Select" },
-        { value: "Internal", label: "Internal" },
-        { value: "External", label: "External" },
-    ];
-    const jobpostBoard = [
-        { value: "Select", label: "Select" },
-        { value: "LinkedIn", label: "LinkedIn" },
-    ];
-    const requisitionStatus = [
-        { value: "Select", label: "Select" },
-        { value: "Open", label: "Open" },
-        { value: "Closed", label: "Closed" },
-    ];
-    const experience = [
-        { value: "Select", label: "Select" },
-        { value: "Entry Level", label: "Entry Level" },
-        { value: "Mid Level", label: "Mid Level" },
-        { value: "Expert", label: "Expert" },
-    ];
-    const qualification = [
-        { value: "Select", label: "Select" },
-        { value: "Bachelore Degree", label: "Bachelore Degree" },
-        { value: "Master Degree", label: "Master Degree" },
-        { value: "Others", label: "Others" },
-    ];
-    const genderChoose = [
-        { value: "Select", label: "Select" },
-        { value: "Male", label: "Male" },
-        { value: "Female", label: "Female" },
-    ];
-    const salary = [
-        { value: "Select", label: "Select" },
-        { value: "10k - 15k", label: "10k - 15k" },
-        { value: "15k -20k", label: "15k -20k" },
-    ];
-    const maxsalary = [
-        { value: "Select", label: "Select" },
-        { value: "40k - 50k", label: "40k - 50k" },
-        { value: "50k - 60k", label: "50k - 60k" },
-    ];
-    const country = [
-        { value: "Select", label: "Select" },
-        { value: "USA", label: "USA" },
-        { value: "Canada", label: "Canada" },
-        { value: "Germany", label: "Germany" },
-        { value: "France", label: "France" },
-    ];
-    const state = [
-        { value: "Select", label: "Select" },
-        { value: "California", label: "California" },
-        { value: "New York", label: "New York" },
-        { value: "Texas", label: "Texas" },
-        { value: "Florida", label: "Florida" },
-    ];
-    const city = [
-        { value: "Select", label: "Select" },
-        { value: "Los Angeles", label: "Los Angeles" },
-        { value: "San Diego", label: "San Diego" },
-        { value: "Fresno", label: "Fresno" },
-        { value: "San Francisco", label: "San Francisco" },
-    ];
 
     useEffect(() => {
         getJobs();
@@ -190,7 +116,7 @@ const JobGrid = () => {
                                     className="btn btn-primary d-flex align-items-center"
                                 >
                                     <i className="ti ti-circle-plus me-2" />
-                                    Post Job
+                                    Create Job Requisition
                                 </Link>
                             </div>
                             <div className="head-icons ms-2">
@@ -405,7 +331,7 @@ const JobGrid = () => {
             </div>
             {/* /Page Wrapper */}
             {/* Add Post */}
-            <div className="modal fade" id="add_post">
+            {/* <div className="modal fade" id="add_post">
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -436,7 +362,7 @@ const JobGrid = () => {
                         />
                     </div>
                 </div>
-            </div>
+            </div> */}
             {/* /Post Job */}
             {/* Add Job Success */}
             <div className="modal fade" id="success_modal" role="dialog">
@@ -464,7 +390,7 @@ const JobGrid = () => {
             </div>
             {/* /Add Client Success */}
             {/* Edit Post */}
-            <div className="modal fade" id="edit_post">
+            {/* <div className="modal fade" id="edit_post">
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -496,7 +422,7 @@ const JobGrid = () => {
                         />
                     </div>
                 </div>
-            </div>
+            </div> */}
         </>
 
     )
