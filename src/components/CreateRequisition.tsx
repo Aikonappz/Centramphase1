@@ -372,7 +372,7 @@ const CreateRequisition = (props: any) => {
                     </Form.Item>
                 </Col>
             </Row>
-            <div className="">
+            <div className="modal-footer">
                 <Space size="middle">
                     {currentStep > 0 && (
                         <Button

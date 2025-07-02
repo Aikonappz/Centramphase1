@@ -87,15 +87,6 @@ const RequisitionPage: React.FC = () => {
       >
         {requisition && (
           <>
-            <div style={{ marginBottom: '24px' }}>
-              <h3>Requisition Details</h3>
-              <p><strong>ID:</strong> {requisition.id}</p>
-              <p><strong>Title:</strong> {requisition.title}</p>
-              <p><strong>Description:</strong> {requisition.description}</p>
-              <p><strong>Status:</strong> {requisition.status}</p>
-            </div>
-
-            <h3>Approval Process</h3>
             <StepperForm />
           </>
         )}
