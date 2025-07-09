@@ -6,6 +6,9 @@ import {
     GET_JOB_REQUEST,
     GET_JOB_SUCCESS,
     GET_JOB_FAILURE,
+    GET_JOB_BY_ID_REQUEST,
+    GET_JOB_BY_ID_SUCCESS,
+    GET_JOB_BY_ID_FAILURE,
     GET_POSITION_REQUEST,
     GET_POSITION_SUCCESS,
     GET_POSITION_FAILURE,
@@ -37,6 +40,7 @@ import {
     businessUnit: any | null;
     department: any | null;
     organisation: any | null;
+    jobById: any | null;
   }
   
   const initialState: JobState = {
@@ -49,7 +53,8 @@ import {
     division: null,
     businessUnit: null,
     department: null,
-    organisation: null
+    organisation: null,
+    jobById: null
   };
   
   // Use Reducer type for better type safety
@@ -91,6 +96,25 @@ import {
           error: null
         };
       case GET_JOB_FAILURE:
+        return {
+          ...state,
+          loading: false,
+          error: action.payload
+        };
+      case GET_JOB_BY_ID_REQUEST:
+        return {
+          ...state,
+          loading: true,
+          error: null
+        };
+      case GET_JOB_BY_ID_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          jobById: action.payload,
+          error: null
+        };
+      case GET_JOB_BY_ID_FAILURE:
         return {
           ...state,
           loading: false,

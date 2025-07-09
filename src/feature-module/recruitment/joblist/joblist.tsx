@@ -11,7 +11,7 @@ import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions';
 import { useSelector } from 'react-redux';
 import { transformArrayToLabelValue } from '../../../utils/misc';
-import PostJobModal from '../../../components/CreateRequisition';
+import PostJobModal from '../create/CreateRequisition';
 import { Spinner } from 'react-bootstrap';
 import EnhancedTableSkeleton from '../../../components/TableSkeleton';
 
@@ -181,6 +181,7 @@ const JobList = () => {
 
   useEffect(() => {
     getJobs();
+    localStorage.removeItem('requisitionId');
   }, [dispatch]);
 
   const getJobs = async () => {

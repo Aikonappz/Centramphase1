@@ -19,7 +19,7 @@ const formatDate = (date: any) => {
   return date.toISOString().split('T')[0];
 }
 
-const toNumber = (value: number, precision: number | undefined) => {
+const toNumber = (value: any, precision: number | undefined) => {
         precision = precision || 0;
         if (precision === 0) {
           return value * 1;

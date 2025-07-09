@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Steps, Button, Card, Row, Col } from 'antd';
-import {
-  CloseOutlined,
-  SaveOutlined,
-  ArrowRightOutlined,
-  ArrowLeftOutlined
-} from '@ant-design/icons';
+
 import CreateRequisition from './CreateRequisition';
+import Step2 from './step2';
+import Step3 from './step3';
+import FinalStep from './finalStep';
+import Step4 from './step4';
 
 const { Step } = Steps;
 
@@ -47,8 +46,17 @@ const Completed = () => (
   </div>
 );
 
-const StepperForm = () => {
-  const [current, setCurrent] = useState(0);
+const StepperForm = (props: any) => {
+  const { setCurrentStep } = props;
+  const [current, setCurrent] = useState(() => {
+    const saved = localStorage.getItem('currentStep');
+    return saved !== null ? parseInt(saved) : 0;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('currentStep', current.toString());
+  }, [current]);
+
 
   const prev = () => {
     setCurrent(current - 1);
@@ -62,27 +70,22 @@ const StepperForm = () => {
     },
     {
       title: 'Approver 1',
-      content: <Approver1 />,
+      content: <Step2 currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 2'
     },
     {
       title: 'Approver 2',
-      content: <Approver2 />,
+      content: <Step3 currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 3'
     },
     {
       title: 'Approver 3',
-      content: <Approver3 />,
+      content: <Step4 currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 4'
     },
     {
-      title: 'Approver 4',
-      content: <Approver4 />,
-      nextButtonText: 'Complete'
-    },
-    {
       title: 'Completed',
-      content: <Completed />,
+      content: <FinalStep />,
       nextButtonText: 'Finish'
     }
   ];
@@ -90,14 +93,15 @@ const StepperForm = () => {
   const next = () => {
     setCurrent(current + 1);
   };
+  
 
   const handleStepClick = (step: any) => {
     setCurrent(step);
   };
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Steps current={current} onChange={handleStepClick}>
+    <div>
+      <Steps current={current} size="small">
         {steps.map((item) => (
           <Step key={item.title} title={item.title} />
         ))}

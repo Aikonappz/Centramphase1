@@ -10,6 +10,10 @@ export const GET_JOB_REQUEST = 'GET_JOB_REQUEST';
 export const GET_JOB_SUCCESS = 'GET_JOB_SUCCESS';
 export const GET_JOB_FAILURE = 'GET_JOB_FAILURE';
 
+export const GET_JOB_BY_ID_REQUEST = 'GET_JOB_BY_ID_REQUEST';
+export const GET_JOB_BY_ID_SUCCESS = 'GET_JOB_BY_ID_SUCCESS';
+export const GET_JOB_BY_ID_FAILURE = 'GET_JOB_BY_ID_FAILURE';
+
 export const DELETE_JOB_REQUEST = 'DELETE_JOB_REQUEST';
 export const DELETE_JOB_SUCCESS = 'DELETE_JOB_SUCCESS';
 export const DELETE_JOB_FAILURE = 'DELETE_JOB_FAILURE';
@@ -46,6 +50,22 @@ export const SAVE_ORGANISATION_REQUEST = 'SAVE_ORGANISATION_REQUEST';
 export const SAVE_ORGANISATION_SUCCESS = 'SAVE_ORGANISATION_SUCCESS';
 export const SAVE_ORGANISATION_FAILURE = 'SAVE_ORGANISATION_FAILURE';
 
+export const SAVE_MANAGER_REVIEW_REQUEST = 'SAVE_MANAGER_REVIEW_REQUEST';
+export const SAVE_MANAGER_REVIEW_SUCCESS = 'SAVE_MANAGER_REVIEW_SUCCESS';
+export const SAVE_MANAGER_REVIEW_FAILURE = 'SAVE_MANAGER_REVIEW_FAILURE';
+
+export const SAVE_RECRUITER_LEAD_REQUEST = 'SAVE_RECRUITER_LEAD_REQUEST';
+export const SAVE_RECRUITER_LEAD_SUCCESS = 'SAVE_RECRUITER_LEAD_SUCCESS';
+export const SAVE_RECRUITER_LEAD_FAILURE = 'SAVE_RECRUITER_LEAD_FAILURE';
+
+export const SAVE_RECRUITER_REVIEW_REQUEST = 'SAVE_RECRUITER_REVIEW_REQUEST';
+export const SAVE_RECRUITER_REVIEW_SUCCESS = 'SAVE_RECRUITER_REVIEW_SUCCESS';
+export const SAVE_RECRUITER_REVIEW_FAILURE = 'SAVE_RECRUITER_REVIEW_FAILURE';
+
+export const SAVE_FINAL_REVIEW_REQUEST = 'SAVE_FINAL_REVIEW_REQUEST';
+export const SAVE_FINAL_REVIEW_SUCCESS = 'SAVE_FINAL_REVIEW_SUCCESS';
+export const SAVE_FINAL_REVIEW_FAILURE = 'SAVE_FINAL_REVIEW_FAILURE';
+
 interface PostJobRequestAction {
   type: typeof POST_JOB_REQUEST;
 }
@@ -73,6 +93,21 @@ interface GetJobFailureAction {
   type: typeof GET_JOB_FAILURE;
   payload: string;
 }
+
+interface GetJobByIdRequestAction {
+  type: typeof GET_JOB_BY_ID_REQUEST;
+}
+
+interface GetJobByIdSuccessAction {
+  type: typeof GET_JOB_BY_ID_SUCCESS;
+  payload: any;
+}
+
+interface GetJobByIdFailureAction {
+  type: typeof GET_JOB_BY_ID_FAILURE;
+  payload: string;
+}
+
 
 interface GetPositionRequestAction {
   type: typeof GET_POSITION_REQUEST;
@@ -172,6 +207,62 @@ interface SaveOrganisationFailureAction {
   payload: string;
 }
 
+interface SaveManagerReviewRequestAction {
+  type: typeof SAVE_MANAGER_REVIEW_REQUEST;
+}
+
+interface SaveManagerReviewSuccessAction {
+  type: typeof SAVE_MANAGER_REVIEW_SUCCESS;
+  payload: any;
+}
+
+interface SaveManagerReviewFailureAction {
+  type: typeof SAVE_MANAGER_REVIEW_FAILURE;
+  payload: string;
+}
+
+interface SaveRecruiterLeadRequestAction {
+  type: typeof SAVE_RECRUITER_LEAD_REQUEST;
+}
+
+interface SaveRecruiterLeadSuccessAction {
+  type: typeof SAVE_RECRUITER_LEAD_SUCCESS;
+  payload: any;
+}
+
+interface SaveRecruiterLeadFailureAction {
+  type: typeof SAVE_RECRUITER_LEAD_FAILURE;
+  payload: string;
+}
+
+interface SaveRecruiterReviewRequestAction {
+  type: typeof SAVE_RECRUITER_REVIEW_REQUEST;
+}
+
+interface SaveRecruiterReviewSuccessAction {
+  type: typeof SAVE_RECRUITER_REVIEW_SUCCESS;
+  payload: any;
+}
+
+interface SaveRecruiterReviewFailureAction {
+  type: typeof SAVE_RECRUITER_REVIEW_FAILURE;
+  payload: string;
+}
+
+interface SaveFinalReviewRequestAction {
+  type: typeof SAVE_FINAL_REVIEW_REQUEST;
+}
+
+interface SaveFinalReviewSuccessAction {
+  type: typeof SAVE_FINAL_REVIEW_SUCCESS;
+  payload: any;
+}
+
+interface SaveFinalReviewFailureAction {
+  type: typeof SAVE_FINAL_REVIEW_FAILURE;
+  payload: string;
+}
+
 
 
 export type JobActionTypes = 
@@ -181,6 +272,9 @@ export type JobActionTypes =
   | GetJobRequestAction 
   | GetJobSuccessAction 
   | GetJobFailureAction
+  | GetJobByIdRequestAction 
+  | GetJobByIdSuccessAction 
+  | GetJobByIdFailureAction
   | GetPositionRequestAction 
   | GetPositionSuccessAction 
   | GetPositionFailureAction
@@ -201,7 +295,19 @@ export type JobActionTypes =
   | GetOrganisationFailureAction
   | SaveOrganisationRequestAction 
   | SaveOrganisationSuccessAction 
-  | SaveOrganisationFailureAction;
+  | SaveOrganisationFailureAction
+  | SaveManagerReviewRequestAction
+  | SaveManagerReviewSuccessAction
+  | SaveManagerReviewFailureAction
+  | SaveRecruiterLeadRequestAction
+  | SaveRecruiterLeadSuccessAction
+  | SaveRecruiterLeadFailureAction
+  | SaveRecruiterReviewRequestAction
+  | SaveRecruiterReviewSuccessAction
+  | SaveRecruiterReviewFailureAction
+  | SaveFinalReviewRequestAction
+  | SaveFinalReviewSuccessAction
+  | SaveFinalReviewFailureAction;
 
 // Async action creator with TypeScript
 
@@ -229,13 +335,13 @@ export const postJob = (data: any) => {
   };
 };
 
-export const getJobLists = () => {
+export const getJobLists = (id?: any) => {
   return async (dispatch: Dispatch<JobActionTypes>) => {
-    dispatch({ type: GET_JOB_REQUEST });
+    dispatch({ type: id ? GET_JOB_BY_ID_REQUEST : GET_JOB_REQUEST });
     try {
-      const response = await api.get(`/requisition/`);
+      const response = await api.get(id ? `/requisition/${id}` : `/requisition/`);
       dispatch({
-        type: GET_JOB_SUCCESS,
+        type: id ? GET_JOB_BY_ID_SUCCESS : GET_JOB_SUCCESS,
         payload: response.data
       });
       return response;
@@ -245,7 +351,31 @@ export const getJobLists = () => {
         errorMessage = error.message;
       }
       dispatch({
-        type: GET_JOB_FAILURE,
+        type: id ? GET_JOB_BY_ID_FAILURE : GET_JOB_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const resetJobById = () => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_JOB_BY_ID_REQUEST });
+    try {
+      localStorage.removeItem('requisitionId');
+      localStorage.removeItem('currentStep');
+      dispatch({
+        type: GET_JOB_BY_ID_SUCCESS,
+        payload: []
+      });
+    } catch (error) {
+      let errorMessage = 'Failed to load!';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_JOB_BY_ID_FAILURE,
         payload: errorMessage
       });
       return error;
@@ -414,6 +544,102 @@ export const saveOrganisation = (data: any) => {
       }
       dispatch({
         type: SAVE_ORGANISATION_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const saveManagerReview = (data: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: SAVE_MANAGER_REVIEW_REQUEST });
+    try {
+      const response = await api.post(`/requisition/manager_review/add`, data);
+      dispatch({
+        type: SAVE_MANAGER_REVIEW_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: SAVE_MANAGER_REVIEW_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const saveRecruiterLeadReview = (data: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: SAVE_RECRUITER_LEAD_REQUEST });
+    try {
+      const response = await api.post(`/requisition/recruiter_team_lead/add`, data);
+      dispatch({
+        type: SAVE_RECRUITER_LEAD_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: SAVE_RECRUITER_LEAD_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const saveRecruiterReview = (data: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: SAVE_RECRUITER_REVIEW_REQUEST });
+    try {
+      const response = await api.post(`/requisition/recruiter_review/add`, data);
+      dispatch({
+        type: SAVE_RECRUITER_REVIEW_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: SAVE_RECRUITER_REVIEW_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const saveFinalReview = (data: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: SAVE_FINAL_REVIEW_REQUEST });
+    try {
+      const response = await api.post(`/requisition/completed/add`, data);
+      dispatch({
+        type: SAVE_FINAL_REVIEW_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: SAVE_FINAL_REVIEW_FAILURE,
         payload: errorMessage
       });
       return error;

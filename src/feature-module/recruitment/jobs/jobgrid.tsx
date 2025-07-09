@@ -7,10 +7,10 @@ import { DatePicker } from "antd";
 import CommonSelect from '../../../core/common/commonSelect'
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header'
 import { RootState, useAppDispatch } from '../../../core/data/redux/store'
-import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPositions, postJob } from '../../../core/data/redux/actions/requisitionActions'
+import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPositions, postJob, resetJobById } from '../../../core/data/redux/actions/requisitionActions'
 import { useSelector } from 'react-redux'
 import { transformArrayToLabelValue } from '../../../utils/misc'
-import PostJobModal from '../../../components/CreateRequisition';
+import PostJobModal from '../create/CreateRequisition';
 import CardGridSkeleton from '../../../components/CardGridSkeleton'
 
 const JobGrid = () => {
@@ -22,6 +22,7 @@ const JobGrid = () => {
 
     useEffect(() => {
         getJobs();
+        dispatch(resetJobById());
     }, [dispatch]);
 
     const getJobs = async () => {

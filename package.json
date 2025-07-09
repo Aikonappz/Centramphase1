@@ -26,6 +26,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.8",
     "clipboard-copy": "^4.0.1",
+    "dayjs": "^1.11.13",
     "dragula": "^3.7.3",
     "feather-icons-react": "^0.7.1",
     "jquery": "^3.7.1",
