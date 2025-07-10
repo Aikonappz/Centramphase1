@@ -1,16 +1,36 @@
 // src/pages/CareerPage.tsx
-import React from 'react';
-import { Layout, Typography, Card, Row, Col, Button, Divider, List, Space, Tag } from 'antd';
+import React, { useState } from 'react';
+import { 
+  Layout, 
+  Typography, 
+  Card, 
+  Row, 
+  Col, 
+  Button, 
+  Divider, 
+  List, 
+  Space, 
+  Tag, 
+  Input,
+  Select, 
+  Empty,
+  Pagination
+} from 'antd';
 import { 
   RocketOutlined, 
   TeamOutlined, 
   DollarOutlined, 
   GlobalOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  SearchOutlined,
+  EnvironmentOutlined
 } from '@ant-design/icons';
-import "../../../style/css/career.css";
+import '../../../style/css/career.css'
+
 const { Header, Content, Footer } = Layout;
 const { Title, Paragraph, Text } = Typography;
+const { Search } = Input;
+const { Option } = Select;
 
 type JobPosition = {
   id: string;
@@ -21,10 +41,10 @@ type JobPosition = {
   description: string;
   requirements: string[];
 };
-
+const PAGE_SIZE = 3; // Number of jobs per page
 const CareerPage: React.FC = () => {
-  // Sample job data - in a real app, you would fetch this from an API
-  const jobPositions: JobPosition[] = [
+  // Sample job data
+  const allJobPositions: JobPosition[] = [
     {
       id: '1',
       title: 'Frontend Developer',
@@ -69,8 +89,106 @@ const CareerPage: React.FC = () => {
         'Understanding of RESTful API design',
         'Experience with authentication and authorization'
       ]
+    },
+    {
+      id: '4',
+      title: 'Product Manager',
+      department: 'Product',
+      location: 'Remote',
+      type: 'Full-time',
+      description: 'Lead our product development efforts by defining product vision, strategy, and roadmap. Work with cross-functional teams to deliver exceptional products.',
+      requirements: [
+        '5+ years of product management experience',
+        'Strong analytical and problem-solving skills',
+        'Excellent communication and leadership abilities',
+        'Experience with Agile methodologies',
+        'Technical background is a plus'
+      ]
+    },
+    {
+      id: '5',
+      title: 'DevOps Engineer',
+      department: 'Engineering',
+      location: 'Austin, TX',
+      type: 'Full-time',
+      description: 'Implement and maintain our CI/CD pipelines and cloud infrastructure. Ensure high availability and scalability of our systems.',
+      requirements: [
+        'Experience with Docker and Kubernetes',
+        'Knowledge of infrastructure as code (Terraform, CloudFormation)',
+        'Familiarity with monitoring tools (Prometheus, Grafana)',
+        'Strong scripting skills (Bash, Python)',
+        '3+ years of DevOps experience'
+      ]
     }
   ];
+
+  const [jobPositions, setJobPositions] = useState<JobPosition[]>(allJobPositions);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [locationFilter, setLocationFilter] = useState<string | null>(null);
+  const [filteredJobs, setFilteredJobs] = useState<JobPosition[]>(allJobPositions);
+  const [displayedJobs, setDisplayedJobs] = useState<JobPosition[]>(allJobPositions.slice(0, PAGE_SIZE));
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(allJobPositions.length);
+
+  // Get unique locations for filter dropdown
+  const locations = Array.from(new Set(allJobPositions.map(job => job.location)));
+
+  // Filter jobs based on search term and location
+  // Filter jobs based on search term and location
+  const filterJobs = (term: string, location: string | null, page: number = 1) => {
+    let filtered = [...allJobPositions];
+    
+    if (term) {
+      const lowerTerm = term.toLowerCase();
+      filtered = filtered.filter(job => 
+        job.title.toLowerCase().includes(lowerTerm) ||
+        job.department.toLowerCase().includes(lowerTerm) ||
+        job.description.toLowerCase().includes(lowerTerm) ||
+        job.requirements.some(req => req.toLowerCase().includes(lowerTerm))
+      );
+    }
+    
+    if (location) {
+      filtered = filtered.filter(job => job.location === location);
+    }
+    
+    // Update filtered jobs and pagination
+    setFilteredJobs(filtered);
+    setTotalJobs(filtered.length);
+    setCurrentPage(1); // Reset to first page when filters change
+    
+    // Update displayed jobs
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    setDisplayedJobs(filtered.slice(startIndex, endIndex));
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    setDisplayedJobs(filteredJobs.slice(startIndex, endIndex));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    filterJobs(value, locationFilter);
+  };
+
+  const handleLocationChange = (value: string | null) => {
+    setLocationFilter(value);
+    filterJobs(searchTerm, value);
+  };
+
+  const clearFilters = () => {
+     setSearchTerm('');
+    setLocationFilter(null);
+    setCurrentPage(1);
+    setFilteredJobs(allJobPositions);
+    setDisplayedJobs(allJobPositions.slice(0, PAGE_SIZE));
+    setTotalJobs(allJobPositions.length);
+  };
 
   const benefits = [
     {
@@ -145,44 +263,118 @@ const CareerPage: React.FC = () => {
             We're always interested in meeting talented people - feel free to send us your resume.
           </Paragraph>
 
+          {/* Search and Filter Section */}
+          <div className="search-filters">
+            <Row gutter={[16, 16]} align="middle">
+              <Col xs={24} md={12}>
+                <Search
+                  placeholder="Search by job title, department, or skills"
+                  allowClear
+                  enterButton={<Button type="primary"><SearchOutlined /> Search</Button>}
+                  size="large"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onSearch={handleSearch}
+                  className="search-input"
+                />
+              </Col>
+              <Col xs={24} md={8}>
+                <Select
+                  placeholder="Filter by location"
+                  size="large"
+                  style={{ width: '100%' }}
+                  onChange={handleLocationChange}
+                  value={locationFilter}
+                  allowClear
+                  suffixIcon={<EnvironmentOutlined />}
+                >
+                  {locations.map(location => (
+                    <Option key={location} value={location}>{location}</Option>
+                  ))}
+                </Select>
+              </Col>
+              <Col xs={24} md={4}>
+                <Button 
+                  size="large" 
+                  onClick={clearFilters}
+                  disabled={!searchTerm && !locationFilter}
+                  style={{ width: '100%' }}
+                >
+                  Clear Filters
+                </Button>
+              </Col>
+            </Row>
+          </div>
+
           <Divider />
 
-          <Row gutter={[16, 16]}>
-            {jobPositions.map((job) => (
-              <Col span={24} key={job.id}>
-                <Card hoverable className="job-card">
-                  <div className="job-card-header">
-                    <Title level={4} style={{ margin: 0 }}>{job.title}</Title>
-                    <Space>
-                      <Tag color="blue">{job.department}</Tag>
-                      <Tag color="green">{job.location}</Tag>
-                      <Tag color="orange">{job.type}</Tag>
-                    </Space>
-                  </div>
-                  
-                  <Paragraph style={{ margin: '16px 0' }}>
-                    {job.description}
-                  </Paragraph>
+          {filteredJobs.length === 0 ? (
+          <Card>
+            <Empty
+              description={
+                <span>
+                  No jobs found matching your criteria
+                </span>
+              }
+            >
+              <Button type="primary" onClick={clearFilters}>
+                Clear filters
+              </Button>
+            </Empty>
+          </Card>
+        ) : (
+          <>
+            <Row gutter={[16, 16]}>
+              {displayedJobs.map((job) => (
+                <Col span={24} key={job.id}>
+                  <Card hoverable className="job-card">
+                    <div className="job-card-header">
+                      <Title level={4} style={{ margin: 0 }}>{job.title}</Title>
+                      <Space>
+                        <Tag color="blue">{job.department}</Tag>
+                        <Tag color="green">{job.location}</Tag>
+                        <Tag color="orange">{job.type}</Tag>
+                      </Space>
+                    </div>
+                    
+                    <Paragraph style={{ margin: '16px 0' }}>
+                      {job.description}
+                    </Paragraph>
 
-                  <Title level={5}>Requirements:</Title>
-                  <List
-                    size="small"
-                    dataSource={job.requirements}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <CheckCircleOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
-                        {item}
-                      </List.Item>
-                    )}
-                  />
+                    <Title level={5}>Requirements:</Title>
+                    <List
+                      size="small"
+                      dataSource={job.requirements}
+                      renderItem={(item) => (
+                        <List.Item>
+                          <CheckCircleOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
+                          {item}
+                        </List.Item>
+                      )}
+                    />
 
-                  <Button type="primary" style={{ marginTop: '16px' }}>
-                    Apply Now
-                  </Button>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+                    <Button type="primary" style={{ marginTop: '16px' }}>
+                      Apply Now
+                    </Button>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+
+            <div className="pagination-container">
+              <Pagination
+  current={currentPage}
+  total={totalJobs}
+  pageSize={PAGE_SIZE}
+  onChange={handlePageChange}
+  showSizeChanger={true} // Enable page size changer
+  pageSizeOptions={['3', '5', '10']} // Custom page sizes
+  showQuickJumper={true} // Enable quick jump to page
+  showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} positions`}
+/>
+            </div>
+          </>
+        )}
         </section>
 
         {/* Culture Section */}
@@ -206,7 +398,6 @@ const CareerPage: React.FC = () => {
             </Col>
             <Col xs={24} md={12}>
               <div className="culture-image">
-                {/* In a real app, replace with your actual image */}
                 <div style={{ 
                   background: '#f0f2f5', 
                   height: '300px', 

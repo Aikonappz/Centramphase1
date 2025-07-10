@@ -54,7 +54,7 @@ export const all_routes = {
   apikey: "/api-keys",
   privacyPolicy: "/privacy-policy",
   termscondition: "/terms-condition",
-  career: "/career",
+  career: "/careers",
 
   // auth routes routes
   login: "/login",
