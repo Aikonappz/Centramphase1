@@ -292,6 +292,7 @@ import Trainers from "../training/trainers";
 import TrainingList from "../training/trainingList";
 import Invoices from "../finance-accounts/sales/invoices";
 import RequisitionPage from "../recruitment/create/jobRequisition";
+import CareerPage from "../pages/career";
 const routes = all_routes;
 
 export const publicRoutes = [
@@ -1658,6 +1659,11 @@ export const authRoutes = [
   {
     path: routes.comingSoon,
     element: <ComingSoon />,
+    route: Route,
+  },
+  {
+    path: routes.career,
+    element: <CareerPage />,
     route: Route,
   },
   {
