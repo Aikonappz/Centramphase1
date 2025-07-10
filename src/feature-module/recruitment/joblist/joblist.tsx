@@ -8,7 +8,7 @@ import CommonSelect from '../../../core/common/commonSelect';
 import Table from "../../../core/common/dataTable/index";
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
-import { getJobLists, postJob } from '../../../core/data/redux/actions/requisitionActions';
+import { getJobLists, postJob, resetJobById } from '../../../core/data/redux/actions/requisitionActions';
 import { useSelector } from 'react-redux';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import PostJobModal from '../create/CreateRequisition';
@@ -102,88 +102,9 @@ const JobList = () => {
     },
   ]
 
-  const getModalContainer = () => {
-    const modalElement = document.getElementById('modal-datepicker');
-    return modalElement ? modalElement : document.body; // Fallback to document.body if modalElement is null
-  };
-
-  const jobCategory = [
-    { value: "Select", label: "Select" },
-    { value: "IOS", label: "IOS" },
-    { value: "Web & Application", label: "Web & Application" },
-    { value: "Networking", label: "Networking" },
-  ];
-  const jobtype = [
-    { value: "Select", label: "Select" },
-    { value: "Full-Time", label: "Full Time" },
-    { value: "Part-Time", label: "Part Time" },
-  ];
-  const jobposttype = [
-    { value: "Select", label: "Select" },
-    { value: "Internal", label: "Internal" },
-    { value: "External", label: "External" },
-  ];
-  const jobpostBoard = [
-    { value: "Select", label: "Select" },
-    { value: "LinkedIn", label: "LinkedIn" },
-  ];
-  const requisitionStatus = [
-    { value: "Select", label: "Select" },
-    { value: "Open", label: "Open" },
-    { value: "Closed", label: "Closed" },
-  ];
-  const experience = [
-    { value: "Select", label: "Select" },
-    { value: "Entry Level", label: "Entry Level" },
-    { value: "Mid Level", label: "Mid Level" },
-    { value: "Expert", label: "Expert" },
-  ];
-  const qualification = [
-    { value: "Select", label: "Select" },
-    { value: "Bachelore Degree", label: "Bachelore Degree" },
-    { value: "Master Degree", label: "Master Degree" },
-    { value: "Others", label: "Others" },
-  ];
-  const genderChoose = [
-    { value: "Select", label: "Select" },
-    { value: "Male", label: "Male" },
-    { value: "Female", label: "Female" },
-  ];
-  const salary = [
-    { value: "Select", label: "Select" },
-    { value: "10k - 15k", label: "10k - 15k" },
-    { value: "15k -20k", label: "15k -20k" },
-  ];
-  const maxsalary = [
-    { value: "Select", label: "Select" },
-    { value: "40k - 50k", label: "40k - 50k" },
-    { value: "50k - 60k", label: "50k - 60k" },
-  ];
-  const country = [
-    { value: "Select", label: "Select" },
-    { value: "USA", label: "USA" },
-    { value: "Canada", label: "Canada" },
-    { value: "Germany", label: "Germany" },
-    { value: "France", label: "France" },
-  ];
-  const state = [
-    { value: "Select", label: "Select" },
-    { value: "California", label: "California" },
-    { value: "New York", label: "New York" },
-    { value: "Texas", label: "Texas" },
-    { value: "Florida", label: "Florida" },
-  ];
-  const city = [
-    { value: "Select", label: "Select" },
-    { value: "Los Angeles", label: "Los Angeles" },
-    { value: "San Diego", label: "San Diego" },
-    { value: "Fresno", label: "Fresno" },
-    { value: "San Francisco", label: "San Francisco" },
-  ];
-
   useEffect(() => {
     getJobs();
-    localStorage.removeItem('requisitionId');
+    dispatch(resetJobById());
   }, [dispatch]);
 
   const getJobs = async () => {
