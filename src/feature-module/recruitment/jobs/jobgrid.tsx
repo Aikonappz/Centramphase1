@@ -11,10 +11,12 @@ import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPosit
 import { useSelector } from 'react-redux'
 import { transformArrayToLabelValue } from '../../../utils/misc'
 import PostJobModal from '../create/CreateRequisition';
-import CardGridSkeleton from '../../../components/CardGridSkeleton'
+import CardGridSkeleton from '../../../components/CardGridSkeleton';
+import { useNavigate } from "react-router";
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
     
     const [isLoading, setIsLoading] = React.useState<any>(jobs.loading);
@@ -29,6 +31,10 @@ const JobGrid = () => {
         setIsLoading(true);
         await dispatch(getJobLists());
         setIsLoading(false);
+    }
+
+    const handleJobDetails = (jobId: any) => {
+        localStorage.setItem('requisitionId', jobId);
     }
 
     return (
@@ -265,8 +271,7 @@ const JobGrid = () => {
                                                     </Link>
                                                     <div>
                                                         <h6 className="fw-medium mb-1 text-truncate" title={`${job.jobTitle}`}>
-                                                            <Link to="#" data-bs-toggle="modal"
-                                                                data-bs-target="#edit_post" onClick={() => setJobData(job)}>{job.jobTitle}</Link>
+                                                            <Link to="/create/job-requisition" onClick={() => handleJobDetails(job.id)}>{job.jobTitle}</Link>
                                                         </h6>
                                                         <p className="fs-12 text-gray fw-normal">25 Applicants</p>
                                                     </div>

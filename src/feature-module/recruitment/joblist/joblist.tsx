@@ -27,6 +27,9 @@ const JobList = () => {
   const [isLoading, setIsLoading] = React.useState<any>(false);
   const data = jobs.jobList?.content || [];
   const [jobData, setJobData] = React.useState<any>({});
+  const handleJobDetails = (jobId: any) => {
+        localStorage.setItem('requisitionId', jobId);
+    }
   const columns = [
     {
       title: "Job ID",
@@ -82,12 +85,11 @@ const JobList = () => {
       render: (text: string, record: any) => (
         <div className="action-icon d-inline-flex">
           <Link
-            to="#"
+            to="/create/job-requisition"
             className="me-2"
-            data-bs-toggle="modal"
-            data-bs-target="#edit_post"
             onClick={() => {
-              setJobData(record)
+              setJobData(record);
+               handleJobDetails(record.id);
             }}
           >
             <i className="ti ti-edit" />
@@ -261,13 +263,11 @@ const JobList = () => {
               </div>
               <div className="mb-2">
                 <Link
-                  to="#"
-                  data-bs-toggle="modal"
-                  data-bs-target="#add_post"
+                  to="/create/job-requisition"
                   className="btn btn-primary d-flex align-items-center"
                 >
                   <i className="ti ti-circle-plus me-2" />
-                  Post job
+                  Create Job Requisition
                 </Link>
               </div>
               <div className="head-icons ms-2">
@@ -420,7 +420,7 @@ const JobList = () => {
               </div>
             </div>
             <div className="card-body p-0">
-              {!isLoading ? <Table dataSource={data} columns={columns} Selection={true} /> : <EnhancedTableSkeleton  />}
+              {!isLoading ? <Table dataSource={data} columns={columns} Selection={true} /> : <EnhancedTableSkeleton />}
             </div>
           </div>
         </div>
