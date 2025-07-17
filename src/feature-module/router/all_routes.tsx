@@ -365,6 +365,10 @@ export const all_routes = {
   resignation: "/resignation",
   termination: "/termination",
   // RECRUITMENT
+  positions: "/positions",
+  createPosition: "/positions/create",
+  editPosition: "/positions/edit/:id",
+  viewPosition: "/positions/view/:id",
   jobgrid: "/job-grid",
   joblist: "/job-list",
   jobrequsition: "/create/job-requisition",

@@ -293,6 +293,10 @@ import TrainingList from "../training/trainingList";
 import Invoices from "../finance-accounts/sales/invoices";
 import RequisitionPage from "../recruitment/create/jobRequisition";
 import CareerPage from "../pages/career";
+import PositionManagementPage from "../recruitment/positions";
+import CreatePosition from "../recruitment/positions/createPosition";
+import EditPosition from "../recruitment/positions/editPosition";
+import PositionDetails from "../recruitment/positions/viewPosition";
 const routes = all_routes;
 
 export const publicRoutes = [
@@ -1339,6 +1343,26 @@ export const publicRoutes = [
   {
     path: routes.jobgrid,
     element: <JobGrid />,
+    route: Route,
+  },
+  {
+    path: routes.positions,
+    element: <PositionManagementPage />,
+    route: Route,
+  },
+  {
+    path: routes.createPosition,
+    element: <CreatePosition />,
+    route: Route,
+  },
+  {
+    path: routes.editPosition,
+    element: <EditPosition />,
+    route: Route,
+  },
+  {
+    path: routes.viewPosition,
+    element: <PositionDetails />,
     route: Route,
   },
   {

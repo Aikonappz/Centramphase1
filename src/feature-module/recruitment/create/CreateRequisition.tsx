@@ -2,27 +2,32 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space } fro
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { getJobLists, postJob } from "../../../core/data/redux/actions/requisitionActions";
+import { getJobLists, getPositionById, postJob } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import DebounceSelect from "../../../components/DebounceSelect";
-import { useNavigate } from "react-router";
-import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
+import { useNavigate, useParams, useSearchParams } from "react-router";
+import moment from "moment";
 
 const CreateRequisition = (props: any) => {
     const { currentStep, setCurrent, prev } = props;
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const positionId = searchParams.get('positionId');
+    // const jobId = searchParams.get('id');
+
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
     const onFinish = (values: any) => {
-        handleSubmit(values);
+        const formattedValues = {
+            ...values,
+            jobPostingEndDate: values.jobPostingEndDate?.format('YYYY-MM-DD') || null
+        };
+        handleSubmit(formattedValues);
     };
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
     const [jobLevel, setJobLevel] = useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
@@ -32,6 +37,7 @@ const CreateRequisition = (props: any) => {
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
+    const [positions, setPositions] = useState<any>({});
 
 
     const jobtype = [
@@ -52,27 +58,63 @@ const CreateRequisition = (props: any) => {
     ];
 
     useEffect(() => {
-        const reqId = localStorage.getItem('requisitionId');
-        if (reqId) {
-            getJobs(reqId);
+        const jobId = localStorage.getItem('requisitionId');
+        if (positionId) {
+            fetchJobByPosition(positionId);
+        } else if (jobId) {
+            getJobs(jobId);
         }
-    }, []);
-
-    useEffect(() => {
-        if (jobs.jobById) {
-            form.setFieldsValue({
-                jobPostingEndDate: dayjs.utc(jobs.jobById.jobPostingEndDate),
-                ...jobs.jobById
-            });
-            setJobData(jobs.jobById);
-        }
-    }, [jobs.jobById, form]);
+    }, [positionId]);
 
     const getJobs = async (reqId: any) => {
         setIsLoading(true);
-        await dispatch(getJobLists(reqId));
-        setIsLoading(false);
+        const response: any = await dispatch(getJobLists(reqId));
+        const data = response.data;
+        if (response.status !== 200) {
+            setIsLoading(false);
+            message.error('Error fetching position');
+        } else {
+            setTimeout(() => {
+                form.setFieldsValue({
+                    ...data,
+                    ...positions,
+                    jobPostingEndDate: data.jobPostingEndDate ? moment(data?.jobPostingEndDate) : new Date(),
+                });
+                setJobData(data);
+                setIsLoading(false);
+            }, 500);
+        }
     }
+
+    const fetchJobByPosition = async (reqId: any) => {
+        const response: any = await dispatch(getPositionById(positionId));
+        const data = response.data;
+        if (response.status !== 200) {
+            message.error('Error fetching position');
+        } else {
+            setTimeout(() => {
+                form.setFieldsValue({
+                    ...data,
+                    ...jobData,
+                    positionId: data.id,
+                    payRangeMin: data.maxPay,
+                    payRangeMax: data.minPay,
+                    payRangeMid: data.midPay,
+                    jobPostingEndDate: data.endDate ? moment(data?.endDate) : null,
+                    jobStartDate: moment(data?.startDate),
+                    startDate: moment(data?.startDate),
+                    endDate: data.endDate ? moment(data?.endDate) : null
+                });
+                setPositions(data);
+                setIsLoading(false);
+            }, 500);
+        }
+    }
+
+    const removeQueryParam = (paramName: any) => {
+        searchParams.delete(paramName);
+        setSearchParams(searchParams);
+    };
 
     const handleSubmit = async (formValues: any) => {
         setIsLoading(true);
@@ -90,7 +132,7 @@ const CreateRequisition = (props: any) => {
             }
         });
         formValues.id = jobData?.id || undefined;
-        formValues.jobStartDate = formatDate(new Date());
+        // formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
         formValues.jobPostingStartDate = formatDate(new Date());
         formValues.jobClassification = "IT";
@@ -111,9 +153,10 @@ const CreateRequisition = (props: any) => {
                 duration: 7,
             });
             localStorage.setItem('requisitionId', response?.data?.id);
+            removeQueryParam('positionId');
             setTimeout(() => {
                 setCurrent(1);
-            }, 700)
+            }, 700);
         } else {
             console.log(response);
             setIsLoading(false);
@@ -168,6 +211,23 @@ const CreateRequisition = (props: any) => {
                             rules={[{ required: true, message: 'Please enter job description!' }]}
                         >
                             <Input.TextArea showCount maxLength={100} />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="positionId"
+                            label="Position"
+                            rules={[{ required: true, message: 'Please select job level!' }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={jobLevel}
+                            />
                         </Form.Item>
                     </Col>
                     <Col className="gutter-row" span={12}>
@@ -289,23 +349,6 @@ const CreateRequisition = (props: any) => {
                             />
                         </Form.Item>
                     </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="positionId"
-                            label="Job Level"
-                            rules={[{ required: true, message: 'Please select job level!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={jobLevel}
-                            />
-                        </Form.Item>
-                    </Col>
                     {/* <div className="col-md-6">
                           <div className="mb-3">
                             <label className="form-label">
@@ -396,13 +439,20 @@ const CreateRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="jobPostingEndDate"
+                            label="End Date"
+                            rules={[{ required: true, message: 'Please select job expired date!' }]}
+                        >
+                            <DatePicker style={{ width: '100%' }} />
+                        </Form.Item>
+                        {/* <Form.Item
+                            name="jobPostingEndDate"
                             label="Job Expired Date"
                             rules={[{ required: true, message: 'Please select job expired date!' }]}
                             valuePropName="date"
                             getValueFromEvent={(momentObj) => momentObj ? momentObj.format('YYYY-MM-DD') : null}
                         >
                             <DatePicker format="YYYY-MM-DD" />
-                        </Form.Item>
+                        </Form.Item> */}
                     </Col>
                     <Col className="gutter-row" span={12}>
                         <Form.Item
@@ -424,19 +474,23 @@ const CreateRequisition = (props: any) => {
                             Cancel Job Requisition
                         </button>
                         <button
-                        className="btn btn-primary ml-5"
-                        onClick={async() => {
-                            setIsLoading(true);
-                            await handleSubmit(form.getFieldsValue());
-                            setTimeout(() => {
-                                setIsLoading(false);
-                                navigate('/job-grid');
-                            }, 2000);
-                        }}
-                    >
-                        {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Save & Close
-                    </button>
+                            className="btn btn-primary ml-5"
+                            onClick={async () => {
+                                setIsLoading(true);
+                                const formattedValues = {
+                                    ...form.getFieldsValue(),
+                                    jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
+                                };
+                                await handleSubmit(formattedValues);
+                                setTimeout(() => {
+                                    setIsLoading(false);
+                                    navigate('/job-grid');
+                                }, 2000);
+                            }}
+                        >
+                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Save & Close
+                        </button>
                         <button
                             type="submit"
                             className="btn btn-primary"

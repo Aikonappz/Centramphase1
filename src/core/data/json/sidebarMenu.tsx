@@ -701,6 +701,16 @@ export const SidebarDataTest = [
     separateRoute: false,
     submenuItems: [
       {
+        label: 'Manage Position',
+        link: routes.positions,
+        submenu: false,
+        showSubRoute: false,
+        icon: 'settings',
+        base: 'jobs',
+        materialicons: 'settings',
+        submenuItems: [],
+      },
+      {
         label: 'Jobs Requisitions',
         link: routes.jobgrid,
         submenu: false,

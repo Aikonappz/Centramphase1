@@ -12,6 +12,9 @@ import {
     GET_POSITION_REQUEST,
     GET_POSITION_SUCCESS,
     GET_POSITION_FAILURE,
+    POST_POSITION_REQUEST,
+    POST_POSITION_SUCCESS,
+    POST_POSITION_FAILURE,
     GET_POSITION_BY_ID_REQUEST,
     GET_POSITION_BY_ID_SUCCESS,
     GET_POSITION_BY_ID_FAILURE,
@@ -134,6 +137,25 @@ import {
           error: null
         };
       case GET_POSITION_FAILURE:
+        return {
+          ...state,
+          loading: false,
+          error: action.payload
+        };
+      case POST_POSITION_REQUEST:
+        return {
+          ...state,
+          loading: true,
+          error: null
+        };
+      case POST_POSITION_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          postJOB: action.payload,
+          error: null
+        };
+      case POST_POSITION_FAILURE:
         return {
           ...state,
           loading: false,

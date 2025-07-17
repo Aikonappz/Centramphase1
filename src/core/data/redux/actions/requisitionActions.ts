@@ -26,6 +26,10 @@ export const GET_POSITION_REQUEST = 'GET_POSITION_REQUEST';
 export const GET_POSITION_SUCCESS = 'GET_POSITION_SUCCESS';
 export const GET_POSITION_FAILURE = 'GET_POSITION_FAILURE';
 
+export const POST_POSITION_REQUEST = 'POST_POSITION_REQUEST';
+export const POST_POSITION_SUCCESS = 'POST_POSITION_SUCCESS';
+export const POST_POSITION_FAILURE = 'POST_POSITION_FAILURE';
+
 export const GET_POSITION_BY_ID_REQUEST = 'GET_POSITION_BY_ID_REQUEST';
 export const GET_POSITION_BY_ID_SUCCESS = 'GET_POSITION_BY_ID_SUCCESS';
 export const GET_POSITION_BY_ID_FAILURE = 'GET_POSITION_BY_ID_FAILURE';
@@ -120,6 +124,19 @@ interface GetPositionSuccessAction {
 
 interface GetPositionFailureAction {
   type: typeof GET_POSITION_FAILURE;
+  payload: string;
+}
+
+interface PostPositionRequestAction {
+  type: typeof POST_POSITION_REQUEST;
+}
+interface PostPositionSuccessAction {
+  type: typeof POST_POSITION_SUCCESS;
+  payload: any;
+}
+
+interface PostPositionFailureAction {
+  type: typeof POST_POSITION_FAILURE;
   payload: string;
 }
 
@@ -278,6 +295,9 @@ export type JobActionTypes =
   | GetPositionRequestAction 
   | GetPositionSuccessAction 
   | GetPositionFailureAction
+  | PostPositionRequestAction 
+  | PostPositionSuccessAction 
+  | PostPositionFailureAction
   | GetPositionByIdRequestAction 
   | GetPositionByIdSuccessAction 
   | GetPositionByIdFailureAction
@@ -455,11 +475,11 @@ export const getDivision = () => {
   };
 };
 
-export const getPositions = () => {
+export const getPositions = (filters?: any) => {
   return async (dispatch: Dispatch<JobActionTypes>) => {
     dispatch({ type: GET_POSITION_REQUEST });
     try {
-      const response = await api.get(`/position/`);
+      const response = await api.get(`/position/get-all?${filters}`);
       dispatch({
         type: GET_POSITION_SUCCESS,
         payload: response.data
@@ -472,6 +492,30 @@ export const getPositions = () => {
       }
       dispatch({
         type: GET_POSITION_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const savePosition = (data: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: POST_POSITION_REQUEST });
+    try {
+      const response = await api.post(`/position/add`, data);
+      dispatch({
+        type: POST_POSITION_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: POST_POSITION_FAILURE,
         payload: errorMessage
       });
       return error;

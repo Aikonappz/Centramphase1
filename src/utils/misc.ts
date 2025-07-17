@@ -1,8 +1,8 @@
 const transformArrayToLabelValue = (array: any, islabel?: any) => {
-    return array.map((item: any) => ({
-      label: item.name,
-      value: islabel ? item.name : Number(item.id)
-    }));
+  return array.map((item: any) => ({
+    label: item.name,
+    value: islabel ? item.name : Number(item.id)
+  }));
 }
 // const transformMultipleArrays = (arraysObj: any) => {
 //     const result = [];
@@ -20,12 +20,24 @@ const formatDate = (date: any) => {
 }
 
 const toNumber = (value: any, precision: number | undefined) => {
-        precision = precision || 0;
-        if (precision === 0) {
-          return value * 1;
-        } else {
-          return Number((value * 1).toFixed(precision));
-        }
-      }
+  precision = precision || 0;
+  if (precision === 0) {
+    return value * 1;
+  } else {
+    return Number((value * 1).toFixed(precision));
+  }
+}
 
-export { transformArrayToLabelValue, formatDate, toNumber };
+const removeEmptyParams = (params: any): Record<any, any> => {
+  const cleaned: Record<string, string> = {};
+  
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      cleaned[key] = String(value);
+    }
+  });
+  
+  return cleaned;
+}
+
+export { transformArrayToLabelValue, formatDate, toNumber, removeEmptyParams };

@@ -12,7 +12,7 @@ interface RequisitionData {
 }
 
 const RequisitionPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, positionId } = useParams<{ id: string, positionId: string }>();
   const navigate = useNavigate();
   const [requisition, setRequisition] = useState<RequisitionData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
