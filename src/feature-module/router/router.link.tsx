@@ -297,6 +297,7 @@ import PositionManagementPage from "../recruitment/positions";
 import CreatePosition from "../recruitment/positions/createPosition";
 import EditPosition from "../recruitment/positions/editPosition";
 import PositionDetails from "../recruitment/positions/viewPosition";
+import RecruitmentDashboard from "../recruitment/dashboard";
 const routes = all_routes;
 
 export const publicRoutes = [
@@ -1348,6 +1349,11 @@ export const publicRoutes = [
   {
     path: routes.positions,
     element: <PositionManagementPage />,
+    route: Route,
+  },
+  {
+    path: routes.requsitionDashboard,
+    element: <RecruitmentDashboard />,
     route: Route,
   },
   {

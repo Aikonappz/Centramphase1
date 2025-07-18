@@ -365,6 +365,7 @@ export const all_routes = {
   resignation: "/resignation",
   termination: "/termination",
   // RECRUITMENT
+  requsitionDashboard: "/requisition-dashboard",
   positions: "/positions",
   createPosition: "/positions/create",
   editPosition: "/positions/edit/:id",

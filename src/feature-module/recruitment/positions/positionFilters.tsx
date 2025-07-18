@@ -93,7 +93,7 @@ const PositionFilters: React.FC<PositionFiltersProps> = ({ onFilter, onReset }) 
             <Form.Item name="status" label="Status">
               <Select 
                 placeholder="Select status" 
-                mode="multiple"
+                // mode="tags"
                 allowClear
               >
                 {statusOptions.map(option => (
@@ -109,7 +109,7 @@ const PositionFilters: React.FC<PositionFiltersProps> = ({ onFilter, onReset }) 
             <Form.Item name="department" label="Department">
               <Select 
                 placeholder="Select department" 
-                mode="multiple"
+                // mode="tags"
                 allowClear
               >
                 {departmentOptions.map(option => (
@@ -125,7 +125,7 @@ const PositionFilters: React.FC<PositionFiltersProps> = ({ onFilter, onReset }) 
             <Form.Item name="location" label="Location">
               <Select 
                 placeholder="Select location" 
-                mode="multiple"
+                // mode="tags"
                 allowClear
               >
                 {locationOptions.map(option => (

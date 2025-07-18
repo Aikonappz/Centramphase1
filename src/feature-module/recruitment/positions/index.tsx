@@ -30,31 +30,7 @@ const PositionManagement = () => {
     const dispatch = useAppDispatch();
 
     // Sample data
-    const [positions, setPositions] = useState([
-        {
-            id: 14,
-            name: "Senior Software Engineer",
-            code: "POS020",
-            status: 1,
-            startDate: "2025-07-17",
-            jobCode: "1234",
-            fte: 1.0,
-            locationId: 12345,
-            costCenter: "CC-TECH",
-            endDate: "2026-07-17",
-            payGrad: "G7",
-            standardHour: 40,
-            toBeHired: true,
-            minPay: 50000.00,
-            midPay: 75000.00,
-            maxPay: 100000.00,
-            departmentId: 101,
-            organisationId: 201,
-            divisionId: 301,
-            businessUnitId: 401,
-            department: ''
-        },
-    ]);
+    const [positions, setPositions] = useState([]);
 
     useEffect(() => {
         // Simulate API call
@@ -85,16 +61,16 @@ const PositionManagement = () => {
             setFilteredPositions(positions);
             return;
         }
-        const filtered = positions.filter(position =>
-            position.name.toLowerCase().includes(value.toLowerCase()) ||
-            position.code.toLowerCase().includes(value.toLowerCase()) ||
-            position.jobCode.toLowerCase().includes(value.toLowerCase())
+        const filtered = positions.filter((position: any) =>
+            position?.name.toLowerCase().includes(value.toLowerCase()) ||
+            position?.code.toLowerCase().includes(value.toLowerCase()) ||
+            position?.jobCode.toLowerCase().includes(value.toLowerCase())
         );
         setFilteredPositions(filtered);
     };
 
     const handleDelete = (id: any) => {
-        setPositions(positions.filter(position => position.id !== id));
+        setPositions(positions.filter((position: any) => position?.id !== id));
         message.success('Position deleted successfully');
     };
 
@@ -325,7 +301,7 @@ const PositionManagement = () => {
                                 <Card>
                                     <Statistic
                                         title="Positions to Hire"
-                                        value={positions?.filter(p => p.toBeHired)?.length}
+                                        value={positions?.filter((p: any) => p?.toBeHired)?.length}
                                         prefix={<DollarOutlined style={{ color: '#faad14' }} />}
                                     />
                                 </Card>
