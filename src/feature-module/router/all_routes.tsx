@@ -367,6 +367,7 @@ export const all_routes = {
   // RECRUITMENT
   requsitionDashboard: "/requisition-dashboard",
   positions: "/positions",
+  jobProfile: '/jobProfile',
   createPosition: "/positions/create",
   editPosition: "/positions/edit/:id",
   viewPosition: "/positions/view/:id",
