@@ -210,7 +210,7 @@ const CreateRequisition = (props: any) => {
                             label="Job Description"
                             rules={[{ required: true, message: 'Please enter job description!' }]}
                         >
-                            <Input.TextArea showCount maxLength={100} />
+                            <Input.TextArea showCount />
                         </Form.Item>
                     </Col>
                     <Col className="gutter-row" span={12}>

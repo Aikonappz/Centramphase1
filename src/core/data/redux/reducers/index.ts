@@ -3,6 +3,7 @@ import userReducer, { UserState } from './userReducer';
 import themeSettingSlice from '../themeSettingSlice';
 import sidebarSlice from '../sidebarSlice';
 import jobReducer from './jobReducer';
+import { jobProfileReducer } from './jobProfileReducer';
 
 // The top-level state object
 export interface RootState {
@@ -15,6 +16,7 @@ const rootReducer = combineReducers<any>({
   themeSetting: themeSettingSlice,
   sidebarSlice: sidebarSlice,
   jobs: jobReducer,
+  jobProfile: jobProfileReducer
   // Add other reducers here
 });
 

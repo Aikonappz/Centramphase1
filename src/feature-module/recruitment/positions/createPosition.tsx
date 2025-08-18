@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, Row, Col, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
@@ -6,6 +6,7 @@ import { savePosition } from '../../../core/data/redux/actions/requisitionAction
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
+import { getJobFamily } from '../../../core/data/redux/actions/jobProfileActions';
 
 const { Option } = Select;
 
@@ -16,10 +17,12 @@ const CreatePosition = () => {
     const dispatch = useAppDispatch();
 
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
+    const jobProfile: any = useSelector((state: RootState) => state.jobProfile) || [];
     const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
     const [businessUnit, setBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
+    const [jobFamily, setJobFamily] = useState<any>(transformArrayToLabelValue(jobProfile.jobFamilyList?.content || []));
 
     const onFinish = async (values: any) => {
         setLoading(true);
@@ -89,11 +92,22 @@ const CreatePosition = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        name="jobCode"
-                                        label="Job Code"
-                                        rules={[{ required: true, message: 'Please input the job code!' }]}
+                                        name="organisationId"
+                                        label="Organization ID"
                                     >
-                                        <Input placeholder="e.g. 1234" />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={organisation}
+                                            onChange={(value: any) => {
+                                                console.log(value)
+                                                dispatch(getJobFamily(value));
+                                            }}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
@@ -135,11 +149,18 @@ const CreatePosition = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        name="costCenter"
-                                        label="Cost Center"
-                                        rules={[{ required: true, message: 'Please input the cost center!' }]}
+                                        name="jobCode"
+                                        label="Job Code"
                                     >
-                                        <Input placeholder="e.g. CC-TECH" />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={jobFamily}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
@@ -225,18 +246,11 @@ const CreatePosition = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        name="organisationId"
-                                        label="Organization ID"
+                                        name="costCenter"
+                                        label="Cost Center"
+                                        rules={[{ required: true, message: 'Please input the cost center!' }]}
                                     >
-                                        <Select
-                                            showSearch
-                                            placeholder="Search to Select"
-                                            optionFilterProp="label"
-                                            filterSort={(optionA: any, optionB: any) =>
-                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                            }
-                                            options={organisation}
-                                        />
+                                        <Input placeholder="e.g. CC-TECH" />
                                     </Form.Item>
 
                                     <Form.Item

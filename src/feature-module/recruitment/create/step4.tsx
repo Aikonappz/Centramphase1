@@ -44,7 +44,7 @@ const Step4 = (props: any) => {
     ];
     const requisitionStatus = [
         // { value: "Select", label: "Select" },
-        { value: "pre-approved", label: "Pre-approved" },
+        { value: "approved", label: "Approved" },
         { value: "rejected", label: "Rejected" },
     ];
 
@@ -145,8 +145,34 @@ const Step4 = (props: any) => {
                         label="Requisition Status"
                         rules={[{ required: true, message: 'Please enter requisition status!' }]}
                     >
+                        <Select
+                            showSearch
+                            placeholder="Search to Select"
+                            optionFilterProp="label"
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                            }
+                            options={requisitionStatus}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="internalQuery"
+                        label="Query"
+                        rules={[{ required: true, message: 'Please enter a query!' }]}
+                    >
+                        <Input.TextArea showCount maxLength={100} />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="requisitionStatus"
+                        label="Requisition Status"
+                        rules={[{ required: true, message: 'Please enter requisition status!' }]}
+                    >
                         <Paragraph>
-                            <Typography.Text strong>Ready for posting!</Typography.Text>
+                            <Typography.Text strong>Ready to create requisition!</Typography.Text>
                         </Paragraph>
                     </Form.Item>
                 </Col>
@@ -160,7 +186,7 @@ const Step4 = (props: any) => {
                             onClick={() => prev()}
                             icon={<ArrowLeftOutlined />}
                         >
-                            Previous
+                            Send Back to Recruiter
                         </Button>
                     )}
                     <button
@@ -175,7 +201,7 @@ const Step4 = (props: any) => {
                         className="btn btn-primary"
                     >
                         {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Ready for Posting
+                        Create Requisition
                     </button>
                 </Space>
             </div>

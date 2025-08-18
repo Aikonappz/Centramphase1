@@ -156,6 +156,203 @@ const Step3 = (props: any) => {
                         />
                     </Form.Item>
                 </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="id"
+                        label="Requisition ID"
+                        rules={[{ required: true, message: 'Please select department!' }]}
+                    >
+                        <Typography.Text>{form.getFieldValue('id')}</Typography.Text>
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="jobCode"
+                        label="Job Code"
+                        rules={[{ required: false, message: 'Please enter job code!' }]}
+                    >
+                        <Paragraph editable={{ onChange: setJobCode }}>{jobCode}</Paragraph>
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="jobStartDate"
+                        label="Job Start Date"
+                        rules={[{ required: true, message: 'Please select job start date!' }]}
+                        valuePropName="date"
+                        getValueFromEvent={(momentObj) => momentObj ? momentObj.format('YYYY-MM-DD') : null}
+                    >
+                        <DatePicker />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="jobEndDate"
+                        label="Job Expired Date"
+                        rules={[{ required: true, message: 'Please select job expired date!' }]}
+                        valuePropName="date"
+                        getValueFromEvent={(momentObj) => momentObj ? momentObj.format('YYYY-MM-DD') : null}
+                    >
+                        <DatePicker />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="internalJobTitle"
+                        label="Internal Job Title"
+                        rules={[{ required: true, message: 'Please select job type!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="internalJobDescription"
+                        label="Job Description"
+                        rules={[{ required: true, message: 'Please enter job description!' }]}
+                    >
+                        <Input.TextArea showCount maxLength={100} />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="externalJobTitle"
+                        label="External Job Title"
+                        rules={[{ required: true, message: 'Please select job type!' }]}
+                    >
+                        <Input suffix={<Button type="link" onClick={() => form.setFieldValue('externalJobTitle', (form.getFieldValue('internalJobTitle')))}>Same as internal</Button>} />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="externalJobDescription"
+                        label="External Job Description"
+                        rules={[{ required: true, message: 'Please enter job description!' }]}
+                    >
+                        <Input showCount maxLength={100} suffix={<Button type="link" onClick={() => form.setFieldValue('externalJobDescription', (form.getFieldValue('internalJobDescription')))}>Same as internal</Button>} />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="businessUnitId"
+                        label="Business Unit"
+                        rules={[{ required: true, message: 'Please select business unit!' }]}
+                    >
+                        <Select
+                            showSearch
+                            placeholder="Search to Select"
+                            optionFilterProp="label"
+                            filterSort={(optionA: any, optionB: any) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                            }
+                            options={businessUnit}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="divisionId"
+                        label="Division"
+                        rules={[{ required: true, message: 'Please select division!' }]}
+                    >
+                        <Select
+                            showSearch
+                            placeholder="Search to Select"
+                            optionFilterProp="label"
+                            filterSort={(optionA: any, optionB: any) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                            }
+                            options={division}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="levelOfExperience"
+                        label="Level of Experience"
+                        rules={[{ required: true, message: 'Please select job level!' }]}
+                    >
+                        <Select
+                            showSearch
+                            placeholder="Search to Select"
+                            optionFilterProp="label"
+                            filterSort={(optionA: any, optionB: any) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                            }
+                            options={joblevel}
+                        />
+                    </Form.Item>
+                </Col>
+                {/* <div className="col-md-6">
+                          <div className="mb-3">
+                            <label className="form-label">
+                              Experience <span className="text-danger"> *</span>
+                            </label>
+                            <CommonSelect
+                              className='select'
+                              options={experience}
+                              defaultValue={experience[0]}
+                              name='experience'
+                            />
+                          </div>
+                        </div> */}
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="referralBonus"
+                        label="Referral Bonus"
+                    >
+                        <Input />
+                    </Form.Item>
+                </Col>
+                {/* <div className="col-md-6">
+                          <div className="mb-3">
+                            <label className="form-label">
+                              Gender <span className="text-danger"> *</span>
+                            </label>
+                            <CommonSelect
+                              className='select'
+                              options={genderChoose}
+                              defaultValue={genderChoose[0]}
+                              name='gender'
+                            />
+                          </div>
+                        </div> */}
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="payRangeMin"
+                        label="Min. Salary"
+                        rules={[{ required: true, message: 'Please enter minimum salary!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="payRangeMid"
+                        label="Mid. Salary"
+                        rules={[{ required: true, message: 'Please enter middle salary!' }]}
+                    >
+                        <input type="number" className="form-control" name='payRangeMid' step={0.01} />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="payRangeMax"
+                        label="Max. Salary"
+                        rules={[{ required: true, message: 'Please enter maximum salary!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    <Form.Item
+                        name="approvedBudget"
+                        label="Approved Budget"
+                        rules={[{ required: true, message: 'Please enter approved budget!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Col>
 
             </Row>
             <div className="modal-footer">

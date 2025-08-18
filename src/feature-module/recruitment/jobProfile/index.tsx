@@ -23,6 +23,10 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined, ProfileOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
 import 'react-quill/dist/quill.snow.css';
+import { RootState, useAppDispatch } from '../../../core/data/redux/store';
+import { createCompentancy, getCompentancy, getJobFamily, getJobRole } from '../../../core/data/redux/actions/jobProfileActions';
+import { transformArrayToLabelValue } from '../../../utils/misc';
+import { useSelector } from 'react-redux';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
@@ -66,6 +70,7 @@ interface JobProfile {
 const JobProfilePage: React.FC = () => {
     const screens = useBreakpoint();
     // State management
+    const [loading, setLoading] = useState(false);
     const [competencies, setCompetencies] = useState<Competency[]>([]);
     const [jobFamilies, setJobFamilies] = useState<JobFamily[]>([]);
     const [jobRoles, setJobRoles] = useState<JobRole[]>([]);
@@ -86,9 +91,18 @@ const JobProfilePage: React.FC = () => {
     const [jobFamilyForm] = Form.useForm();
     const [jobRoleForm] = Form.useForm();
     const [jobProfileForm] = Form.useForm();
+    const dispatch = useAppDispatch();
+
+    const user: any = useSelector((state: RootState) => state.user) || [];
+    const jobProfile: any = useSelector((state: RootState) => state.jobProfile) || [];
+    const [jobRoleList, setJobRoleList] = useState<any>(transformArrayToLabelValue(jobProfile.jobRoleList?.content || []));
 
     // Load initial data (mock)
     useEffect(() => {
+        console.log(user)
+        dispatch(getJobRole(1));
+        dispatch(getJobFamily(1));
+        dispatch(getCompentancy(1));
         // Mock data
         const mockCompetencies: Competency[] = [
             { id: 1, name: 'Communication', description: 'Effective communication skills' },
@@ -183,26 +197,28 @@ const JobProfilePage: React.FC = () => {
         setCompetencyModalVisible(true);
     };
 
-    const handleSaveCompetency = () => {
-        competencyForm.validateFields().then(values => {
-            if (selectedCompetency) {
-                // Update existing competency
-                const updated = competencies.map(c =>
-                    c.id === selectedCompetency.id ? { ...c, ...values } : c
-                );
-                setCompetencies(updated);
-                message.success('Competency updated successfully');
-            } else {
-                // Add new competency
-                const newCompetency: Competency = {
-                    id: Math.max(...competencies.map(c => c.id), 0) + 1,
-                    ...values
-                };
-                setCompetencies([...competencies, newCompetency]);
-                message.success('Competency added successfully');
+    const handleSaveCompetency = async () => {
+        competencyForm.validateFields().then(async (values) => {
+            setLoading(true);
+            try {
+                // Format dates before submission
+
+                console.log('Received values:', values);
+                const response: any = await dispatch(createCompentancy(values));
+                if (response.status === 200) {
+                    message.success('Competency updated successfully!');
+                    // navigate('/positions');
+                } else {
+                    console.log(response);
+                    message.error('Failed!');
+                }
+            } catch (error) {
+                message.error('Failed to create position');
+            } finally {
+                setLoading(false);
             }
-            setCompetencyModalVisible(false);
-            resetForms();
+            // setCompetencyModalVisible(false);
+            // resetForms();
         });
     };
 
@@ -686,18 +702,25 @@ const JobProfilePage: React.FC = () => {
                     >
                         <Form form={competencyForm} layout="vertical">
                             <Form.Item
-                                name="name"
+                                name="competencyName"
                                 label="Competency Name"
                                 rules={[{ required: true, message: 'Please input the competency name!' }]}
                             >
                                 <Input />
                             </Form.Item>
                             <Form.Item
-                                name="description"
-                                label="Description"
-                                rules={[{ required: true, message: 'Please input the description!' }]}
+                                name="jobRoleId"
+                                label="Job Role Id"
                             >
-                                <TextArea rows={4} />
+                                <Select
+                                    showSearch
+                                    placeholder="Search to Select"
+                                    optionFilterProp="label"
+                                    filterSort={(optionA: any, optionB: any) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    options={jobRoleList}
+                                />
                             </Form.Item>
                         </Form>
                     </Modal>
