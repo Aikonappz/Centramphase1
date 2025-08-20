@@ -66,7 +66,6 @@ export const jobProfileReducer = (state: JobProfileState = initialState, action:
             return {
                 ...state,
                 loading: false,
-                jobProfile: action.payload,
                 error: null
             };
         case CREATE_JOB_PROFILE_FAILURE:

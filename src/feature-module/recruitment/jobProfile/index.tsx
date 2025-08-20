@@ -24,7 +24,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, ProfileOutlined } from '@an
 import type { TabsProps } from 'antd';
 import 'react-quill/dist/quill.snow.css';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
-import { createCompentancy, getCompentancy, getJobFamily, getJobRole } from '../../../core/data/redux/actions/jobProfileActions';
+import { createCompentancy, createJobFamily, createJobRole, getCompentancy, getJobFamily, getJobProfile, getJobRole, postJobProfile } from '../../../core/data/redux/actions/jobProfileActions';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
 
@@ -37,21 +37,20 @@ const { useBreakpoint } = Grid;
 // Types
 interface Competency {
     id: number;
-    name: string;
-    description: string;
+    competencyName: string;
+    jobRoleId: number;
 }
 
 interface JobFamily {
     id: number;
-    name: string;
-    description: string;
+    jobFamilyName: string;
 }
 
 interface JobRole {
-    id: number;
-    name: string;
+    id?: any;
+    jobRoleName: string;
     jobFamilyId: number;
-    description: string;
+    jobCodeId?: number;
     jobProfile: JobProfile;
 }
 
@@ -71,10 +70,8 @@ const JobProfilePage: React.FC = () => {
     const screens = useBreakpoint();
     // State management
     const [loading, setLoading] = useState(false);
-    const [competencies, setCompetencies] = useState<Competency[]>([]);
-    const [jobFamilies, setJobFamilies] = useState<JobFamily[]>([]);
-    const [jobRoles, setJobRoles] = useState<JobRole[]>([]);
-    const [selectedJobRole, setSelectedJobRole] = useState<JobRole | null>(null);
+    const [selectedJobRole, setSelectedJobRole] = useState<any | null>(null);
+    const [selectedJobProfile, setSelectedJobProfile] = useState<any | null>(null);
     const [selectedCompetency, setSelectedCompetency] = useState<Competency | null>(null);
     const [selectedJobFamily, setSelectedJobFamily] = useState<JobFamily | null>(null);
     const [selectedJobRoleForEdit, setSelectedJobRoleForEdit] = useState<JobRole | null>(null);
@@ -94,85 +91,20 @@ const JobProfilePage: React.FC = () => {
     const dispatch = useAppDispatch();
 
     const user: any = useSelector((state: RootState) => state.user) || [];
-    const jobProfile: any = useSelector((state: RootState) => state.jobProfile) || [];
-    const [jobRoleList, setJobRoleList] = useState<any>(transformArrayToLabelValue(jobProfile.jobRoleList?.content || []));
+    const profile: any = useSelector((state: RootState) => state.jobProfile) || [];
+    const [jobRoles, setJobRoles] = useState<any>(profile.jobRoleList?.content || []);
+    const [competencies, setCompetencies] = useState<any>(profile.compentencyList?.content || []);
+    const [jobFamilies, setJobFamilies] = useState<any>(profile.jobFamilyList?.content || []);
+    const [jobProfiles, setjobProfiles] = useState<any>(profile.jobProfile?.content || []);
 
-    // Load initial data (mock)
+    console.log(jobRoles)
+    console.log(jobProfiles)
+
     useEffect(() => {
-        console.log(user)
-        dispatch(getJobRole(1));
-        dispatch(getJobFamily(1));
-        dispatch(getCompentancy(1));
-        // Mock data
-        const mockCompetencies: Competency[] = [
-            { id: 1, name: 'Communication', description: 'Effective communication skills' },
-            { id: 2, name: 'Leadership', description: 'Ability to lead teams' },
-            { id: 3, name: 'Technical Skills', description: 'Job-specific technical abilities' },
-        ];
-
-        const mockJobFamilies: JobFamily[] = [
-            { id: 1, name: 'Human Resources', description: 'HR related roles' },
-            { id: 2, name: 'Information Technology', description: 'IT related roles' },
-            { id: 3, name: 'Finance', description: 'Finance related roles' },
-        ];
-
-        const mockJobRoles: JobRole[] = [
-            {
-                id: 1,
-                name: 'HR Manager',
-                jobFamilyId: 1,
-                description: 'Manages HR operations',
-                jobProfile: {
-                    jobRoleId: 1,
-                    competencyIds: [1, 2],
-                    rolesAndResponsibilities: "<p>Handle recruitment</p>",
-                    educationBackground: "<p>Bachelor's in HR</p>",
-                    experienceRequirements: "<p>5+ years experience</p>",
-                    jobPurpose: "<p>To manage HR operations</p>",
-                    keyRolesAndResponsibilities1: "<p>Recruitment</p>",
-                    keyRolesAndResponsibilities2: "<p>Employee engagement</p>",
-                    keyRolesAndResponsibilities3: "<p>Policy making</p>"
-                }
-            },
-            {
-                id: 2,
-                name: 'IT Manager',
-                jobFamilyId: 2,
-                description: 'Manages IT operations',
-                jobProfile: {
-                    jobRoleId: 2,
-                    competencyIds: [2, 3],
-                    rolesAndResponsibilities: "<p>Handle IT infrastructure</p>",
-                    educationBackground: "<p>Bachelor's in Computer Science</p>",
-                    experienceRequirements: "<p>7+ years experience</p>",
-                    jobPurpose: "<p>To manage IT operations</p>",
-                    keyRolesAndResponsibilities1: "<p>System maintenance</p>",
-                    keyRolesAndResponsibilities2: "<p>Team management</p>",
-                    keyRolesAndResponsibilities3: "<p>Technology strategy</p>"
-                }
-            },
-            {
-                id: 3,
-                name: 'Finance Manager',
-                jobFamilyId: 3,
-                description: 'Manages financial operations',
-                jobProfile: {
-                    jobRoleId: 3,
-                    competencyIds: [1, 3],
-                    rolesAndResponsibilities: "<p>Handle financial reporting</p>",
-                    educationBackground: "<p>Bachelor's in Finance</p>",
-                    experienceRequirements: "<p>6+ years experience</p>",
-                    jobPurpose: "<p>To manage financial operations</p>",
-                    keyRolesAndResponsibilities1: "<p>Financial planning</p>",
-                    keyRolesAndResponsibilities2: "<p>Budget management</p>",
-                    keyRolesAndResponsibilities3: "<p>Financial reporting</p>"
-                }
-            }
-        ];
-
-        setCompetencies(mockCompetencies);
-        setJobFamilies(mockJobFamilies);
-        setJobRoles(mockJobRoles);
+        dispatch(getJobRole());
+        dispatch(getJobFamily());
+        dispatch(getCompentancy());
+        dispatch(getJobProfile());
     }, []);
 
     // Reset all forms
@@ -197,17 +129,34 @@ const JobProfilePage: React.FC = () => {
         setCompetencyModalVisible(true);
     };
 
-    const handleSaveCompetency = async () => {
+    const handleSaveCompetency = () => {
         competencyForm.validateFields().then(async (values) => {
+            let updatedValues;
+            if (selectedCompetency) {
+                // Update existing competency
+                const updated = competencies.map((c: { id: number; }) =>
+                    c.id === selectedCompetency.id ? { ...c, ...values } : c
+                );
+                setCompetencies(updated);
+                updatedValues = updated;
+            } else {
+                // Add new competency
+                const newCompetency: Competency = {
+                    id: null,
+                    ...values
+                };
+                setCompetencies([...competencies, newCompetency]);
+                updatedValues = newCompetency;
+            }
             setLoading(true);
             try {
                 // Format dates before submission
-
-                console.log('Received values:', values);
-                const response: any = await dispatch(createCompentancy(values));
+                const response: any = await dispatch(createCompentancy(updatedValues));
                 if (response.status === 200) {
                     message.success('Competency updated successfully!');
                     // navigate('/positions');
+                    setCompetencyModalVisible(false);
+                    resetForms();
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -217,13 +166,11 @@ const JobProfilePage: React.FC = () => {
             } finally {
                 setLoading(false);
             }
-            // setCompetencyModalVisible(false);
-            // resetForms();
         });
     };
 
     const handleDeleteCompetency = (id: number) => {
-        setCompetencies(competencies.filter(c => c.id !== id));
+        setCompetencies(competencies.filter((c: { id: number; }) => c.id !== id));
         message.success('Competency deleted successfully');
     };
 
@@ -239,31 +186,51 @@ const JobProfilePage: React.FC = () => {
     };
 
     const handleSaveJobFamily = () => {
-        jobFamilyForm.validateFields().then(values => {
-            if (selectedJobFamily) {
-                // Update existing job family
-                const updated = jobFamilies.map(jf =>
-                    jf.id === selectedJobFamily.id ? { ...jf, ...values } : jf
-                );
-                setJobFamilies(updated);
-                message.success('Job Family updated successfully');
-            } else {
-                // Add new job family
-                const newJobFamily: JobFamily = {
-                    id: Math.max(...jobFamilies.map(jf => jf.id), 0) + 1,
-                    ...values
-                };
-                setJobFamilies([...jobFamilies, newJobFamily]);
-                message.success('Job Family added successfully');
+        jobFamilyForm.validateFields().then(async (values) => {
+            setLoading(true);
+            try {
+                let updatedValue;
+                // Format dates before submission
+                if (selectedJobFamily) {
+                    // Update existing job family
+                    const updated = jobFamilies.map((jf: { id: number; }) =>
+                        jf.id === selectedJobFamily.id ? { ...jf, ...values } : jf
+                    );
+                    setJobFamilies(updated);
+                    updatedValue = updated;
+                    // message.success('Job Family updated successfully');
+                } else {
+                    // Add new job family
+                    const newJobFamily: JobFamily = {
+                        id: null,
+                        ...values
+                    };
+                    setJobFamilies([...jobFamilies, newJobFamily]);
+                    updatedValue = newJobFamily;
+                    // message.success('Job Family added successfully');
+                }
+                const response: any = await dispatch(createJobFamily(updatedValue));
+                if (response.status === 200) {
+                    message.success('Job Family added successfully!');
+                    // navigate('/positions');
+                    setJobFamilyModalVisible(false);
+                    resetForms();
+                    getJobFamily();
+                } else {
+                    console.log(response);
+                    message.error('Failed!');
+                }
+            } catch (error) {
+                message.error('Failed to create position');
+            } finally {
+                setLoading(false);
             }
-            setJobFamilyModalVisible(false);
-            resetForms();
         });
     };
 
     const handleDeleteJobFamily = (id: number) => {
-        setJobFamilies(jobFamilies.filter(jf => jf.id !== id));
-        setJobRoles(jobRoles.filter(jr => jr.jobFamilyId !== id));
+        setJobFamilies(jobFamilies.filter((jf: { id: number; }) => jf.id !== id));
+        setJobRoles(jobRoles.filter((jr: { jobFamilyId: number; }) => jr.jobFamilyId !== id));
         message.success('Job Family deleted successfully');
     };
 
@@ -279,41 +246,49 @@ const JobProfilePage: React.FC = () => {
     };
 
     const handleSaveJobRole = () => {
-        jobRoleForm.validateFields().then(values => {
+        jobRoleForm.validateFields().then(async (values) => {
+            let updatedValues;
             if (selectedJobRoleForEdit) {
                 // Update existing job role
-                const updated = jobRoles.map(jr =>
+                const updated = jobRoles.map((jr: { id: number; }) =>
                     jr.id === selectedJobRoleForEdit.id ? { ...jr, ...values } : jr
                 );
                 setJobRoles(updated);
-                message.success('Job Role updated successfully');
+                updatedValues = values;
+                // message.success('Job Role updated successfully');
             } else {
                 // Add new job role
                 const newJobRole: JobRole = {
-                    id: Math.max(...jobRoles.map(jr => jr.id), 0) + 1,
+                    id: null,
                     ...values,
-                    jobProfile: {
-                        jobRoleId: Math.max(...jobRoles.map(jr => jr.id), 0) + 1,
-                        competencyIds: [],
-                        rolesAndResponsibilities: "",
-                        educationBackground: "",
-                        experienceRequirements: "",
-                        jobPurpose: "",
-                        keyRolesAndResponsibilities1: "",
-                        keyRolesAndResponsibilities2: "",
-                        keyRolesAndResponsibilities3: ""
-                    }
                 };
                 setJobRoles([...jobRoles, newJobRole]);
-                message.success('Job Role added successfully');
+                updatedValues = newJobRole;
+                // message.success('Job Role added successfully');
             }
-            setJobRoleModalVisible(false);
-            resetForms();
+            try {
+                // Format dates before submission
+                const response: any = await dispatch(createJobRole(updatedValues));
+                if (response.status === 200) {
+                    message.success('Job Role saved successfully!');
+                    // navigate('/positions');
+                    setJobRoleModalVisible(false);
+                    resetForms();
+                    dispatch(getJobRole());
+                } else {
+                    console.log(response);
+                    message.error('Failed!');
+                }
+            } catch (error) {
+                message.error('Failed to create position');
+            } finally {
+                setLoading(false);
+            }
         });
     };
 
     const handleDeleteJobRole = (id: number) => {
-        setJobRoles(jobRoles.filter(jr => jr.id !== id));
+        setJobRoles(jobRoles.filter((jr: { id: number; }) => jr.id !== id));
         message.success('Job Role deleted successfully');
     };
 
@@ -321,61 +296,79 @@ const JobProfilePage: React.FC = () => {
     const handleEditJobProfile = (jobRole: JobRole) => {
         setSelectedJobRole(jobRole);
         jobProfileForm.setFieldsValue({
-            ...jobRole.jobProfile,
-            jobRoleName: jobRole.name
+            ...jobRole,
+            id: jobRole.id,
+            jobRoleName: jobRole.jobRoleName
         });
         setJobProfileModalVisible(true);
     };
 
     const handleSaveJobProfile = () => {
-        jobProfileForm.validateFields().then(values => {
+        jobProfileForm.validateFields().then(async (values) => {
+            console.log(values)
+            let updatedValues;
             if (isCreatingNewProfile) {
                 // Create new job role with profile
-                const newJobRole: JobRole = {
-                    id: Math.max(...jobRoles.map(jr => jr.id), 0) + 1,
-                    name: `New Role ${Math.max(...jobRoles.map(jr => jr.id), 0) + 1}`,
-                    jobFamilyId: 1, // Default family, can be made configurable
-                    description: "New role description",
-                    jobProfile: {
-                        jobRoleId: Math.max(...jobRoles.map(jr => jr.id), 0) + 1,
-                        ...values
-                    }
-                };
-                setJobRoles([...jobRoles, newJobRole]);
-                message.success('Job Profile created successfully');
+                setjobProfiles([...jobProfiles, values]);
+                updatedValues = values;
+                // message.success('Job Profile created successfully');
             } else {
                 // Update existing profile
-                const updatedJobRoles = jobRoles.map(role => {
-                    if (role.id === selectedJobRole?.id) {
+                const updatedJobRoles = jobProfiles.map((role: { id: number | undefined; }) => {
+                    if (role.id === values?.id) {
                         return {
                             ...role,
-                            jobProfile: {
-                                ...values,
-                                jobRoleId: role.id
-                            }
+                            values
                         };
                     }
                     return role;
                 });
-                setJobRoles(updatedJobRoles);
-                message.success('Job Profile updated successfully');
+                setjobProfiles(updatedJobRoles);
+                updatedValues = {
+                    id: values.id,
+                    ...values
+                };
+                // message.success('Job Profile updated successfully');
             }
-            setJobProfileModalVisible(false);
-            setIsCreatingNewProfile(false);
+            try {
+                // Format dates before submission
+                const response: any = await dispatch(postJobProfile(updatedValues));
+                if (response.status === 200) {
+                    message.success('Job Profile created successfully!');
+                    // navigate('/positions');
+                    setJobProfileModalVisible(false);
+                    setIsCreatingNewProfile(false);
+                    dispatch(getJobProfile());
+                    resetForms();
+                } else {
+                    console.log(response);
+                    message.error('Failed!');
+                }
+            } catch (error) {
+                message.error('Failed to create position');
+            } finally {
+                setLoading(false);
+            }
         });
     };
 
     // Table columns
     const competencyColumns = [
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
         },
         {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
+            title: 'Name',
+            dataIndex: 'competencyName',
+            key: 'competencyName',
+        },
+        {
+            title: 'job Role',
+            dataIndex: 'jobRoleId',
+            key: 'jobRoleId',
+            render: (id: number) => jobRoles.find((f: { id: number; }) => f.id === id)?.jobRoleName || 'N/A'
         },
         {
             title: 'Action',
@@ -402,14 +395,14 @@ const JobProfilePage: React.FC = () => {
 
     const jobFamilyColumns = [
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
         },
         {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
+            title: 'Name',
+            dataIndex: 'jobFamilyName',
+            key: 'jobFamilyName',
         },
         {
             title: 'Action',
@@ -437,19 +430,19 @@ const JobProfilePage: React.FC = () => {
     const jobRoleColumns = [
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'jobRoleName',
+            key: 'jobRoleName',
         },
         {
             title: 'Job Family',
             dataIndex: 'jobFamilyId',
             key: 'jobFamilyId',
-            render: (id: number) => jobFamilies.find(f => f.id === id)?.name || 'N/A',
+            render: (id: number) => jobFamilies.find((f: { id: number; }) => f.id === id)?.jobFamilyName || 'N/A',
         },
         {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
+            title: 'Job Code',
+            dataIndex: 'jobCodeId',
+            key: 'jobCodeId',
         },
         {
             title: 'Action',
@@ -477,7 +470,7 @@ const JobProfilePage: React.FC = () => {
 
     // Render job profile cards
     const renderJobProfileCards = () => {
-        if (jobRoles.length === 0) {
+        if (jobProfiles.length === 0) {
             return (
                 <div style={{ textAlign: 'center', padding: '40px 0' }}>
                     <Title level={4} style={{ color: 'rgba(0, 0, 0, 0.45)' }}>
@@ -501,20 +494,20 @@ const JobProfilePage: React.FC = () => {
 
         return (
             <Row gutter={[16, 16]}>
-                {jobRoles.map(jobRole => (
-                    <Col xs={24} sm={12} md={8} lg={8} xl={6} key={jobRole.id}>
+                {jobProfiles.map((jobProfile: any) => (
+                    <Col xs={24} sm={12} md={8} lg={8} xl={6} key={jobProfile.id}>
                         <Card
-                            title={jobRole.name}
+                            title={jobFamilies.find((f: { id: number; }) => f.id === jobProfile.jobRoleId)?.jobFamilyName || 'N/A'}
                             extra={
                                 <Button
                                     type="link"
                                     icon={<EditOutlined />}
                                     onClick={() => {
-                                        setSelectedJobRole(jobRole);
+                                        setSelectedJobProfile(jobProfile);
                                         setIsCreatingNewProfile(false);
                                         jobProfileForm.setFieldsValue({
-                                            ...jobRole.jobProfile,
-                                            jobRoleName: jobRole.name
+                                            ...jobProfile,
+                                            jobRoleName: jobRoles.find((f: { id: number; }) => f.id === jobProfile.jobRoleId)?.jobRoleName || 'N/A'
                                         });
                                         setJobProfileModalVisible(true);
                                     }}
@@ -524,11 +517,11 @@ const JobProfilePage: React.FC = () => {
                                 <Button
                                     type="link"
                                     onClick={() => {
-                                        setSelectedJobRole(jobRole);
+                                        setSelectedJobProfile(jobProfile);
                                         setIsCreatingNewProfile(false);
                                         jobProfileForm.setFieldsValue({
-                                            ...jobRole.jobProfile,
-                                            jobRoleName: jobRole.name
+                                            ...jobProfile,
+                                            jobRoleName: jobRoles.find((f: { id: number; }) => f.id === jobProfile.jobRoleId)?.jobRoleName || 'N/A'
                                         });
                                         setJobProfileModalVisible(true);
                                     }}
@@ -539,14 +532,14 @@ const JobProfilePage: React.FC = () => {
                         >
                             <div style={{ marginBottom: 16 }}>
                                 <Text strong>Job Family: </Text>
-                                <Text>{jobFamilies.find(f => f.id === jobRole.jobFamilyId)?.name || 'N/A'}</Text>
+                                <Text>{jobFamilies.find((f: { id: any; }) => f.id === jobProfile.jobRoleId)?.jobFamilyName || 'N/A'}</Text>
                             </div>
                             <div style={{ marginBottom: 16 }}>
                                 <Text strong>Competencies: </Text>
                                 <div style={{ marginTop: 8 }}>
-                                    {jobRole.jobProfile.competencyIds.map(id => {
-                                        const comp = competencies.find(c => c.id === id);
-                                        return comp ? <Tag key={id}>{comp.name}</Tag> : null;
+                                    {jobProfile?.competencyIds?.map((id: React.Key | null | undefined) => {
+                                        const comp = competencies.find((c: { id: any; }) => c.id === id);
+                                        return comp ? <Tag key={id}>{comp.competencyName}</Tag> : null;
                                     })}
                                 </div>
                             </div>
@@ -562,7 +555,7 @@ const JobProfilePage: React.FC = () => {
                                 <Col span={12}>
                                     <Statistic
                                         title="Required Competencies"
-                                        value={jobRole.jobProfile.competencyIds.length}
+                                        value={jobProfile?.competencyIds?.length}
                                     />
                                 </Col>
                             </Row>
@@ -658,7 +651,7 @@ const JobProfilePage: React.FC = () => {
                     title={
                         <Space>
                             <span>Job Profiles</span>
-                            <Tag color="blue">{jobRoles.length} Profiles</Tag>
+                            <Tag color="blue">{jobProfiles.length} Profiles</Tag>
                         </Space>
                     }
                     extra={
@@ -712,15 +705,11 @@ const JobProfilePage: React.FC = () => {
                                 name="jobRoleId"
                                 label="Job Role Id"
                             >
-                                <Select
-                                    showSearch
-                                    placeholder="Search to Select"
-                                    optionFilterProp="label"
-                                    filterSort={(optionA: any, optionB: any) =>
-                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                    }
-                                    options={jobRoleList}
-                                />
+                                <Select placeholder="Select job role">
+                                    {jobRoles.map((roles: any) => (
+                                        <Option key={roles.id} value={roles.id}>{roles.jobRoleName}</Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
                         </Form>
                     </Modal>
@@ -737,18 +726,11 @@ const JobProfilePage: React.FC = () => {
                     >
                         <Form form={jobFamilyForm} layout="vertical">
                             <Form.Item
-                                name="name"
+                                name="jobFamilyName"
                                 label="Job Family Name"
                                 rules={[{ required: true, message: 'Please input the job family name!' }]}
                             >
                                 <Input />
-                            </Form.Item>
-                            <Form.Item
-                                name="description"
-                                label="Description"
-                                rules={[{ required: true, message: 'Please input the description!' }]}
-                            >
-                                <TextArea rows={4} />
                             </Form.Item>
                         </Form>
                     </Modal>
@@ -768,7 +750,15 @@ const JobProfilePage: React.FC = () => {
                             <Row gutter={16}>
                                 <Col span={12}>
                                     <Form.Item
-                                        name="name"
+                                        name="id"
+                                        label="ID"
+                                        rules={[{ required: false }]}
+                                        hidden
+                                    >
+                                        <Input hidden />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="jobRoleName"
                                         label="Job Role Name"
                                         rules={[{ required: true, message: 'Please input the job role name!' }]}
                                     >
@@ -782,19 +772,19 @@ const JobProfilePage: React.FC = () => {
                                         rules={[{ required: true, message: 'Please select a job family!' }]}
                                     >
                                         <Select placeholder="Select job family">
-                                            {jobFamilies.map(family => (
-                                                <Option key={family.id} value={family.id}>{family.name}</Option>
+                                            {jobFamilies.map((family: any) => (
+                                                <Option key={family.id} value={family.id}>{family.jobFamilyName}</Option>
                                             ))}
                                         </Select>
                                     </Form.Item>
                                 </Col>
                             </Row>
                             <Form.Item
-                                name="description"
-                                label="Description"
+                                name="jobCodeId"
+                                label="Job Code"
                                 rules={[{ required: true, message: 'Please input the description!' }]}
                             >
-                                <TextArea rows={4} />
+                                <Input type='number' />
                             </Form.Item>
                         </Form>
                     </Modal>
@@ -802,7 +792,7 @@ const JobProfilePage: React.FC = () => {
                     {/* Job Profile Modal */}
                     <Modal
                         centered={true}
-                        title={isCreatingNewProfile ? 'Create New Job Profile' : `Edit Job Profile - ${selectedJobRole?.name || ''}`}
+                        title={isCreatingNewProfile ? 'Create New Job Profile' : `Edit Job Profile - ${jobRoles.find((f: { id: number; }) => f.id === selectedJobProfile?.jobRoleId)?.jobRoleName || 'N/A'}`}
                         open={jobProfileModalVisible}
                         onOk={handleSaveJobProfile}
                         onCancel={() => {
@@ -822,11 +812,23 @@ const JobProfilePage: React.FC = () => {
                         }}
                     >
                         <Form form={jobProfileForm} layout="vertical">
-                            {!isCreatingNewProfile && (
-                                <Form.Item name="jobRoleName" label="Job Role">
-                                    <Input disabled />
-                                </Form.Item>
-                            )}
+                            <Form.Item
+                                name="id"
+                                label="ID"
+                                hidden
+                            >
+                                <Input hidden />
+                            </Form.Item>
+                            <Form.Item
+                                name="jobRoleId"
+                                label="Job Role Id"
+                            >
+                                <Select placeholder="Select job role">
+                                    {jobRoles.map((roles: any) => (
+                                        <Option key={roles.id} value={roles.id}>{roles.jobRoleName}</Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
 
                             <Form.Item
                                 name="competencyIds"
@@ -838,8 +840,8 @@ const JobProfilePage: React.FC = () => {
                                     placeholder="Select competencies"
                                     style={{ width: '100%' }}
                                 >
-                                    {competencies.map(comp => (
-                                        <Option key={comp.id} value={comp.id}>{comp.name}</Option>
+                                    {competencies.map((comp: any) => (
+                                        <Option key={comp.id} value={comp.id}>{comp.competencyName}</Option>
                                     ))}
                                 </Select>
                             </Form.Item>

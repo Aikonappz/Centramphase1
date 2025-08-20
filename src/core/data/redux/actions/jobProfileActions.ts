@@ -183,13 +183,13 @@ export const postJobProfile = (data: any) => {
   };
 };
 
-export const getJobProfile = (id: any) => {
+export const getJobProfile = () => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
-    dispatch({ type: CREATE_JOB_PROFILE_REQUEST });
+    dispatch({ type: GET_JOB_PROFILE_REQUEST });
     try {
-      const response = await api.get(`/job-profile/${id}`);
+      const response = await api.get(`/job-profile/get-all`);
       dispatch({
-        type: CREATE_JOB_PROFILE_SUCCESS,
+        type: GET_JOB_PROFILE_SUCCESS,
         payload: response.data
       });
       return response;
@@ -199,7 +199,7 @@ export const getJobProfile = (id: any) => {
         errorMessage = error.message;
       }
       dispatch({
-        type: CREATE_JOB_PROFILE_FAILURE,
+        type: GET_JOB_PROFILE_FAILURE,
         payload: errorMessage
       });
       return error;
@@ -231,11 +231,11 @@ export const createCompentancy = (data: any) => {
   };
 };
 
-export const getCompentancy = (id: any) => {
+export const getCompentancy = () => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
     dispatch({ type: GET_COMPENTANCY_REQUEST });
     try {
-      const response = await api.get(`/competency/${id}`);
+      const response = await api.get(`/competency/get-all`);
       dispatch({
         type: GET_COMPENTANCY_SUCCESS,
         payload: response.data
@@ -255,11 +255,11 @@ export const getCompentancy = (id: any) => {
   };
 };
 
-export const getJobFamily = (id: any) => {
+export const getJobFamily = () => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
     dispatch({ type: GET_JOB_FAMILY_REQUEST });
     try {
-      const response = await api.get(`/job-family/${id}`);
+      const response = await api.get(`/job-family/get-all`);
       dispatch({
         type: GET_JOB_FAMILY_SUCCESS,
         payload: response.data
@@ -279,11 +279,11 @@ export const getJobFamily = (id: any) => {
   };
 };
 
-export const getJobRole = (id: any) => {
+export const getJobRole = () => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
     dispatch({ type: GET_JOB_ROLE_REQUEST });
     try {
-      const response = await api.get(`/job-role/${id}`);
+      const response = await api.get(`/job-role/get-all`);
       dispatch({
         type: GET_JOB_ROLE_SUCCESS,
         payload: response.data

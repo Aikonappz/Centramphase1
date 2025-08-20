@@ -22,7 +22,13 @@ const CreatePosition = () => {
     const [businessUnit, setBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
-    const [jobFamily, setJobFamily] = useState<any>(transformArrayToLabelValue(jobProfile.jobFamilyList?.content || []));
+    const [jobRoles, setJobRoles] = useState<any>(jobProfile.jobRoleList?.content || []);
+    const [competencies, setCompetencies] = useState<any>(jobProfile.compentencyList?.content || []);
+    const [jobFamilies, setJobFamilies] = useState<any>(jobProfile.jobFamilyList?.content || []);
+
+    useEffect(() => {
+        dispatch(getJobFamily());
+    }, []);
 
     const onFinish = async (values: any) => {
         setLoading(true);
@@ -33,7 +39,6 @@ const CreatePosition = () => {
                 startDate: values.startDate.format('YYYY-MM-DD'),
                 endDate: values.endDate?.format('YYYY-MM-DD') || null
             };
-            console.log('Received values:', formattedValues);
             const response: any = await dispatch(savePosition(formattedValues));
             if (response.status === 200) {
                 message.success('Position created successfully!');
@@ -104,8 +109,7 @@ const CreatePosition = () => {
                                             }
                                             options={organisation}
                                             onChange={(value: any) => {
-                                                console.log(value)
-                                                dispatch(getJobFamily(value));
+                                                console.log(value);
                                             }}
                                         />
                                     </Form.Item>
@@ -159,7 +163,7 @@ const CreatePosition = () => {
                                             filterSort={(optionA: any, optionB: any) =>
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
-                                            options={jobFamily}
+                                            options={jobFamilies}
                                         />
                                     </Form.Item>
 
