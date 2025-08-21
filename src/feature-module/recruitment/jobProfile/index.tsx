@@ -138,7 +138,7 @@ const JobProfilePage: React.FC = () => {
                     c.id === selectedCompetency.id ? { ...c, ...values } : c
                 );
                 setCompetencies(updated);
-                updatedValues = updated;
+                updatedValues = values;
             } else {
                 // Add new competency
                 const newCompetency: Competency = {
@@ -157,6 +157,7 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setCompetencyModalVisible(false);
                     resetForms();
+                    dispatch(getCompentancy());
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -197,7 +198,7 @@ const JobProfilePage: React.FC = () => {
                         jf.id === selectedJobFamily.id ? { ...jf, ...values } : jf
                     );
                     setJobFamilies(updated);
-                    updatedValue = updated;
+                    updatedValue = values;
                     // message.success('Job Family updated successfully');
                 } else {
                     // Add new job family
@@ -215,7 +216,7 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setJobFamilyModalVisible(false);
                     resetForms();
-                    getJobFamily();
+                    dispatch(getJobFamily());
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -695,6 +696,14 @@ const JobProfilePage: React.FC = () => {
                     >
                         <Form form={competencyForm} layout="vertical">
                             <Form.Item
+                                name="id"
+                                label="ID"
+                                rules={[{ required: false }]}
+                                hidden
+                            >
+                                <Input hidden />
+                            </Form.Item>
+                            <Form.Item
                                 name="competencyName"
                                 label="Competency Name"
                                 rules={[{ required: true, message: 'Please input the competency name!' }]}
@@ -725,6 +734,14 @@ const JobProfilePage: React.FC = () => {
                         }}
                     >
                         <Form form={jobFamilyForm} layout="vertical">
+                            <Form.Item
+                                name="id"
+                                label="ID"
+                                rules={[{ required: false }]}
+                                hidden
+                            >
+                                <Input hidden />
+                            </Form.Item>
                             <Form.Item
                                 name="jobFamilyName"
                                 label="Job Family Name"
@@ -784,7 +801,7 @@ const JobProfilePage: React.FC = () => {
                                 label="Job Code"
                                 rules={[{ required: true, message: 'Please input the description!' }]}
                             >
-                                <Input type='number' />
+                                <Input />
                             </Form.Item>
                         </Form>
                     </Modal>
