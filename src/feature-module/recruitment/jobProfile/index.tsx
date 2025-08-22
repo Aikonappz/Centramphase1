@@ -22,7 +22,6 @@ import {
 } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, ProfileOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
-import 'react-quill/dist/quill.snow.css';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { createCompentancy, createJobFamily, createJobRole, getCompentancy, getJobFamily, getJobProfile, getJobRole, postJobProfile } from '../../../core/data/redux/actions/jobProfileActions';
 import { transformArrayToLabelValue } from '../../../utils/misc';
