@@ -26,6 +26,22 @@ const CreatePosition = () => {
     const [competencies, setCompetencies] = useState<any>(jobProfile.compentencyList?.content || []);
     const [jobFamilies, setJobFamilies] = useState<any>(jobProfile.jobFamilyList?.content || []);
 
+    const hiringManager = [
+        { value: 1, label: 'William Stones' },
+        { value: 2, label: 'Amit Mishra' },
+      ];      
+    //const [hiringManager, setHiringManager] = useState<any>(transformArrayToLabelValue(jobs.hiringManager?.content || []));
+    const headOfBusinessUnit = [
+        { value: 1, label: 'Rohini Mohan' },
+        { value: 2, label: 'Prem Kumaran' },
+      ];    
+    //const [headOfBusinessUnit, setheadOfBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.headOfBusinessUnit?.content || []));
+    const headOfRecruitment = [
+        { value: 1, label: 'Harris Kumar' },
+        { value: 2, label: 'Amit Samaddar' },
+      ];   
+    //const [headOfRecruitment, setheadOfRecruitment] = useState<any>(transformArrayToLabelValue(jobs.headOfRecruitment?.content || []));
+
     useEffect(() => {
         dispatch(getJobFamily());
     }, []);
@@ -284,6 +300,51 @@ const CreatePosition = () => {
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
                                             options={businessUnit}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="hiringManager"
+                                        label="Hiring Manager"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={hiringManager}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="headOfBusinessUnit"
+                                        label="Head Of Business Unit"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={headOfBusinessUnit}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="headOfRecruitment"
+                                        label="Head Of Recruitment"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={headOfRecruitment}
                                         />
                                     </Form.Item>
 

@@ -11,14 +11,14 @@ interface RequisitionData {
   // Add other fields as needed
 }
 
-const RequisitionPage: React.FC = () => {
+const RequisitionBlankPage: React.FC = () => {
   const { id, positionId } = useParams<{ id: string, positionId: string }>();
   const navigate = useNavigate();
   const [requisition, setRequisition] = useState<RequisitionData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [title, setTitle] = useState('Create Requisition Via Position');
+  const [title, setTitle] = useState('Create Requisition via Blank Template');
   
   // Fetch requisition data when component mounts or ID changes
   useEffect(() => {
@@ -102,4 +102,4 @@ const RequisitionPage: React.FC = () => {
   );
 };
 
-export default RequisitionPage;
+export default RequisitionBlankPage;

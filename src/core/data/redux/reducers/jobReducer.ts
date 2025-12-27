@@ -1,6 +1,7 @@
 import {
     JobActionTypes,
     POST_JOB_REQUEST,
+    BLANK_POST_JOB_REQUEST,
     POST_JOB_SUCCESS,
     POST_JOB_FAILURE,
     GET_JOB_REQUEST,
@@ -67,6 +68,12 @@ import {
   ): JobState => {
     switch (action.type) {
       case POST_JOB_REQUEST:
+        return {
+          ...state,
+          loading: true,
+          error: null
+        };
+        case BLANK_POST_JOB_REQUEST:
         return {
           ...state,
           loading: true,

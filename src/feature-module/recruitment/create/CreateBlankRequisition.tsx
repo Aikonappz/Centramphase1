@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space } fro
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { getJobLists, getPositionById, postJob } from "../../../core/data/redux/actions/requisitionActions";
+import { blankpostJob, getJobLists, getPositionById, postJob } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -11,13 +11,13 @@ import DebounceSelect from "../../../components/DebounceSelect";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import moment from "moment";
 
-const CreateRequisition = (props: any) => {
+const CreateBlankRequisition = (props: any) => {
     const { currentStep, setCurrent, prev } = props;
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const positionId = searchParams.get('positionId');
-    //const jobId = searchParams.get('id');
+    const jobId = searchParams.get('id');
 
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
@@ -56,21 +56,15 @@ const CreateRequisition = (props: any) => {
         { value: "Open", label: "Open" },
         { value: "Closed", label: "Closed" },
     ];
-    const recruiterName = [
-        // { value: "Select", label: "Select" },
-        { value: "William Stones", label: "William Stones" },
-        { value: "Lorem Ipsum", label: "Lorem Ipsum" },
-    ];
 
-    // useEffect(() => {
-    //     const jobId = localStorage.getItem('requisitionId');
-    //     console.log("jobId", jobId);
-    //     if (positionId) {
-    //         fetchJobByPosition(positionId);
-    //     } else if (jobId) {
-    //         getJobs(jobId);
-    //     }
-    // }, [positionId]);
+    useEffect(() => {
+        const jobId = localStorage.getItem('requisitionId');
+        if (positionId) {
+            fetchJobByPosition(positionId);
+        } else if (jobId) {
+            getJobs(jobId);
+        }
+    }, [positionId]);
 
     const getJobs = async (reqId: any) => {
         setIsLoading(true);
@@ -95,7 +89,6 @@ const CreateRequisition = (props: any) => {
     const fetchJobByPosition = async (reqId: any) => {
         const response: any = await dispatch(getPositionById(positionId));
         const data = response.data;
-        console.log('fetchJobByPosition', data);
         if (response.status !== 200) {
             message.error('Error fetching position');
         } else {
@@ -104,8 +97,8 @@ const CreateRequisition = (props: any) => {
                     ...data,
                     ...jobData,
                     positionId: data.id,
-                    payRangeMin: data.minPay,
-                    payRangeMax: data.maxPay,
+                    payRangeMin: data.maxPay,
+                    payRangeMax: data.minPay,
                     payRangeMid: data.midPay,
                     jobPostingEndDate: data.endDate ? moment(data?.endDate) : null,
                     jobStartDate: moment(data?.startDate),
@@ -115,7 +108,6 @@ const CreateRequisition = (props: any) => {
                 setPositions(data);
                 setIsLoading(false);
             }, 500);
-            console.log('fetchJobByPosition payRangeMin', data.m)
         }
     }
 
@@ -141,18 +133,17 @@ const CreateRequisition = (props: any) => {
         });
         formValues.id = jobData?.id || undefined;
         // formValues.jobStartDate = formatDate(new Date());
-        formValues.reasonForVacancy = "New Position";
+        formValues.reasonForVacancy = "";
         formValues.jobPostingStartDate = formatDate(new Date());
-        formValues.jobClassification = "IT";
+        formValues.jobClassification = "";
         formValues.locationId = 1;
-        formValues.currencyId = 1;
-        formValues.payGrade = "G5";
-        formValues.recruiter = "William Stones";
-        formValues.hiringManager = "William Stones";
-        formValues.headOfBusinessUnit = "William Stones";
-        formValues.headOfRecruitment = "William Stones";
-        formValues.recruiterName = "William Stones";
-        const response: any = await dispatch(postJob(formValues));
+        formValues.payGrade = "PG06";
+        formValues.recruiter = "Harris Kumar";
+        formValues.hiringManager = "Monika Gupta";
+        formValues.headOfBusinessUnit = "Harris Kumar";
+        formValues.headOfRecruitment = "Monika Gupta";
+        formValues.jobCode = "JC-001"
+        const response: any = await dispatch(blankpostJob(formValues));
         if (response.status === 200) {
             setIsLoading(false);
             messageApi.open({
@@ -206,6 +197,24 @@ const CreateRequisition = (props: any) => {
                 <Row gutter={{ xs: 6, sm: 12, md: 12, lg: 12 }}>
                     <Col className="gutter-row" span={12}>
                         <Form.Item
+                            name="hiringManager"
+                            label="Hiring Manager"
+                            rules={[{ required: true, message: 'Please enter hiring manager name!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="recruiterDetails"
+                            label="Recruiter Details"
+                            rules={[{ required: true, message: 'Please enter recruiter details!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
                             name="jobTitle"
                             label="Job Title"
                             rules={[{ required: true, message: 'Please enter job title!' }]}
@@ -236,23 +245,6 @@ const CreateRequisition = (props: any) => {
                                     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                 }
                                 options={jobLevel}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="recruiterName"
-                            label="Recruiter Name"
-                            rules={[{ required: true, message: 'Please enter Recruiter Name!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={recruiterName}
                             />
                         </Form.Item>
                     </Col>
@@ -530,4 +522,4 @@ const CreateRequisition = (props: any) => {
         </>
     )
 }
-export default CreateRequisition;
+export default CreateBlankRequisition;

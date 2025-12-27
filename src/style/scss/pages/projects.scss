@@ -269,3 +269,232 @@ display: none;
   width: 8rem;
   height: 5rem;
 }
+
+// Manivannan Style 
+
+.card-style {
+  height: 100px;
+  border-radius: 4px;
+  text-align: center;
+  padding: 10px;
+  i {
+    margin: 10px 0px;
+  }
+  h4 {
+    padding: 10px 0px;
+    color: #fff;
+  }
+}
+
+.recruitment-wrapper {
+  position: relative;
+}
+
+.dropdown-hover-content {
+  position: absolute;
+  top: 82%;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+  .main-submenu {
+    color: #fff;
+    font-size: 14px;
+    a {
+      color: #fff;
+    }
+  }
+}
+
+.recruitment-wrapper:hover .dropdown-hover-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.btn-space {
+  margin-right: 5px;
+}
+
+//Accordion style here
+.accordion {
+  width: 95%;
+  margin: 20px auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #ddd;
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  font-size: 16px;
+  background: #7b7b7b;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.accordion-icon {
+  font-size: 18px;
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: #fff;
+}
+
+.accordion-content.open {
+  max-height: 450px; /* enough for form fields */
+  padding: 12px 16px;
+}
+
+.accordion-inner label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.accordion-inner input,
+.accordion-inner textarea {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+//upload button css
+.resume-upload-container {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.resume-label {
+  font-weight: bold;
+  color: orange;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.upload-box {
+  position: relative;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-placeholder {
+  font-size: 16px;
+  color: #666;
+}
+
+.upload-icon {
+  display: block;
+  font-size: 24px;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+//Tab style 
+.job-portal-sec {
+  display: flex;
+  .tab-section {
+    flex-grow: 1
+  }
+  .content {
+    flex-grow: 8;
+    background-color: #E8E9EA;
+    min-height: calc(85vh - 105px);
+  }
+}
+.sidebar-new {
+  width: 200px;
+  background: #f4f4f4;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+}
+
+.tab {
+  padding: 12px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.tab.active {
+  background: #007bff;
+  color: white;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  h2, h3 {
+    margin-bottom: 20px;
+  }
+}
+
+.next-btn {
+  display: flex;
+  justify-content: flex-end;
+  button {
+    display: flex;
+    align-items: flex-end;
+  }
+  .cancel-btn {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .next-btn {
+    background: #007bff;
+    color: white;
+  }
+  
+  .submit-btn {
+    background: #07760c;
+    color: white;
+  }
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+button {
+  margin-right: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+

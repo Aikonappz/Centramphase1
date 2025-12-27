@@ -33,7 +33,8 @@ interface PositionStatusChartProps {
       departmentId: any,
       organisationId: any,
       divisionId: any,
-      businessUnitId: any
+      businessUnitId: any,
+      recruiterName: any
   }>;
 }
 

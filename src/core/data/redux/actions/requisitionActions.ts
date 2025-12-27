@@ -5,6 +5,7 @@ import { Dispatch } from 'redux';
 export const POST_JOB_REQUEST = 'POST_JOB_REQUEST';
 export const POST_JOB_SUCCESS = 'POST_JOB_SUCCESS';
 export const POST_JOB_FAILURE = 'POST_JOB_FAILURE';
+export const BLANK_POST_JOB_REQUEST = 'BLANK_POST_JOB_REQUEST';
 
 export const GET_JOB_REQUEST = 'GET_JOB_REQUEST';
 export const GET_JOB_SUCCESS = 'GET_JOB_SUCCESS';
@@ -72,6 +73,10 @@ export const SAVE_FINAL_REVIEW_FAILURE = 'SAVE_FINAL_REVIEW_FAILURE';
 
 interface PostJobRequestAction {
   type: typeof POST_JOB_REQUEST;
+}
+
+interface BlankPostJobRequestAction {
+  type: typeof BLANK_POST_JOB_REQUEST;
 }
 
 interface PostJobSuccessAction {
@@ -284,6 +289,7 @@ interface SaveFinalReviewFailureAction {
 
 export type JobActionTypes = 
   | PostJobRequestAction 
+  | BlankPostJobRequestAction
   | PostJobSuccessAction 
   | PostJobFailureAction
   | GetJobRequestAction 
@@ -332,10 +338,38 @@ export type JobActionTypes =
 // Async action creator with TypeScript
 
 export const postJob = (data: any) => {
+  console.log("Requisition Details", data);
   return async (dispatch: Dispatch<JobActionTypes>) => {
     dispatch({ type: POST_JOB_REQUEST });
     try {
       const response = await api.post(`/requisition/add`, data);
+      dispatch({
+        type: POST_JOB_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: POST_JOB_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+//Blank template
+
+export const blankpostJob = (data: any) => {
+  console.log("Blank Requisition Details", data);
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: BLANK_POST_JOB_REQUEST });
+    try {
+      const response = await api.post(`/requisition/blank-template`, data);
       dispatch({
         type: POST_JOB_SUCCESS,
         payload: response.data
