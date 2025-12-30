@@ -106,15 +106,28 @@ const JobGrid = () => {
                                     </ul>
                                 </div>
                             </div>
-                            <div className="mb-2">
+                            {/* <div className="mb-2"> */}
                                 <Link
                                     to="/create/job-requisition"
-                                    className="btn btn-primary d-flex align-items-center"
+                                    className="btn btn-primary d-flex align-items-center btn-space"
                                 >
                                     <i className="ti ti-circle-plus me-2" />
-                                    Create Job Requisition
+                                    Create via Position
                                 </Link>
-                            </div>
+                                <Link
+                                    to="/create/job-blank-requisition"
+                                    className="btn btn-secondary-light d-flex align-items-center btn-space"
+                                >
+                                    <i className="ti ti-circle-plus me-2" />
+                                    Create via blank template
+                                </Link>
+                                <Link
+                                    to="/create/job-portal"
+                                    className="btn bg-info d-flex align-items-center"
+                                >
+                                    Job Application Portal
+                                </Link>
+                            {/* </div> */}
                             <div className="head-icons ms-2">
                                 <CollapseHeader />
                             </div>

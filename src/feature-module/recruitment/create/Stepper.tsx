@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Steps, Button, Card, Row, Col } from 'antd';
-
+import { useLocation } from 'react-router-dom';
 import CreateRequisition from './CreateRequisition';
+import CreateBlankRequisition from './CreateBlankRequisition';
 import Step2 from './step2';
 import Step3 from './step3';
 import FinalStep from './finalStep';
@@ -48,6 +49,9 @@ const Completed = () => (
 
 const StepperForm = (props: any) => {
   const { setCurrentStep } = props;
+  const location = useLocation();
+  const isBlankTemplate = location.pathname === '/create/job-blank-requisition';
+
   const [current, setCurrent] = useState(() => {
     const saved = localStorage.getItem('currentStep');
     return saved !== null ? parseInt(saved) : 0;
@@ -90,6 +94,34 @@ const StepperForm = (props: any) => {
     }
   ];
 
+  const blankTemplatesteps = [
+    {
+      title: 'Create Requisition',
+      content: <CreateBlankRequisition currentStep={current} setCurrent={setCurrent} prev={prev} />,
+      nextButtonText: 'Move to Approver 1'
+    },
+    {
+      title: 'Approver 1',
+      content: <Step2 currentStep={current} setCurrent={setCurrent} prev={prev} />,
+      nextButtonText: 'Move to Approver 2'
+    },
+    {
+      title: 'Approver 2',
+      content: <Step3 currentStep={current} setCurrent={setCurrent} prev={prev} />,
+      nextButtonText: 'Move to Approver 3'
+    },
+    {
+      title: 'Approver 3',
+      content: <Step4 currentStep={current} setCurrent={setCurrent} prev={prev} />,
+      nextButtonText: 'Move to Approver 4'
+    },
+    {
+      title: 'Completed',
+      content: <FinalStep />,
+      nextButtonText: 'Finish'
+    }
+  ];
+
   const next = () => {
     setCurrent(current + 1);
   };
@@ -99,60 +131,47 @@ const StepperForm = (props: any) => {
     setCurrent(step);
   };
 
+  const activeSteps = isBlankTemplate ? blankTemplatesteps : steps;
+
   return (
     <div>
-      <Steps current={current} size="small">
-        {steps.map((item) => (
-          <Step key={item.title} title={item.title} />
-        ))}
-      </Steps>
+    <Steps current={current} size="small">
+      {activeSteps.map((item) => (
+        <Step key={item.title} title={item.title} />
+      ))}
+    </Steps>
 
-      <Card style={{ margin: '24px 0', minHeight: '300px' }}>
-        {steps[current].content}
-      </Card>
+    <Card style={{ margin: '24px 0', minHeight: '300px' }}>
+      {activeSteps[current].content}
+    </Card>
+  </div>
+    // <div>
+    //   <div className='requisitionvia-position'>
+    //     <Steps current={current} size="small">
+    //       {steps.map((item) => (
+    //         <Step key={item.title} title={item.title} />
+    //       ))}
+    //     </Steps>
 
-      {/* <Row justify="space-between">
-        <Col>
-          {current > 0 && (
-            <Button
-              style={{ margin: '0 8px' }}
-              onClick={() => prev()}
-              icon={<ArrowLeftOutlined />}
-            >
-              Previous
-            </Button>
-          )}
+    //     <Card style={{ margin: '24px 0', minHeight: '300px' }}>
+    //       {steps[current].content}
+    //     </Card>
+    //   </div>
 
-          <Button
-            type="text"
-            danger
-            style={{ margin: '0 8px' }}
-            icon={<CloseOutlined />}
-          >
-            Cancel
-          </Button>
-        </Col>
+    //   <div className='requisitionvia-blank'>
+    //     <Steps current={current} size="small">
+    //       {blankTemplatesteps.map((item) => (
+    //         <Step key={item.title} title={item.title} />
+    //       ))}
+    //     </Steps>
 
-        <Col>
-          <Button
-            style={{ margin: '0 8px' }}
-            icon={<SaveOutlined />}
-          >
-            Save
-          </Button>
+    //     <Card style={{ margin: '24px 0', minHeight: '300px' }}>
+    //       {blankTemplatesteps[current].content}
+    //     </Card>
+    //   </div>
+    // </div>
 
-          {current < steps.length - 1 && (
-            <Button
-              type="primary"
-              onClick={() => next()}
-              icon={<ArrowRightOutlined />}
-            >
-              {steps[current].nextButtonText}
-            </Button>
-          )}
-        </Col>
-      </Row> */}
-    </div>
+    
   );
 };
 

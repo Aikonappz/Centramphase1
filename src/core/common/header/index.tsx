@@ -105,6 +105,11 @@ const Header = () => {
 					<div className="nav user-menu nav-list">
 
 						<div className="me-auto d-flex align-items-center" id="header-search">
+							<div className="sidebar-logo">
+								<Link to="routes.index" className="logo logo-normal">
+									<ImageWithBasePath src="assets/img/logo.svg" alt="Logo" />
+								</Link>
+							</div>
 							<Link id="toggle_btn" to="#" onClick={handleToggleMiniSidebar} className="btn btn-menubar me-1">
 								<i className="ti ti-arrow-bar-to-left"></i>
 							</Link>

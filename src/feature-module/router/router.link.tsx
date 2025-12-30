@@ -299,6 +299,8 @@ import EditPosition from "../recruitment/positions/editPosition";
 import PositionDetails from "../recruitment/positions/viewPosition";
 import RecruitmentDashboard from "../recruitment/dashboard";
 import JobProfilePage from "../recruitment/jobProfile";
+import RequisitionBlankPage from "../recruitment/create/jobRequisitionBlank";
+import JobPortalProfile from "../recruitment/create/jobPortal";
 const routes = all_routes;
 
 export const publicRoutes = [
@@ -1380,6 +1382,16 @@ export const publicRoutes = [
   {
     path: routes.jobrequsition,
     element: <RequisitionPage />,
+    route: Route,
+  },
+  {
+    path: routes.jobrequsitionblank,
+    element: <RequisitionBlankPage />,
+    route: Route,
+  },
+  {
+    path: routes.jobPortal,
+    element: <JobPortalProfile />,
     route: Route,
   },
   {

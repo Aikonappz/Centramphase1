@@ -262,6 +262,27 @@ const EditPosition = () => {
                                     </Form.Item>
 
                                     <Form.Item
+                                        name="hiringManager"
+                                        label="Hiring Manager"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="headOfBusinessUnit"
+                                        label="Head Of Business Unit"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="headOfRecruitment"
+                                        label="Head Of Recruitment"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>
+
+                                    <Form.Item
                                         name="toBeHired"
                                         label="To Be Hired"
                                         valuePropName="checked"

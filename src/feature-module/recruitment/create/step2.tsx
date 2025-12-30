@@ -66,19 +66,25 @@ const Step2 = (props: any) => {
             type: 'loading',
             content: 'Loading...',
         });
-
+    
         Object.entries(formValues).forEach(([key, value]) => {
-            if (key === "payRangeMin" || key === "payRangeMid" || key === "payRangeMax" || key === "approvedBudget") {
+            if (
+                key === "payRangeMin" ||
+                key === "payRangeMid" ||
+                key === "payRangeMax" ||
+                key === "approvedBudget"
+            ) {
                 formValues[key] = toNumber(value, 2);
             } else {
                 formValues[key] = isNaN(value as any) ? value : Number(value);
             }
         });
+    
         formValues.status = jobData?.requisitionStatus || undefined;
         formValues.requisition = {
-            id: jobData?.id
+            id: jobData?.id,
         };
-        formValues.id = localStorage.getItem('managerReviewId') || undefined;
+        // ❌ removed formValues.id assignment
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
@@ -91,6 +97,10 @@ const Step2 = (props: any) => {
         formValues.hiringManager = "Jane Smith";
         formValues.headOfBusinessUnit = "Michael Johnson";
         formValues.headOfRecruitment = "Sarah Williams";
+    
+        // ✅ ensure id is not present
+        delete formValues.id;
+    
         const response: any = await dispatch(saveManagerReview(formValues));
         if (response.status === 200) {
             setIsLoading(false);
@@ -103,7 +113,7 @@ const Step2 = (props: any) => {
             localStorage.setItem('managerReviewId', response?.data?.id);
             setTimeout(() => {
                 setCurrent(2);
-            }, 700)
+            }, 700);
         } else {
             console.log(response);
             setIsLoading(false);
@@ -115,6 +125,7 @@ const Step2 = (props: any) => {
             });
         }
     };
+    
 
     const formItemLayout = {
         labelCol: {
