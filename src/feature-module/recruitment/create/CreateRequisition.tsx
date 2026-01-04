@@ -18,7 +18,7 @@ const CreateRequisition = (props: any) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const positionId = searchParams.get('positionId');
     //const jobId = searchParams.get('id');
-
+    
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
@@ -62,15 +62,15 @@ const CreateRequisition = (props: any) => {
         { value: "Lorem Ipsum", label: "Lorem Ipsum" },
     ];
 
-    // useEffect(() => {
-    //     const jobId = localStorage.getItem('requisitionId');
-    //     console.log("jobId", jobId);
-    //     if (positionId) {
-    //         fetchJobByPosition(positionId);
-    //     } else if (jobId) {
-    //         getJobs(jobId);
-    //     }
-    // }, [positionId]);
+    useEffect(() => {
+        const jobId = localStorage.getItem('requisitionId');
+        console.log("jobId", jobId);
+        if (positionId) {
+            fetchJobByPosition(positionId);
+        } else if (jobId) {
+            getJobs(jobId);
+        }
+    }, [positionId]);
 
     const getJobs = async (reqId: any) => {
         setIsLoading(true);

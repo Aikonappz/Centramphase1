@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Card,
     Descriptions,
@@ -32,6 +32,11 @@ import {
     CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAppDispatch } from '../../../core/data/redux/store';
+import { getPositionById } from '../../../core/data/redux/actions/requisitionActions';
+import moment from 'moment';
+import { Spin } from 'antd';
+
 
 const { TabPane } = Tabs;
 
@@ -59,19 +64,19 @@ interface Position {
     department: {
         id: number;
         name: string;
-    };
+    } | null;
     organisation: {
         id: number;
         name: string;
-    };
+    } | null;
     division: {
         id: number;
         name: string;
-    };
+    } | null;
     businessUnit: {
         id: number;
         name: string;
-    };
+    } | null;
     hiringManager: {
         id: number;
         name: string;
@@ -87,42 +92,118 @@ const PositionDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
-    // Mock data - in a real app, this would come from an API
-    const positionData: Position = {
-        id: 14,
-        name: "Senior Software Engineer",
-        code: "POS020",
-        status: 1,
-        startDate: "2025-07-17",
-        jobCode: "1234",
-        fte: 1.0,
-        location: {
-            id: 12345,
-            name: "San Francisco HQ",
-            address: "123 Tech Street, San Francisco, CA 94107"
+    const positionId = Number(id);
+    const dispatch = useAppDispatch();
+    const [positionData, setPositionData] = useState<Position | null>(null);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        if (!positionId) return;
+
+        const fetchPosition = async () => {
+            try {
+                setLoading(true);
+
+                const response: any = await dispatch(getPositionById(positionId));
+                const data = response.data;
+                if (response.status !== 200) {
+                    message.error("Error fetching position");
+                } else {
+                    // setPositionData({
+                    //     id: data.id,
+                    //     startDate: moment(data.startDate),
+                    //     endDate: data.endDate ? moment(data.endDate) : null
+                    // });
+                    setPositionData(mapPositionResponse(data));
+                }
+            } catch (error) {
+                message.error("Failed to load position data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPosition();
+    }, [positionId, dispatch]);
+
+    const mapPositionResponse = (data: any): Position => ({
+        id: data.id,
+        name: data.name,
+        code: data.code,
+        description: `We are looking for a ${data.name} to join our team. The ideal candidate will passion for building scalable applications.`,
+        status: data.status === "ACTIVE" ? 1 : 0,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        jobCode: data.jobCode,
+        fte: data.fte,
+        costCenter: data.costCenter,
+        payGrad: data.payGrad,
+        standardHour: data.standardHour,
+        toBeHired: data.toBeHired,
+        minPay: data.minPay,
+        midPay: data.midPay,
+        maxPay: data.maxPay,
+
+        // ✅ SAFE DEFAULT OBJECTS
+        organisation: data.organisation ?? { id: 0, name: "N/A" },
+        division: data.divisionId ?? { id: 0, name: "N/A" },
+        department: data.department ?? { id: 0, name: "N/A" },
+        businessUnit: data.businessUnit ?? { id: 0, name: "N/A" },
+
+        location: data.location ?? { id: data.locationId, name: "N/A" },
+
+        hiringManager: data.hiringManager ?? {
+            id: 0,
+            name: "Not Assigned",
+            email: "-"
         },
-        costCenter: "CC-TECH",
-        endDate: "2026-07-17",
-        payGrad: "G7",
-        standardHour: 40,
-        toBeHired: true,
-        minPay: 50000.00,
-        midPay: 75000.00,
-        maxPay: 100000.00,
-        department: { id: 101, name: "Engineering" },
-        organisation: { id: 201, name: "Tech Division" },
-        division: { id: 301, name: "Product Development" },
-        businessUnit: { id: 401, name: "Software Engineering" },
-        hiringManager: {
-            id: 1,
-            name: "John Doe",
-            email: "john.doe@company.com",
-            avatar: "https://i.pravatar.cc/150?img=1"
-        },
-        candidates: 5,
-        lastUpdated: "2023-05-15T10:30:00Z",
-        description: "We are looking for a Senior Software Engineer to join our team. The ideal candidate will have 5+ years of experience in full-stack development and a passion for building scalable applications."
-    };
+
+        candidates: data.candidates ?? 0,
+        // description: data.description ?? "",
+        lastUpdated: data.modifiedDate
+    });
+
+
+    // ✅ ADD THIS HERE
+    if (loading) {
+        return <Spin size="large" />;
+    }
+    if (!positionData) return null;
+    // // Mock data - in a real app, this would come from an API
+    // const positionData: Position = {
+    //     id: 14,
+    //     name: "Senior Software Engineer",
+    //     code: "POS020",
+    //     status: 1,
+    //     startDate: "2025-07-17",
+    //     jobCode: "1234",
+    //     fte: 1.0,
+    //     location: {
+    //         id: 12345,
+    //         name: "San Francisco HQ",
+    //         address: "123 Tech Street, San Francisco, CA 94107"
+    //     },
+    //     costCenter: "CC-TECH",
+    //     endDate: "2026-07-17",
+    //     payGrad: "G7",
+    //     standardHour: 40,
+    //     toBeHired: true,
+    //     minPay: 50000.00,
+    //     midPay: 75000.00,
+    //     maxPay: 100000.00,
+    //     department: { id: 101, name: "Engineering" },
+    //     organisation: { id: 201, name: "Tech Division" },
+    //     division: { id: 301, name: "Product Development" },
+    //     businessUnit: { id: 401, name: "Software Engineering" },
+    //     hiringManager: {
+    //         id: 1,
+    //         name: "John Doe",
+    //         email: "john.doe@company.com",
+    //         avatar: "https://i.pravatar.cc/150?img=1"
+    //     },
+    //     candidates: 5,
+    //     lastUpdated: "2023-05-15T10:30:00Z",
+    //     description: "We are looking for a Senior Software Engineer to join our team. The ideal candidate will have 5+ years of experience in full-stack development and a passion for building scalable applications."
+    // };
 
     const handleEdit = () => {
         navigate(`/positions/edit/${id}`);
@@ -295,16 +376,16 @@ const PositionDetails: React.FC = () => {
                                         <Card title="Organizational Structure" style={{ marginBottom: 24 }}>
                                             <Timeline>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Organization:</strong> {positionData.organisation.name}
+                                                    <strong>Organization:</strong> {positionData.organisation?.name}
                                                 </Timeline.Item>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Division:</strong> {positionData.division.name}
+                                                    <strong>Division:</strong> {positionData.division?.name}
                                                 </Timeline.Item>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Business Unit:</strong> {positionData.businessUnit.name}
+                                                    <strong>Business Unit:</strong> {positionData.businessUnit?.name}
                                                 </Timeline.Item>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Department:</strong> {positionData.department.name}
+                                                    <strong>Department:</strong> {positionData.department?.name}
                                                 </Timeline.Item>
                                             </Timeline>
                                         </Card>
@@ -347,7 +428,7 @@ const PositionDetails: React.FC = () => {
                                 </Row>
                             </TabPane>
 
-                            <TabPane
+                            {/* <TabPane
                                 tab={
                                     <span>
                                         <TeamOutlined /> Candidates <Badge count={positionData.candidates} style={{ backgroundColor: '#52c41a' }} />
@@ -363,9 +444,9 @@ const PositionDetails: React.FC = () => {
                                         <Button type="primary">View Candidates</Button>
                                     </div>
                                 </Card>
-                            </TabPane>
+                            </TabPane> */}
 
-                            <TabPane tab={<span><HistoryOutlined /> Activity</span>} key="3">
+                            {/* <TabPane tab={<span><HistoryOutlined /> Activity</span>} key="3">
                                 <Card>
                                     <Timeline mode="alternate">
                                         <Timeline.Item color="green">
@@ -394,7 +475,7 @@ const PositionDetails: React.FC = () => {
                                         </Timeline.Item>
                                     </Timeline>
                                 </Card>
-                            </TabPane>
+                            </TabPane> */}
                         </Tabs>
                     </Card>
                 </div>
