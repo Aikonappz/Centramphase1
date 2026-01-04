@@ -61,6 +61,11 @@ interface Position {
     minPay: number;
     midPay: number;
     maxPay: number;
+    departmentname: string;
+    organisationname: string;
+    divisionname: string;
+    businessunitname: string;
+    locationname: string;
     department: {
         id: number;
         name: string;
@@ -105,6 +110,7 @@ const PositionDetails: React.FC = () => {
 
                 const response: any = await dispatch(getPositionById(positionId));
                 const data = response.data;
+                // console.log(data)
                 if (response.status !== 200) {
                     message.error("Error fetching position");
                 } else {
@@ -144,12 +150,17 @@ const PositionDetails: React.FC = () => {
         maxPay: data.maxPay,
 
         // ✅ SAFE DEFAULT OBJECTS
-        organisation: data.organisation ?? { id: 0, name: "N/A" },
-        division: data.divisionId ?? { id: 0, name: "N/A" },
-        department: data.department ?? { id: 0, name: "N/A" },
-        businessUnit: data.businessUnit ?? { id: 0, name: "N/A" },
+        organisation: data.organisationName ?? { id: 0, name: "N/A" },
+        division: data.divisionName ?? { id: 0, name: data.divisionName},
+        department: data.departmentName ?? { id: 0, name: data.departmentName },
+        businessUnit: data.businessUnitName ?? { id: 0, name: data.businessUnitName },
+        location: data.locationName ?? { id: data.locationId, name: data.locationName },
 
-        location: data.location ?? { id: data.locationId, name: "N/A" },
+        departmentname: data.departmentName,
+        divisionname: data.divisionName,
+        businessunitname: data.businessUnitName,
+        organisationname: data.organisationName,
+        locationname: data.locationName,
 
         hiringManager: data.hiringManager ?? {
             id: 0,
@@ -376,16 +387,16 @@ const PositionDetails: React.FC = () => {
                                         <Card title="Organizational Structure" style={{ marginBottom: 24 }}>
                                             <Timeline>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Organization:</strong> {positionData.organisation?.name}
+                                                    <strong>Organization:</strong> {positionData.organisationname}
                                                 </Timeline.Item>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Division:</strong> {positionData.division?.name}
+                                                    <strong>Division:</strong> {positionData.divisionname}
                                                 </Timeline.Item>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Business Unit:</strong> {positionData.businessUnit?.name}
+                                                    <strong>Business Unit:</strong> {positionData.businessunitname}
                                                 </Timeline.Item>
                                                 <Timeline.Item dot={<ApartmentOutlined style={{ fontSize: '16px' }} />}>
-                                                    <strong>Department:</strong> {positionData.department?.name}
+                                                    <strong>Department:</strong> {positionData.departmentname}
                                                 </Timeline.Item>
                                             </Timeline>
                                         </Card>
@@ -394,7 +405,7 @@ const PositionDetails: React.FC = () => {
                                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
                                                 <EnvironmentOutlined style={{ fontSize: 20, color: '#1890ff', marginRight: 12 }} />
                                                 <div>
-                                                    <div style={{ fontWeight: 'bold' }}>{positionData.location.name}</div>
+                                                    <div style={{ fontWeight: 'bold' }}>{positionData.locationname}</div>
                                                     {positionData.location.address && (
                                                         <div style={{ color: 'rgba(0,0,0,0.45)' }}>
                                                             {positionData.location.address}
