@@ -6,7 +6,7 @@ import { savePosition } from '../../../core/data/redux/actions/requisitionAction
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
-import { getJobFamily } from '../../../core/data/redux/actions/jobProfileActions';
+import { getJobFamily, getAllJobCode, getReqruiterDetails_BasedCriteria } from '../../../core/data/redux/actions/jobProfileActions';
 
 const { Option } = Select;
 
@@ -24,27 +24,68 @@ const CreatePosition = () => {
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [jobRoles, setJobRoles] = useState<any>(jobProfile.jobRoleList?.content || []);
     const [competencies, setCompetencies] = useState<any>(jobProfile.compentencyList?.content || []);
-    const [jobFamilies, setJobFamilies] = useState<any>(jobProfile.jobFamilyList?.content || []);
+    const [jobFamilies, setJobFamilies] = useState<{ label: string; value: string }[]>([]);
 
     const hiringManager = [
         { value: 1, label: 'William Stones' },
         { value: 2, label: 'Amit Mishra' },
-      ];      
+    ];
     //const [hiringManager, setHiringManager] = useState<any>(transformArrayToLabelValue(jobs.hiringManager?.content || []));
     const headOfBusinessUnit = [
         { value: 1, label: 'Rohini Mohan' },
         { value: 2, label: 'Prem Kumaran' },
-      ];    
+    ];
     //const [headOfBusinessUnit, setheadOfBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.headOfBusinessUnit?.content || []));
     const headOfRecruitment = [
         { value: 1, label: 'Harris Kumar' },
         { value: 2, label: 'Amit Samaddar' },
-      ];   
+    ];
     //const [headOfRecruitment, setheadOfRecruitment] = useState<any>(transformArrayToLabelValue(jobs.headOfRecruitment?.content || []));
 
     useEffect(() => {
         dispatch(getJobFamily());
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response: any = await dispatch(getAllJobCode());
+
+            const options = (response?.data?.content || []).map((item: string) => ({
+                label: item,
+                value: item,
+            }));
+            setJobFamilies(options);
+        };
+        fetchData();
+    }, [dispatch]);
+
+
+    const [filters, setFilters] = useState({
+        departmentId: null,
+        businessUnitId: null,
+        organisationId: null,
+        divisionId: null
+    });
+    const [recruitOptions, setRecruitOptions] = useState<any[]>([]);
+    const handleFilterChange = (
+        key: keyof typeof filters,
+        value: any
+    ) => {
+        const updatedFilters = {
+            ...filters,
+            [key]: value
+        };
+        setFilters(updatedFilters);
+        const allSelected =
+            updatedFilters.departmentId &&
+            updatedFilters.businessUnitId &&
+            updatedFilters.organisationId &&
+            updatedFilters.divisionId;
+        if (!allSelected) return;
+        dispatch(
+            getReqruiterDetails_BasedCriteria(updatedFilters)
+        );
+    };
 
     const onFinish = async (values: any) => {
         setLoading(true);
@@ -125,6 +166,7 @@ const CreatePosition = () => {
                                             }
                                             options={organisation}
                                             onChange={(value: any) => {
+                                                handleFilterChange('organisationId', value)
                                                 console.log(value);
                                             }}
                                         />
@@ -261,6 +303,9 @@ const CreatePosition = () => {
                                             filterSort={(optionA: any, optionB: any) =>
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
+                                            onChange={(value) =>
+                                                handleFilterChange('departmentId', value)
+                                            }
                                             options={jobDepartment}
                                         />
                                     </Form.Item>
@@ -284,6 +329,9 @@ const CreatePosition = () => {
                                             filterSort={(optionA: any, optionB: any) =>
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
+                                            onChange={(value) =>
+                                                handleFilterChange('divisionId', value)
+                                            }
                                             options={division}
                                         />
                                     </Form.Item>
@@ -298,6 +346,9 @@ const CreatePosition = () => {
                                             optionFilterProp="label"
                                             filterSort={(optionA: any, optionB: any) =>
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={(value) =>
+                                                handleFilterChange('businessUnitId', value)
                                             }
                                             options={businessUnit}
                                         />

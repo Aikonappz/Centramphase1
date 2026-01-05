@@ -151,10 +151,10 @@ const PositionDetails: React.FC = () => {
 
         // ✅ SAFE DEFAULT OBJECTS
         organisation: data.organisationName ?? { id: 0, name: "N/A" },
-        division: data.divisionName ?? { id: 0, name: data.divisionName},
-        department: data.departmentName ?? { id: 0, name: data.departmentName },
-        businessUnit: data.businessUnitName ?? { id: 0, name: data.businessUnitName },
-        location: data.locationName ?? { id: data.locationId, name: data.locationName },
+        division: data.divisionName ?? { id: 0, name: "N/A"},
+        department: data.departmentName ?? { id: 0, name: "N/A" },
+        businessUnit: data.businessUnitName ?? { id: 0, name: "N/A" },
+        location: data.locationName ?? { id: data.locationId, name: "N/A" },
 
         departmentname: data.departmentName,
         divisionname: data.divisionName,

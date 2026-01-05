@@ -25,6 +25,14 @@ export const GET_JOB_FAMILY_REQUEST = 'GET_JOB_FAMILY_REQUEST';
 export const GET_JOB_FAMILY_SUCCESS = 'GET_JOB_FAMILY_SUCCESS';
 export const GET_JOB_FAMILY_FAILURE = 'GET_JOB_FAMILY_FAILURE';
 
+export const GET_JOB_CODE_REQUEST = 'GET_JOB_CODE_REQUEST';
+export const GET_JOB_CODE_SUCCESS = 'GET_JOB_CODE_SUCCESS';
+export const GET_JOB_CODE_FAILURE = 'GET_JOB_CODE_FAILURE';
+
+export const GET_REQRUITER_DETAILS_REQUEST = 'GET_REQRUITER_DETAILS_REQUEST';
+export const GET_REQRUITER_DETAILS_SUCCESS = 'GET_REQRUITER_DETAILS_SUCCESS';
+export const GET_REQRUITER_DETAILS_FAILURE = 'GET_REQRUITER_DETAILS_FAILURE';
+
 export const CREATE_JOB_ROLE_REQUEST = 'CREATE_JOB_ROLE_REQUEST';
 export const CREATE_JOB_ROLE_SUCCESS = 'CREATE_JOB_ROLE_SUCCESS';
 export const CREATE_JOB_ROLE_FAILURE = 'CREATE_JOB_ROLE_FAILURE';
@@ -66,76 +74,98 @@ interface CreateCompentancyRequestAction {
   type: typeof CREATE_COMPENTANCY_REQUEST;
 }
 interface CreateCompentancySuccessAction {
-    type: typeof CREATE_COMPENTANCY_SUCCESS;
-    payload: any;
-  }
+  type: typeof CREATE_COMPENTANCY_SUCCESS;
+  payload: any;
+}
 interface CreateCompentancyFailureAction {
-    type: typeof CREATE_COMPENTANCY_FAILURE;
-    payload: string;
+  type: typeof CREATE_COMPENTANCY_FAILURE;
+  payload: string;
 }
 interface GetCompentancyRequestAction {
-    type: typeof GET_COMPENTANCY_REQUEST;
-  }
-  interface GetCompentancySuccessAction {
-    type: typeof GET_COMPENTANCY_SUCCESS;
-    payload: any;
-  }
-  interface GetCompentancyFailureAction {
-    type: typeof GET_COMPENTANCY_FAILURE;
-    payload: string;
-  }
-  interface GetJobFamilyRequestAction {
-    type: typeof GET_JOB_FAMILY_REQUEST;
-  }
-  interface GetJobFamilySuccessAction {
-    type: typeof GET_JOB_FAMILY_SUCCESS;
-    payload: any;
-  }
-  interface GetJobFamilyFailureAction {
-    type: typeof GET_JOB_FAMILY_FAILURE;
-    payload: string;
-  }
-  interface GetJobRoleRequestAction {
-    type: typeof GET_JOB_ROLE_REQUEST;
-  }
-  interface GetJobRoleSuccessAction {
-    type: typeof GET_JOB_ROLE_SUCCESS;
-    payload: any;
-  }
-  interface GetJobRoleFailureAction {
-    type: typeof GET_JOB_ROLE_FAILURE;
-    payload: string;
-  }
-  interface CreateJobFamilyRequestAction {
-    type: typeof CREATE_JOB_FAMILY_REQUEST;
-  }
-  interface CreateJobFamilySuccessAction {
-    type: typeof CREATE_JOB_FAMILY_SUCCESS;
-    payload: any;
-  }
-  interface CreateJobFamilyFailureAction {
-    type: typeof CREATE_JOB_FAMILY_FAILURE;
-    payload: string;
-  }
-  interface CreateJobRoleRequestAction {
-    type: typeof CREATE_JOB_ROLE_REQUEST;
-  }
-  interface CreateJobRoleSuccessAction {
-    type: typeof CREATE_JOB_ROLE_SUCCESS;
-    payload: any;
-  }
-  interface CreateJobRoleFailureAction {
-    type: typeof CREATE_JOB_ROLE_FAILURE;
-    payload: string;
-  }
+  type: typeof GET_COMPENTANCY_REQUEST;
+}
+interface GetCompentancySuccessAction {
+  type: typeof GET_COMPENTANCY_SUCCESS;
+  payload: any;
+}
+interface GetCompentancyFailureAction {
+  type: typeof GET_COMPENTANCY_FAILURE;
+  payload: string;
+}
+interface GetJobCodeRequestAction {
+  type: typeof GET_JOB_CODE_REQUEST;
+}
+interface GetJobCodeSuccessAction {
+  type: typeof GET_JOB_CODE_SUCCESS;
+  payload: any;
+}
+interface GetJobCodeFailureAction {
+  type: typeof GET_JOB_CODE_FAILURE;
+  payload: string;
+}
+interface GetReqruiterDetailsRequestAction {
+  type: typeof GET_REQRUITER_DETAILS_REQUEST;
+}
+interface GetReqruiterDetailsSuccessAction {
+  type: typeof GET_REQRUITER_DETAILS_SUCCESS;
+  payload: any;
+}
+interface GetReqruiterDetailsFailureAction {
+  type: typeof GET_REQRUITER_DETAILS_FAILURE;
+  payload: string;
+}
+interface GetJobFamilyRequestAction {
+  type: typeof GET_JOB_FAMILY_REQUEST;
+}
+interface GetJobFamilySuccessAction {
+  type: typeof GET_JOB_FAMILY_SUCCESS;
+  payload: any;
+}
+interface GetJobFamilyFailureAction {
+  type: typeof GET_JOB_FAMILY_FAILURE;
+  payload: string;
+}
+interface GetJobRoleRequestAction {
+  type: typeof GET_JOB_ROLE_REQUEST;
+}
+interface GetJobRoleSuccessAction {
+  type: typeof GET_JOB_ROLE_SUCCESS;
+  payload: any;
+}
+interface GetJobRoleFailureAction {
+  type: typeof GET_JOB_ROLE_FAILURE;
+  payload: string;
+}
+interface CreateJobFamilyRequestAction {
+  type: typeof CREATE_JOB_FAMILY_REQUEST;
+}
+interface CreateJobFamilySuccessAction {
+  type: typeof CREATE_JOB_FAMILY_SUCCESS;
+  payload: any;
+}
+interface CreateJobFamilyFailureAction {
+  type: typeof CREATE_JOB_FAMILY_FAILURE;
+  payload: string;
+}
+interface CreateJobRoleRequestAction {
+  type: typeof CREATE_JOB_ROLE_REQUEST;
+}
+interface CreateJobRoleSuccessAction {
+  type: typeof CREATE_JOB_ROLE_SUCCESS;
+  payload: any;
+}
+interface CreateJobRoleFailureAction {
+  type: typeof CREATE_JOB_ROLE_FAILURE;
+  payload: string;
+}
 
-  
 
 
 
-export type JobProfileActionTypes = 
-  | CreateJobProfileRequestAction 
-  | CreateJobProfileSuccessAction 
+
+export type JobProfileActionTypes =
+  | CreateJobProfileRequestAction
+  | CreateJobProfileSuccessAction
   | CreateJobProfileFailureAction
   | GetJobProfileRequestAction
   | GetJobProfileSuccessAction
@@ -149,6 +179,12 @@ export type JobProfileActionTypes =
   | GetJobFamilyRequestAction
   | GetJobFamilySuccessAction
   | GetJobFamilyFailureAction
+  | GetJobCodeRequestAction
+  | GetJobCodeSuccessAction
+  | GetJobCodeFailureAction
+  | GetReqruiterDetailsRequestAction
+  | GetReqruiterDetailsSuccessAction
+  | GetReqruiterDetailsFailureAction
   | GetJobRoleRequestAction
   | GetJobRoleSuccessAction
   | GetJobRoleFailureAction
@@ -248,6 +284,54 @@ export const getCompentancy = () => {
       }
       dispatch({
         type: GET_COMPENTANCY_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getAllJobCode = () => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: GET_JOB_CODE_REQUEST });
+    try {
+      const response = await api.get(`/position/get-all/jobcodes`);
+      dispatch({
+        type: GET_JOB_CODE_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_JOB_CODE_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getReqruiterDetails_BasedCriteria = (data: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: GET_REQRUITER_DETAILS_REQUEST });
+    try {
+      const response = await api.post(`/position/get-all/recruiters`, data);
+      dispatch({
+        type: GET_REQRUITER_DETAILS_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_REQRUITER_DETAILS_FAILURE,
         payload: errorMessage
       });
       return error;

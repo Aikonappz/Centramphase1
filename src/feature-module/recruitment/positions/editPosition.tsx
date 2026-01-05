@@ -51,7 +51,7 @@ const EditPosition = () => {
                 ...values,
                 startDate: values.startDate.format('YYYY-MM-DD'),
                 endDate: values.endDate?.format('YYYY-MM-DD') || null,
-                id: id // Add the ID to the object
+                id: Number(id) // Add the ID to the object
             };
             console.log('Updated values:', formattedValues);
             const response: any = await dispatch(savePosition(formattedValues));
