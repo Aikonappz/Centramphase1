@@ -222,7 +222,6 @@ const PositionDetails: React.FC = () => {
     };
 
     const handleDelete = async () => {
-        alert(0)
         const positionId = Number(id);
         const response: any = await dispatch(deleteposition(positionId));
         const data = response.data;

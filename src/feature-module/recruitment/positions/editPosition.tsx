@@ -22,17 +22,17 @@ const EditPosition = () => {
                 const response: any = await dispatch(getPositionById(id));
                 const data = response.data;
                 console.log(response)
-                if(response.status !== 200) {
+                if (response.status !== 200) {
                     message.error('Error fetching position');
                 } else {
-                   setTimeout(() => {
-                    form.setFieldsValue({
-                        ...data,
-                        startDate: moment(data?.startDate),
-                        endDate: data.endDate ? moment(data?.endDate) : null
-                    });
-                    setLoading(false);
-                }, 500); 
+                    setTimeout(() => {
+                        form.setFieldsValue({
+                            ...data,
+                            startDate: moment(data?.startDate),
+                            endDate: data.endDate ? moment(data?.endDate) : null
+                        });
+                        setLoading(false);
+                    }, 500);
                 }
             } catch (error) {
                 message.error('Failed to load position data');
@@ -47,8 +47,14 @@ const EditPosition = () => {
         setSubmitting(true);
         try {
             // Format dates before submission
+            const normalizedStatus =
+                values.status === 'ACTIVE' ? 1 :
+                    values.status === 'INACTIVE' ? 0 :
+                        values.status;
+
             const formattedValues = {
                 ...values,
+                status: normalizedStatus,
                 startDate: values.startDate.format('YYYY-MM-DD'),
                 endDate: values.endDate?.format('YYYY-MM-DD') || null,
                 id: Number(id) // Add the ID to the object

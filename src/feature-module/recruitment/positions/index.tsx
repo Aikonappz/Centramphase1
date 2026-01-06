@@ -16,6 +16,7 @@ import PositionFilters from './positionFilters';
 import PositionStatusChart from './positionStatusChart';
 import { useAppDispatch } from '../../../core/data/redux/store';
 import { getPositions, resetJobById } from '../../../core/data/redux/actions/requisitionActions';
+import { deleteposition } from '../../../core/data/redux/actions/jobProfileActions';
 import { removeEmptyParams } from '../../../utils/misc';
 
 const PositionManagement = () => {
@@ -41,7 +42,14 @@ const PositionManagement = () => {
 
     const fetchPositions = async (filters?: any) => {
         // Simulate API call
-        const filtersString = filters ? Object.entries(removeEmptyParams(filters)).map(([key, value]) => `${key}=${value}`).join('&') : '';
+        // const filtersString = filters ? Object.entries(removeEmptyParams(filters)).map(([key, value]) => `${key}=${value}`).join('&') : '';
+        const finalFilters = {
+            ...filters,
+            status: 'ACTIVE'
+        };
+        const filtersString = Object.entries(removeEmptyParams(finalFilters))
+            .map(([key, value]) => `${key}=${value}`)
+            .join('&');
         const response: any = await dispatch(getPositions(filtersString));
         const data = response.data?.content;
         if (response.status !== 200) {
@@ -55,23 +63,46 @@ const PositionManagement = () => {
         }
     };
 
-    const handleSearch = (value: any) => {
+    // const handleSearch = (value: any) => {
+    //     setSearchText(value);
+    //     if (!value) {
+    //         setFilteredPositions(positions);
+    //         return;
+    //     }
+    //     const filtered = positions.filter((position: any) =>
+    //         position?.name.toLowerCase().includes(value.toLowerCase()) ||
+    //         position?.code.toLowerCase().includes(value.toLowerCase()) ||
+    //         position?.jobCode.toLowerCase().includes(value.toLowerCase())
+    //     );
+    //     setFilteredPositions(filtered);
+    // };
+    const handleSearch = (value: string) => {
         setSearchText(value);
         if (!value) {
             setFilteredPositions(positions);
             return;
         }
+        const search = value.toLowerCase();
         const filtered = positions.filter((position: any) =>
-            position?.name.toLowerCase().includes(value.toLowerCase()) ||
-            position?.code.toLowerCase().includes(value.toLowerCase()) ||
-            position?.jobCode.toLowerCase().includes(value.toLowerCase())
+            (position?.name ?? '').toLowerCase().includes(search) ||
+            (position?.code ?? '').toLowerCase().includes(search) ||
+            (position?.jobCode ?? '').toLowerCase().includes(search)
         );
         setFilteredPositions(filtered);
     };
 
-    const handleDelete = (id: any) => {
-        setPositions(positions.filter((position: any) => position?.id !== id));
-        message.success('Position deleted successfully');
+    const handleDelete = async (id: any) => {
+        const positionId = Number(id);
+        const response: any = await dispatch(deleteposition(positionId));
+        const data = response.data;
+        // console.log(data)
+        if (response.status !== 200) {
+            message.error("Error fetching position");
+        } else {
+            message.success('Position deleted successfully');
+            // navigate('/positions');
+            fetchPositions();
+        }
     };
 
     const handleBulkDelete = () => {
@@ -117,11 +148,12 @@ const PositionManagement = () => {
             <Menu.Item
                 icon={<DeleteOutlined />}
                 danger
-                onClick={() => Modal.confirm({
-                    title: 'Confirm Delete',
-                    content: `Are you sure you want to delete ${record.name}?`,
-                    onOk: () => handleDelete(record.id)
-                })}
+                onClick={() => handleDelete(record.id)}
+            //     Modal.confirm({
+            //     title: 'Confirm Delete',
+            //     content: `Are you sure you want to delete ${record.name}?`,
+            //     onOk: () => handleDelete(record.id)
+            // })}
             >
                 Delete
             </Menu.Item>
