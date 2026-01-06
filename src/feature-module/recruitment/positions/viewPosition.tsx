@@ -34,6 +34,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../../core/data/redux/store';
 import { getPositionById } from '../../../core/data/redux/actions/requisitionActions';
+import { deleteposition } from '../../../core/data/redux/actions/jobProfileActions';
 import moment from 'moment';
 import { Spin } from 'antd';
 
@@ -151,7 +152,7 @@ const PositionDetails: React.FC = () => {
 
         // ✅ SAFE DEFAULT OBJECTS
         organisation: data.organisationName ?? { id: 0, name: "N/A" },
-        division: data.divisionName ?? { id: 0, name: "N/A"},
+        division: data.divisionName ?? { id: 0, name: "N/A" },
         department: data.departmentName ?? { id: 0, name: "N/A" },
         businessUnit: data.businessUnitName ?? { id: 0, name: "N/A" },
         location: data.locationName ?? { id: data.locationId, name: "N/A" },
@@ -220,19 +221,30 @@ const PositionDetails: React.FC = () => {
         navigate(`/positions/edit/${id}`);
     };
 
-    const handleDelete = () => {
-        Modal.confirm({
-            title: 'Delete Position',
-            content: 'Are you sure you want to delete this position? This action cannot be undone.',
-            okText: 'Delete',
-            okType: 'danger',
-            cancelText: 'Cancel',
-            onOk() {
-                // Delete logic would go here
-                message.success('Position deleted successfully');
-                navigate('/positions');
-            },
-        });
+    const handleDelete = async () => {
+        alert(0)
+        const positionId = Number(id);
+        const response: any = await dispatch(deleteposition(positionId));
+        const data = response.data;
+        // console.log(data)
+        if (response.status !== 200) {
+            message.error("Error fetching position");
+        } else {
+            message.success('Position deleted successfully');
+            navigate('/positions');
+        }
+        // Modal.confirm({
+        //     title: 'Delete Position',
+        //     content: 'Are you sure you want to delete this position? This action cannot be undone.',
+        //     okText: 'Delete',
+        //     okType: 'danger',
+        //     cancelText: 'Cancel',
+        //     onOk() {
+        //         // Delete logic would go here
+        //         message.success('Position deleted successfully');
+        //         navigate('/positions');
+        //     },
+        // });
     };
 
     const formatDate = (dateString: string) => {

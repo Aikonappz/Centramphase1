@@ -25,22 +25,26 @@ const CreatePosition = () => {
     const [jobRoles, setJobRoles] = useState<any>(jobProfile.jobRoleList?.content || []);
     const [competencies, setCompetencies] = useState<any>(jobProfile.compentencyList?.content || []);
     const [jobFamilies, setJobFamilies] = useState<{ label: string; value: string }[]>([]);
+    const [hiringManager, setHiringManagerOptions] = useState<any[]>([]);
+    const [headOfBusinessUnit, setHeadOfBusinessUnitOptions] = useState<any[]>([]);
+    const [headOfRecruitment, setHeadOfRecruitmentOptions] = useState<any[]>([]);
+    const [recruiter, setRecruitOptions] = useState<any[]>([]);
 
-    const hiringManager = [
-        { value: 1, label: 'William Stones' },
-        { value: 2, label: 'Amit Mishra' },
-    ];
-    //const [hiringManager, setHiringManager] = useState<any>(transformArrayToLabelValue(jobs.hiringManager?.content || []));
-    const headOfBusinessUnit = [
-        { value: 1, label: 'Rohini Mohan' },
-        { value: 2, label: 'Prem Kumaran' },
-    ];
-    //const [headOfBusinessUnit, setheadOfBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.headOfBusinessUnit?.content || []));
-    const headOfRecruitment = [
-        { value: 1, label: 'Harris Kumar' },
-        { value: 2, label: 'Amit Samaddar' },
-    ];
-    //const [headOfRecruitment, setheadOfRecruitment] = useState<any>(transformArrayToLabelValue(jobs.headOfRecruitment?.content || []));
+    // const hiringManager = [
+    //     { value: 1, label: 'William Stones' },
+    //     { value: 2, label: 'Amit Mishra' },
+    // ];
+    // //const [hiringManager, setHiringManager] = useState<any>(transformArrayToLabelValue(jobs.hiringManager?.content || []));
+    // const headOfBusinessUnit = [
+    //     { value: 1, label: 'Rohini Mohan' },
+    //     { value: 2, label: 'Prem Kumaran' },
+    // ];
+    // //const [headOfBusinessUnit, setheadOfBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.headOfBusinessUnit?.content || []));
+    // const headOfRecruitment = [
+    //     { value: 1, label: 'Harris Kumar' },
+    //     { value: 2, label: 'Amit Samaddar' },
+    // ];
+    // //const [headOfRecruitment, setheadOfRecruitment] = useState<any>(transformArrayToLabelValue(jobs.headOfRecruitment?.content || []));
 
     useEffect(() => {
         dispatch(getJobFamily());
@@ -66,7 +70,15 @@ const CreatePosition = () => {
         organisationId: null,
         divisionId: null
     });
-    const [recruitOptions, setRecruitOptions] = useState<any[]>([]);
+    const mapToSelectOptions = (data: string[]) =>
+        data.map(name => ({
+            label: name,
+            value: name
+        }));
+
+    const getSelectValue = (arr: any[]) =>
+        Array.isArray(arr) && arr.length > 0 ? arr[0].value : null;
+
     const handleFilterChange = (
         key: keyof typeof filters,
         value: any
@@ -83,8 +95,13 @@ const CreatePosition = () => {
             updatedFilters.divisionId;
         if (!allSelected) return;
         dispatch(
-            getReqruiterDetails_BasedCriteria(updatedFilters)
-        );
+            getReqruiterDetails_BasedCriteria(updatedFilters)).then((res: any) => {
+                const options = mapToSelectOptions(res.data);
+                setHiringManagerOptions(options);
+                setHeadOfBusinessUnitOptions(options);
+                setHeadOfRecruitmentOptions(options);
+                setRecruitOptions(options);
+            });
     };
 
     const onFinish = async (values: any) => {
@@ -93,9 +110,14 @@ const CreatePosition = () => {
             // Format dates before submission
             const formattedValues = {
                 ...values,
+                recruiterName: getSelectValue(recruiter),
+                hiringManager: getSelectValue(hiringManager),
+                headOfBusinessUnit: getSelectValue(headOfBusinessUnit),
+                headOfRecruitment: getSelectValue(headOfRecruitment),
                 startDate: values.startDate.format('YYYY-MM-DD'),
                 endDate: values.endDate?.format('YYYY-MM-DD') || null
             };
+            console.log("formattedValues" + formattedValues)
             const response: any = await dispatch(savePosition(formattedValues));
             if (response.status === 200) {
                 message.success('Position created successfully!');
@@ -396,6 +418,20 @@ const CreatePosition = () => {
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
                                             options={headOfRecruitment}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="recruiter"
+                                        label="Recruiter"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={recruiter}
                                         />
                                     </Form.Item>
 

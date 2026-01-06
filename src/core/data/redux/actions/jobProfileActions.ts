@@ -29,6 +29,10 @@ export const GET_JOB_CODE_REQUEST = 'GET_JOB_CODE_REQUEST';
 export const GET_JOB_CODE_SUCCESS = 'GET_JOB_CODE_SUCCESS';
 export const GET_JOB_CODE_FAILURE = 'GET_JOB_CODE_FAILURE';
 
+export const DELETE_POSITION_REQUEST = 'DELETE_POSITION_REQUEST';
+export const DELETE_POSITION_SUCCESS = 'DELETE_POSITION_SUCCESS';
+export const DELETE_POSITION_FAILURE = 'DELETE_POSITION_FAILURE';
+
 export const GET_REQRUITER_DETAILS_REQUEST = 'GET_REQRUITER_DETAILS_REQUEST';
 export const GET_REQRUITER_DETAILS_SUCCESS = 'GET_REQRUITER_DETAILS_SUCCESS';
 export const GET_REQRUITER_DETAILS_FAILURE = 'GET_REQRUITER_DETAILS_FAILURE';
@@ -101,6 +105,17 @@ interface GetJobCodeSuccessAction {
 }
 interface GetJobCodeFailureAction {
   type: typeof GET_JOB_CODE_FAILURE;
+  payload: string;
+}
+interface DeleteJobCodeRequestAction {
+  type: typeof DELETE_POSITION_REQUEST;
+}
+interface DeleteJobCodeSuccessAction {
+  type: typeof DELETE_POSITION_SUCCESS;
+  payload: any;
+}
+interface DeleteJobCodeFailureAction {
+  type: typeof DELETE_POSITION_FAILURE;
   payload: string;
 }
 interface GetReqruiterDetailsRequestAction {
@@ -182,6 +197,9 @@ export type JobProfileActionTypes =
   | GetJobCodeRequestAction
   | GetJobCodeSuccessAction
   | GetJobCodeFailureAction
+  | DeleteJobCodeRequestAction
+  | DeleteJobCodeSuccessAction
+  | DeleteJobCodeFailureAction
   | GetReqruiterDetailsRequestAction
   | GetReqruiterDetailsSuccessAction
   | GetReqruiterDetailsFailureAction
@@ -332,6 +350,30 @@ export const getReqruiterDetails_BasedCriteria = (data: any) => {
       }
       dispatch({
         type: GET_REQRUITER_DETAILS_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const deleteposition = (id: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: DELETE_POSITION_REQUEST });
+    try {
+      const response = await api.delete(`/position/${id}`);
+      dispatch({
+        type: DELETE_POSITION_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to delete';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: DELETE_POSITION_FAILURE,
         payload: errorMessage
       });
       return error;
