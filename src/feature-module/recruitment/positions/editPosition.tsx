@@ -3,7 +3,11 @@ import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, 
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import { getPositionById, getPositions, savePosition } from '../../../core/data/redux/actions/requisitionActions';
-import { useAppDispatch } from '../../../core/data/redux/store';
+import { useAppDispatch, RootState } from '../../../core/data/redux/store';
+import { transformArrayToLabelValue } from '../../../utils/misc';
+import { useSelector } from 'react-redux';
+import { getJobFamily, getAllJobCode, getReqruiterDetails_BasedCriteria } from '../../../core/data/redux/actions/jobProfileActions';
+
 
 const { Option } = Select;
 
@@ -14,6 +18,17 @@ const EditPosition = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const jobs: any = useSelector((state: RootState) => state.jobs) || [];
+    const jobProfile: any = useSelector((state: RootState) => state.jobProfile) || [];
+    const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
+    const [businessUnit, setBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
+    const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
+    const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
+    const [jobFamilies, setJobFamilies] = useState<{ label: string; value: string }[]>([]);
+    const [hiringManager, setHiringManagerOptions] = useState<any[]>([]);
+    const [headOfBusinessUnit, setHeadOfBusinessUnitOptions] = useState<any[]>([]);
+    const [headOfRecruitment, setHeadOfRecruitmentOptions] = useState<any[]>([]);
+    const [recruiter, setRecruitOptions] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchPosition = async () => {
@@ -29,7 +44,34 @@ const EditPosition = () => {
                         form.setFieldsValue({
                             ...data,
                             startDate: moment(data?.startDate),
-                            endDate: data.endDate ? moment(data?.endDate) : null
+                            endDate: data.endDate ? moment(data?.endDate) : null,
+                            department: data.departmentId
+                                ? {
+                                    value: data.departmentId, label: data.departmentName
+                                } : null,
+                            organisation: data.organisationId
+                                ? {
+                                    value: data.organisationId, label: data.organisationName
+                                } : null,
+                            division: data.divisionId
+                                ? { value: data.divisionId, label: data.divisionName }
+                                : null,
+                            businessUnit: data.businessUnitId
+                                ? { value: data.businessUnitId, label: data.businessUnitName }
+                                : null,
+                            recruiter: data.recruiterName || null
+                        });
+                        if (data.recruiterName) {
+                            setRecruitOptions([
+                                { label: data.recruiterName, value: data.recruiterName }
+                            ]);
+                        }
+                        // 🔥 ADD THIS BLOCK (CRITICAL)
+                        setFilters({
+                            departmentId: data.departmentId,
+                            organisationId: data.organisationId,
+                            divisionId: data.divisionId,
+                            businessUnitId: data.businessUnitId
                         });
                         setLoading(false);
                     }, 500);
@@ -43,29 +85,99 @@ const EditPosition = () => {
         fetchPosition();
     }, [id, form]);
 
+    const [filters, setFilters] = useState({
+        departmentId: null,
+        businessUnitId: null,
+        organisationId: null,
+        divisionId: null
+    });
+    const mapToSelectOptions = (data: string[]) =>
+        data.map(name => ({
+            label: name,
+            value: name
+        }));
+
+    const handleFilterChange = (
+        key: keyof typeof filters,
+        value: any
+    ) => {
+        const actualValue =
+            typeof value === 'object' && value !== null
+                ? value.value   // from Select (labelInValue)
+                : value;         // fallback
+
+        const updatedFilters = {
+            ...filters,
+            [key]: actualValue
+        };
+
+        setFilters(updatedFilters);
+
+        const allSelected =
+            updatedFilters.departmentId &&
+            updatedFilters.businessUnitId &&
+            updatedFilters.organisationId &&
+            updatedFilters.divisionId;
+
+        if (!allSelected) return;
+
+        dispatch(
+            getReqruiterDetails_BasedCriteria(updatedFilters)
+        ).then((res: any) => {
+            const options = mapToSelectOptions(res.data);
+            form.setFieldsValue({ recruiter: null });
+            setHiringManagerOptions(options);
+            setHeadOfBusinessUnitOptions(options);
+            setHeadOfRecruitmentOptions(options);
+            setRecruitOptions(options);
+        });
+    };
+
+    const getId = (obj: any) => obj?.value ?? null;
+    const getName = (obj: any) => obj?.label ?? null;
+
     const onFinish = async (values: any) => {
         setSubmitting(true);
         try {
-            // Format dates before submission
             const normalizedStatus =
                 values.status === 'ACTIVE' ? 1 :
                     values.status === 'INACTIVE' ? 0 :
                         values.status;
-
             const formattedValues = {
                 ...values,
+                id: Number(id),
                 status: normalizedStatus,
                 startDate: values.startDate.format('YYYY-MM-DD'),
                 endDate: values.endDate?.format('YYYY-MM-DD') || null,
-                id: Number(id) // Add the ID to the object
+
+                // 🔹 Organisation
+                organisationId: getId(values.organisation),
+                organisationName: getName(values.organisation),
+
+                // 🔹 Department
+                departmentId: getId(values.department),
+                departmentName: getName(values.department),
+
+                // 🔹 Division
+                divisionId: getId(values.division),
+                divisionName: getName(values.division),
+
+                // 🔹 Business Unit
+                businessUnitId: getId(values.businessUnit),
+                businessUnitName: getName(values.businessUnit),
+
+                // 🔹 Recruiter fields (string-based)
+                recruiterName: values.recruiter || null,
+                hiringManager: values.hiringManager || null,
+                headOfBusinessUnit: values.headOfBusinessUnit || null,
+                headOfRecruitment: values.headOfRecruitment || null,
             };
-            console.log('Updated values:', formattedValues);
+            // console.log('Updated values:', formattedValues);
             const response: any = await dispatch(savePosition(formattedValues));
             if (response.status === 200) {
                 message.success('Position created successfully!');
                 navigate('/positions');
             } else {
-                console.log(response);
                 message.error('Failed!');
             }
         } catch (error) {
@@ -74,6 +186,7 @@ const EditPosition = () => {
             setSubmitting(false);
         }
     };
+
 
     if (loading) {
         return (
@@ -240,53 +353,147 @@ const EditPosition = () => {
                                         <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>
 
-                                    <Form.Item
+                                    {/*<Form.Item
                                         name="departmentId"
                                         label="Department ID"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>*/}
+                                    <Form.Item name="department" label="Department">
+                                        <Select
+                                            labelInValue
+                                            showSearch
+                                            optionFilterProp="label"
+                                            options={jobDepartment}
+                                            onChange={(obj) => {
+                                                form.setFieldsValue({
+                                                    departmentId: obj.value,
+                                                    departmentName: obj.label
+                                                });
+                                                handleFilterChange('departmentId', obj);
+                                            }}
+                                        />
                                     </Form.Item>
 
-                                    <Form.Item
+                                    {/*<Form.Item
                                         name="organisationId"
                                         label="Organization ID"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>*/}
+                                    <Form.Item name="organisation" label="Organization">
+                                        <Select
+                                            labelInValue
+                                            showSearch
+                                            optionFilterProp="label"
+                                            options={organisation}
+                                            onChange={(obj) => {
+                                                form.setFieldsValue({
+                                                    organisationId: obj.value,
+                                                    organisationName: obj.label
+                                                });
+                                                handleFilterChange('organisationId', obj);
+                                            }}
+                                        />
                                     </Form.Item>
 
-                                    <Form.Item
+                                    {/*<Form.Item
                                         name="divisionId"
                                         label="Division ID"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>*/}
+                                    <Form.Item name="division" label="Division">
+                                        <Select
+                                            labelInValue
+                                            options={division}
+                                            onChange={(obj) => {
+                                                form.setFieldsValue({
+                                                    divisionId: obj.value,
+                                                    divisionName: obj.label
+                                                });
+                                                handleFilterChange('divisionId', obj);
+                                            }}
+                                        />
                                     </Form.Item>
 
-                                    <Form.Item
+                                    {/*<Form.Item
                                         name="businessUnitId"
                                         label="Business Unit ID"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>*/}
+                                    <Form.Item name="businessUnit" label="Business Unit">
+                                        <Select
+                                            labelInValue
+                                            options={businessUnit}
+                                            onChange={(obj) => {
+                                                form.setFieldsValue({
+                                                    businessUnitId: obj.value,
+                                                    businessUnitName: obj.label
+                                                });
+                                                handleFilterChange('businessUnitId', obj);
+                                            }}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="hiringManager"
                                         label="Hiring Manager"
                                     >
-                                        <InputNumber style={{ width: '100%' }} />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={hiringManager}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="headOfBusinessUnit"
                                         label="Head Of Business Unit"
                                     >
-                                        <InputNumber style={{ width: '100%' }} />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={headOfBusinessUnit}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="headOfRecruitment"
                                         label="Head Of Recruitment"
                                     >
-                                        <InputNumber style={{ width: '100%' }} />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={headOfRecruitment}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="recruiter"
+                                        label="Recruiter"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={recruiter}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
