@@ -163,10 +163,12 @@ const PositionDetails: React.FC = () => {
         organisationname: data.organisationName,
         locationname: data.locationName,
 
-        hiringManager: data.hiringManager ?? {
-            id: 0,
-            name: "Not Assigned",
-            email: "-"
+        hiringManager: {
+            id: data.recruiterId ?? 0,
+            name: data.recruiterName
+                ? data.recruiterName.toUpperCase()
+                : "NOT ASSIGNED",
+            email: data.recruiterEmail ?? "-"
         },
 
         candidates: data.candidates ?? 0,
@@ -330,9 +332,9 @@ const PositionDetails: React.FC = () => {
                                                 <Descriptions.Item label="Status">
                                                     {statusTag(positionData.status)} {hiringStatusTag(positionData.toBeHired)}
                                                 </Descriptions.Item>
-                                                <Descriptions.Item label="Description">
+                                                {/* <Descriptions.Item label="Description">
                                                     {positionData.description || 'No description provided'}
-                                                </Descriptions.Item>
+                                                </Descriptions.Item> */}
                                             </Descriptions>
                                         </Card>
 

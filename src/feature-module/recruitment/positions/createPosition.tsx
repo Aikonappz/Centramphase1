@@ -21,6 +21,7 @@ const CreatePosition = () => {
     const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
     const [businessUnit, setBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
+    const [location, setLocation] = useState<any>(transformArrayToLabelValue(jobs.location?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [jobRoles, setJobRoles] = useState<any>(jobProfile.jobRoleList?.content || []);
     const [competencies, setCompetencies] = useState<any>(jobProfile.compentencyList?.content || []);
@@ -29,6 +30,19 @@ const CreatePosition = () => {
     const [headOfBusinessUnit, setHeadOfBusinessUnitOptions] = useState<any[]>([]);
     const [headOfRecruitment, setHeadOfRecruitmentOptions] = useState<any[]>([]);
     const [recruiter, setRecruitOptions] = useState<any[]>([]);
+
+    alert(location.length)
+    //Hierarchy Based modification
+    const [allOrganisations, setAllOrganisations] = useState<any[]>([]);
+    const [allBusinessUnits, setAllBusinessUnits] = useState<any[]>([]);
+    const [allDivisions, setAllDivisions] = useState<any[]>([]);
+    const [allDepartments, setAllDepartments] = useState<any[]>([]);
+
+    const [organisationOptions, setOrganisationOptions] = useState<any[]>([]);
+    const [businessUnitOptions, setBusinessUnitOptions] = useState<any[]>([]);
+    const [divisionOptions, setDivisionOptions] = useState<any[]>([]);
+    const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
+
 
     // const hiringManager = [
     //     { value: 1, label: 'William Stones' },
@@ -45,6 +59,109 @@ const CreatePosition = () => {
     //     { value: 2, label: 'Amit Samaddar' },
     // ];
     // //const [headOfRecruitment, setheadOfRecruitment] = useState<any>(transformArrayToLabelValue(jobs.headOfRecruitment?.content || []));
+
+    useEffect(() => {
+        if (jobs?.organisation?.content) {
+            setAllOrganisations(jobs.organisation.content);
+            setOrganisationOptions(
+                jobs.organisation.content.map((org: any) => ({
+                    label: org.code
+                        ? `${org.name} (${org.code})`
+                        : org.name,
+                    value: org.id
+                }))
+            );
+        }
+
+        if (jobs?.businessUnit?.content) {
+            setAllBusinessUnits(jobs.businessUnit.content);
+        }
+
+        if (jobs?.division?.content) {
+            setAllDivisions(jobs.division.content);
+        }
+
+        if (jobs?.department?.content) {
+            setAllDepartments(jobs.department.content);
+        }
+    }, [jobs]);
+
+    const handleOrganisationChange = (orgId: number) => {
+        handleFilterChange('organisationId', orgId);
+
+        // 🔥 RESET FORM VALUES
+        form.setFieldsValue({
+            businessUnitId: null,
+            divisionId: null,
+            departmentId: null
+        });
+
+        // clear options
+        setBusinessUnitOptions([]);
+        setDivisionOptions([]);
+        setDepartmentOptions([]);
+
+        const filteredBU = allBusinessUnits.filter(
+            (bu) => bu.mapperId === orgId
+        );
+
+        setBusinessUnitOptions(
+            filteredBU.map((bu: any) => ({
+                label: bu.code
+                    ? `${bu.name} (${bu.code})`
+                    : bu.name,
+                value: bu.id
+            }))
+        );
+    };
+
+    const handleBusinessUnitChange = (businessUnitId: number) => {
+        handleFilterChange('businessUnitId', businessUnitId);
+
+        form.setFieldsValue({
+            divisionId: null,
+            departmentId: null
+        });
+
+        setDivisionOptions([]);
+        setDepartmentOptions([]);
+
+        const filteredDivisions = allDivisions.filter(
+            (div) => div.mapperId === businessUnitId
+        );
+
+        setDivisionOptions(
+            filteredDivisions.map((div: any) => ({
+                label: div.code
+                    ? `${div.name} (${div.code})`
+                    : div.name,
+                value: div.id
+            }))
+        );
+    };
+
+    const handleDivisionChange = (divisionId: number) => {
+        handleFilterChange('divisionId', divisionId);
+
+        form.setFieldsValue({
+            departmentId: null
+        });
+
+        setDepartmentOptions([]);
+
+        const filteredDepartments = allDepartments.filter(
+            (dep) => dep.mapperId === divisionId
+        );
+
+        setDepartmentOptions(
+            filteredDepartments.map((dep: any) => ({
+                label: dep.code
+                    ? `${dep.name} (${dep.code})`
+                    : dep.name,
+                value: dep.id
+            }))
+        );
+    };
 
     useEffect(() => {
         dispatch(getJobFamily());
@@ -176,25 +293,6 @@ const CreatePosition = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        name="organisationId"
-                                        label="Organization ID"
-                                    >
-                                        <Select
-                                            showSearch
-                                            placeholder="Search to Select"
-                                            optionFilterProp="label"
-                                            filterSort={(optionA: any, optionB: any) =>
-                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                            }
-                                            options={organisation}
-                                            onChange={(value: any) => {
-                                                handleFilterChange('organisationId', value)
-                                                console.log(value);
-                                            }}
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item
                                         name="payGrad"
                                         label="Pay Grade"
                                         rules={[{ required: true, message: 'Please input the pay grade!' }]}
@@ -210,6 +308,13 @@ const CreatePosition = () => {
                                             <Option value={1}>Active</Option>
                                             <Option value={0}>Inactive</Option>
                                         </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="costCenter"
+                                        label="Cost Center"
+                                        rules={[{ required: true, message: 'Please input the cost center!' }]}
+                                    >
+                                        <Input placeholder="e.g. CC-TECH" />
                                     </Form.Item>
                                 </Col>
 
@@ -308,15 +413,73 @@ const CreatePosition = () => {
                                     <h3 style={{ marginBottom: '16px', color: '#1890ff' }}>Organizational Information</h3>
 
                                     <Form.Item
+                                        name="organisationId"
+                                        label="Organization Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={organisationOptions}
+                                            onChange={(value: any) => {
+                                                handleOrganisationChange(value)
+                                                handleFilterChange('organisationId', value)
+                                                console.log(value);
+                                            }}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
                                         name="locationId"
-                                        label="Location ID"
+                                        label="Location Name"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>
 
                                     <Form.Item
+                                        name="businessUnitId"
+                                        label="Business Unit Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={(value) => {
+                                                handleBusinessUnitChange(value)
+                                                handleFilterChange('businessUnitId', value)
+                                            }}
+                                            options={businessUnitOptions}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="divisionId"
+                                        label="Division Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={(value) => {
+                                                handleDivisionChange(value)
+                                                handleFilterChange('divisionId', value)
+                                            }}
+                                            options={divisionOptions}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
                                         name="departmentId"
-                                        label="Department ID"
+                                        label="Department Name"
                                     >
                                         <Select
                                             showSearch
@@ -328,54 +491,10 @@ const CreatePosition = () => {
                                             onChange={(value) =>
                                                 handleFilterChange('departmentId', value)
                                             }
-                                            options={jobDepartment}
+                                            options={departmentOptions}
                                         />
                                     </Form.Item>
-
-                                    <Form.Item
-                                        name="costCenter"
-                                        label="Cost Center"
-                                        rules={[{ required: true, message: 'Please input the cost center!' }]}
-                                    >
-                                        <Input placeholder="e.g. CC-TECH" />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        name="divisionId"
-                                        label="Division ID"
-                                    >
-                                        <Select
-                                            showSearch
-                                            placeholder="Search to Select"
-                                            optionFilterProp="label"
-                                            filterSort={(optionA: any, optionB: any) =>
-                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                            }
-                                            onChange={(value) =>
-                                                handleFilterChange('divisionId', value)
-                                            }
-                                            options={division}
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        name="businessUnitId"
-                                        label="Business Unit ID"
-                                    >
-                                        <Select
-                                            showSearch
-                                            placeholder="Search to Select"
-                                            optionFilterProp="label"
-                                            filterSort={(optionA: any, optionB: any) =>
-                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                            }
-                                            onChange={(value) =>
-                                                handleFilterChange('businessUnitId', value)
-                                            }
-                                            options={businessUnit}
-                                        />
-                                    </Form.Item>
-
+                                    {/*
                                     <Form.Item
                                         name="hiringManager"
                                         label="Hiring Manager"
@@ -420,6 +539,7 @@ const CreatePosition = () => {
                                             options={headOfRecruitment}
                                         />
                                     </Form.Item>
+                                    */}
                                     <Form.Item
                                         name="recruiter"
                                         label="Recruiter"

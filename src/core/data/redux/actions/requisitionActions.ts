@@ -51,6 +51,10 @@ export const GET_ORGANISATION_REQUEST = 'GET_ORGANISATION_REQUEST';
 export const GET_ORGANISATION_SUCCESS = 'GET_ORGANISATION_SUCCESS';
 export const GET_ORGANISATION_FAILURE = 'GET_ORGANISATION_FAILURE';
 
+export const GET_LOCATION_REQUEST = 'GET_LOCATION_REQUEST';
+export const GET_LOCATION_SUCCESS = 'GET_LOCATION_SUCCESS';
+export const GET_LOCATION_FAILURE = 'GET_LOCATION_FAILURE';
+
 export const SAVE_ORGANISATION_REQUEST = 'SAVE_ORGANISATION_REQUEST';
 export const SAVE_ORGANISATION_SUCCESS = 'SAVE_ORGANISATION_SUCCESS';
 export const SAVE_ORGANISATION_FAILURE = 'SAVE_ORGANISATION_FAILURE';
@@ -215,6 +219,20 @@ interface GetOrganisationFailureAction {
   payload: string;
 }
 
+interface GetLocationRequestAction {
+  type: typeof GET_LOCATION_REQUEST;
+}
+
+interface GetLocationSuccessAction {
+  type: typeof GET_LOCATION_SUCCESS;
+  payload: any;
+}
+
+interface GetLocationFailureAction {
+  type: typeof GET_LOCATION_FAILURE;
+  payload: string;
+}
+
 interface SaveOrganisationRequestAction {
   type: typeof SAVE_ORGANISATION_REQUEST;
 }
@@ -319,6 +337,9 @@ export type JobActionTypes =
   | GetOrganisationRequestAction 
   | GetOrganisationSuccessAction 
   | GetOrganisationFailureAction
+  | GetLocationRequestAction 
+  | GetLocationSuccessAction 
+  | GetLocationFailureAction
   | SaveOrganisationRequestAction 
   | SaveOrganisationSuccessAction 
   | SaveOrganisationFailureAction
@@ -598,6 +619,30 @@ export const getOrganisation = () => {
       }
       dispatch({
         type: GET_ORGANISATION_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getLocations = () => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_LOCATION_REQUEST });
+    try {
+      const response = await api.get(`/location/`);
+      dispatch({
+        type: GET_LOCATION_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_LOCATION_FAILURE,
         payload: errorMessage
       });
       return error;

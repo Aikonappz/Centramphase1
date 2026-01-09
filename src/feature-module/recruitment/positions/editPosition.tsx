@@ -30,6 +30,19 @@ const EditPosition = () => {
     const [headOfRecruitment, setHeadOfRecruitmentOptions] = useState<any[]>([]);
     const [recruiter, setRecruitOptions] = useState<any[]>([]);
 
+    //Hierarchy Based modification
+    const [allOrganisations, setAllOrganisations] = useState<any[]>([]);
+    const [allBusinessUnits, setAllBusinessUnits] = useState<any[]>([]);
+    const [allDivisions, setAllDivisions] = useState<any[]>([]);
+    const [allDepartments, setAllDepartments] = useState<any[]>([]);
+
+    const [organisationOptions, setOrganisationOptions] = useState<any[]>([]);
+    const [businessUnitOptions, setBusinessUnitOptions] = useState<any[]>([]);
+    const [divisionOptions, setDivisionOptions] = useState<any[]>([]);
+    const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
+
+    const [editData, setEditData] = useState<any>(null);
+
     useEffect(() => {
         const fetchPosition = async () => {
             try {
@@ -45,20 +58,6 @@ const EditPosition = () => {
                             ...data,
                             startDate: moment(data?.startDate),
                             endDate: data.endDate ? moment(data?.endDate) : null,
-                            department: data.departmentId
-                                ? {
-                                    value: data.departmentId, label: data.departmentName
-                                } : null,
-                            organisation: data.organisationId
-                                ? {
-                                    value: data.organisationId, label: data.organisationName
-                                } : null,
-                            division: data.divisionId
-                                ? { value: data.divisionId, label: data.divisionName }
-                                : null,
-                            businessUnit: data.businessUnitId
-                                ? { value: data.businessUnitId, label: data.businessUnitName }
-                                : null,
                             recruiter: data.recruiterName || null
                         });
                         if (data.recruiterName) {
@@ -73,6 +72,12 @@ const EditPosition = () => {
                             divisionId: data.divisionId,
                             businessUnitId: data.businessUnitId
                         });
+                        setEditData({
+                            organisationId: data.organisationId,
+                            businessUnitId: data.businessUnitId,
+                            divisionId: data.divisionId,
+                            departmentId: data.departmentId
+                        });
                         setLoading(false);
                     }, 500);
                 }
@@ -84,6 +89,147 @@ const EditPosition = () => {
 
         fetchPosition();
     }, [id, form]);
+
+    useEffect(() => {
+        if (jobs?.organisation?.content) {
+            setAllOrganisations(jobs.organisation.content);
+            setOrganisationOptions(
+                jobs.organisation.content.map((org: any) => ({
+                    label: org.code
+                        ? `${org.name} (${org.code})`
+                        : org.name,
+                    value: org.id
+                }))
+            );
+        }
+
+        if (jobs?.businessUnit?.content) {
+            setAllBusinessUnits(jobs.businessUnit.content);
+        }
+
+        if (jobs?.division?.content) {
+            setAllDivisions(jobs.division.content);
+        }
+
+        if (jobs?.department?.content) {
+            setAllDepartments(jobs.department.content);
+        }
+    }, [jobs]);
+
+    const mapOptions = (list: any[]) =>
+        list.map(item => ({
+            label: item.code ? `${item.name} (${item.code})` : item.name,
+            value: item.id
+        }));
+
+    useEffect(() => {
+        if (!editData) return;
+
+        // Organisation
+        form.setFieldsValue({
+            organisationId: editData.organisationId
+        });
+
+        // Business Unit
+        const buList = allBusinessUnits.filter(
+            bu => bu.mapperId === editData.organisationId
+        );
+        setBusinessUnitOptions(mapOptions(buList));
+        form.setFieldsValue({ businessUnitId: editData.businessUnitId });
+
+        // Division
+        const divList = allDivisions.filter(
+            div => div.mapperId === editData.businessUnitId
+        );
+        setDivisionOptions(mapOptions(divList));
+        form.setFieldsValue({ divisionId: editData.divisionId });
+
+        // Department
+        const depList = allDepartments.filter(
+            dep => dep.mapperId === editData.divisionId
+        );
+        setDepartmentOptions(mapOptions(depList));
+        form.setFieldsValue({ departmentId: editData.departmentId });
+
+    }, [editData, allBusinessUnits, allDivisions, allDepartments]);
+
+
+    const handleOrganisationChange = (orgId: number) => {
+        handleFilterChange('organisationId', orgId);
+
+        // 🔥 RESET FORM VALUES
+        form.setFieldsValue({
+            businessUnitId: null,
+            divisionId: null,
+            departmentId: null
+        });
+
+        // clear options
+        setBusinessUnitOptions([]);
+        setDivisionOptions([]);
+        setDepartmentOptions([]);
+
+        const filteredBU = allBusinessUnits.filter(
+            (bu) => bu.mapperId === orgId
+        );
+
+        setBusinessUnitOptions(
+            filteredBU.map((bu: any) => ({
+                label: bu.code
+                    ? `${bu.name} (${bu.code})`
+                    : bu.name,
+                value: bu.id
+            }))
+        );
+    };
+
+    const handleBusinessUnitChange = (businessUnitId: number) => {
+        handleFilterChange('businessUnitId', businessUnitId);
+
+        form.setFieldsValue({
+            divisionId: null,
+            departmentId: null
+        });
+
+        setDivisionOptions([]);
+        setDepartmentOptions([]);
+
+        const filteredDivisions = allDivisions.filter(
+            (div) => div.mapperId === businessUnitId
+        );
+
+        setDivisionOptions(
+            filteredDivisions.map((div: any) => ({
+                label: div.code
+                    ? `${div.name} (${div.code})`
+                    : div.name,
+                value: div.id
+            }))
+        );
+    };
+
+    const handleDivisionChange = (divisionId: number) => {
+        handleFilterChange('divisionId', divisionId);
+
+        form.setFieldsValue({
+            departmentId: null
+        });
+
+        setDepartmentOptions([]);
+
+        const filteredDepartments = allDepartments.filter(
+            (dep) => dep.mapperId === divisionId
+        );
+
+        setDepartmentOptions(
+            filteredDepartments.map((dep: any) => ({
+                label: dep.code
+                    ? `${dep.name} (${dep.code})`
+                    : dep.name,
+                value: dep.id
+            }))
+        );
+    };
 
     const [filters, setFilters] = useState({
         departmentId: null,
@@ -133,9 +279,6 @@ const EditPosition = () => {
         });
     };
 
-    const getId = (obj: any) => obj?.value ?? null;
-    const getName = (obj: any) => obj?.label ?? null;
-
     const onFinish = async (values: any) => {
         setSubmitting(true);
         try {
@@ -149,23 +292,6 @@ const EditPosition = () => {
                 status: normalizedStatus,
                 startDate: values.startDate.format('YYYY-MM-DD'),
                 endDate: values.endDate?.format('YYYY-MM-DD') || null,
-
-                // 🔹 Organisation
-                organisationId: getId(values.organisation),
-                organisationName: getName(values.organisation),
-
-                // 🔹 Department
-                departmentId: getId(values.department),
-                departmentName: getName(values.department),
-
-                // 🔹 Division
-                divisionId: getId(values.division),
-                divisionName: getName(values.division),
-
-                // 🔹 Business Unit
-                businessUnitId: getId(values.businessUnit),
-                businessUnitName: getName(values.businessUnit),
-
                 // 🔹 Recruiter fields (string-based)
                 recruiterName: values.recruiter || null,
                 hiringManager: values.hiringManager || null,
@@ -346,41 +472,12 @@ const EditPosition = () => {
                                 <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                     <h3 style={{ marginBottom: '16px', color: '#1890ff' }}>Organizational Information</h3>
 
-                                    <Form.Item
-                                        name="locationId"
-                                        label="Location ID"
-                                    >
-                                        <InputNumber style={{ width: '100%' }} />
-                                    </Form.Item>
-
-                                    {/*<Form.Item
-                                        name="departmentId"
-                                        label="Department ID"
-                                    >
-                                        <InputNumber style={{ width: '100%' }} />
-                                    </Form.Item>*/}
-                                    <Form.Item name="department" label="Department">
-                                        <Select
-                                            labelInValue
-                                            showSearch
-                                            optionFilterProp="label"
-                                            options={jobDepartment}
-                                            onChange={(obj) => {
-                                                form.setFieldsValue({
-                                                    departmentId: obj.value,
-                                                    departmentName: obj.label
-                                                });
-                                                handleFilterChange('departmentId', obj);
-                                            }}
-                                        />
-                                    </Form.Item>
-
                                     {/*<Form.Item
                                         name="organisationId"
                                         label="Organization ID"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
-                                    </Form.Item>*/}
+                                    </Form.Item>
                                     <Form.Item name="organisation" label="Organization">
                                         <Select
                                             labelInValue
@@ -395,34 +492,14 @@ const EditPosition = () => {
                                                 handleFilterChange('organisationId', obj);
                                             }}
                                         />
-                                    </Form.Item>
-
-                                    {/*<Form.Item
-                                        name="divisionId"
-                                        label="Division ID"
-                                    >
-                                        <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>*/}
-                                    <Form.Item name="division" label="Division">
-                                        <Select
-                                            labelInValue
-                                            options={division}
-                                            onChange={(obj) => {
-                                                form.setFieldsValue({
-                                                    divisionId: obj.value,
-                                                    divisionName: obj.label
-                                                });
-                                                handleFilterChange('divisionId', obj);
-                                            }}
-                                        />
-                                    </Form.Item>
 
                                     {/*<Form.Item
                                         name="businessUnitId"
                                         label="Business Unit ID"
                                     >
                                         <InputNumber style={{ width: '100%' }} />
-                                    </Form.Item>*/}
+                                    </Form.Item>
                                     <Form.Item name="businessUnit" label="Business Unit">
                                         <Select
                                             labelInValue
@@ -435,9 +512,133 @@ const EditPosition = () => {
                                                 handleFilterChange('businessUnitId', obj);
                                             }}
                                         />
+                                    </Form.Item>*/}
+
+                                    {/*<Form.Item
+                                        name="divisionId"
+                                        label="Division ID"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>
+                                    <Form.Item name="division" label="Division">
+                                        <Select
+                                            labelInValue
+                                            options={division}
+                                            onChange={(obj) => {
+                                                form.setFieldsValue({
+                                                    divisionId: obj.value,
+                                                    divisionName: obj.label
+                                                });
+                                                handleFilterChange('divisionId', obj);
+                                            }}
+                                        />
+                                    </Form.Item>*/}
+
+                                    {/*<Form.Item
+                                        name="departmentId"
+                                        label="Department ID"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>
+                                    <Form.Item name="department" label="Department">
+                                        <Select
+                                            labelInValue
+                                            showSearch
+                                            optionFilterProp="label"
+                                            options={jobDepartment}
+                                            onChange={(obj) => {
+                                                form.setFieldsValue({
+                                                    departmentId: obj.value,
+                                                    departmentName: obj.label
+                                                });
+                                                handleFilterChange('departmentId', obj);
+                                            }}
+                                        />
+                                    </Form.Item>*/}
+                                    <Form.Item
+                                        name="organisationId"
+                                        label="Organization Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={organisationOptions}
+                                            onChange={(value: any) => {
+                                                handleOrganisationChange(value)
+                                                handleFilterChange('organisationId', value)
+                                                console.log(value);
+                                            }}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
+                                        name="locationId"
+                                        label="Location Name"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="businessUnitId"
+                                        label="Business Unit Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={(value) => {
+                                                handleBusinessUnitChange(value)
+                                                handleFilterChange('businessUnitId', value)
+                                            }}
+                                            options={businessUnitOptions}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="divisionId"
+                                        label="Division Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={(value) => {
+                                                handleDivisionChange(value)
+                                                handleFilterChange('divisionId', value)
+                                            }}
+                                            options={divisionOptions}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="departmentId"
+                                        label="Department Name"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            onChange={(value) =>
+                                                handleFilterChange('departmentId', value)
+                                            }
+                                            options={departmentOptions}
+                                        />
+                                    </Form.Item>
+
+                                    {/*<Form.Item
                                         name="hiringManager"
                                         label="Hiring Manager"
                                     >
@@ -481,6 +682,7 @@ const EditPosition = () => {
                                             options={headOfRecruitment}
                                         />
                                     </Form.Item>
+                                    */}
                                     <Form.Item
                                         name="recruiter"
                                         label="Recruiter"
