@@ -211,7 +211,8 @@ const EditPosition = () => {
             businessUnitId: null,
             divisionId: null,
             departmentId: null,
-            locationId: null
+            locationId: null,
+            recruiter: null
         });
 
         // clear options

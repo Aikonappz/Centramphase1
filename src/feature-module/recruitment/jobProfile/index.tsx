@@ -142,7 +142,8 @@ const JobProfilePage: React.FC = () => {
                 // Add new competency
                 const newCompetency: Competency = {
                     id: null,
-                    ...values
+                    ...values,
+                    jobRoleId : values.jobRoleId,
                 };
                 setCompetencies([...competencies, newCompetency]);
                 updatedValues = newCompetency;
