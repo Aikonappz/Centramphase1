@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, Row, Col, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import { savePosition } from '../../../core/data/redux/actions/requisitionActions';
+import { savePosition, getLocations } from '../../../core/data/redux/actions/requisitionActions';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
@@ -31,18 +31,18 @@ const CreatePosition = () => {
     const [headOfRecruitment, setHeadOfRecruitmentOptions] = useState<any[]>([]);
     const [recruiter, setRecruitOptions] = useState<any[]>([]);
 
-    alert(location.length)
     //Hierarchy Based modification
     const [allOrganisations, setAllOrganisations] = useState<any[]>([]);
     const [allBusinessUnits, setAllBusinessUnits] = useState<any[]>([]);
     const [allDivisions, setAllDivisions] = useState<any[]>([]);
     const [allDepartments, setAllDepartments] = useState<any[]>([]);
+    const [allLocations, setAllLocations] = useState<any[]>([]);
 
     const [organisationOptions, setOrganisationOptions] = useState<any[]>([]);
     const [businessUnitOptions, setBusinessUnitOptions] = useState<any[]>([]);
     const [divisionOptions, setDivisionOptions] = useState<any[]>([]);
     const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
-
+    const [locationOptions, setLocationOptions] = useState<any[]>([]);
 
     // const hiringManager = [
     //     { value: 1, label: 'William Stones' },
@@ -59,6 +59,42 @@ const CreatePosition = () => {
     //     { value: 2, label: 'Amit Samaddar' },
     // ];
     // //const [headOfRecruitment, setheadOfRecruitment] = useState<any>(transformArrayToLabelValue(jobs.headOfRecruitment?.content || []));
+
+    useEffect(() => {
+        dispatch(getJobFamily());
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response: any = await dispatch(getAllJobCode());
+
+            const options = (response?.data?.content || []).map((item: string) => ({
+                label: item,
+                value: item,
+            }));
+            setJobFamilies(options);
+        };
+        fetchData();
+    }, [dispatch]);
+
+    useEffect(() => {
+        const fetchLocation = async () => {
+            const response: any = await dispatch(getLocations());
+
+            const options = (response?.data?.content || []).map((item: any) => ({
+                label: item.name,        // dropdown text
+                value: item.id,          // dropdown value
+                mapperId: item.mapperId, // mapper id
+                status: item.status, // status
+                code: item.code, // code
+                version: item.version
+            }));
+            setAllLocations(options);
+        };
+        fetchLocation();
+    }, [dispatch]);
+
+
 
     useEffect(() => {
         if (jobs?.organisation?.content) {
@@ -93,14 +129,17 @@ const CreatePosition = () => {
         form.setFieldsValue({
             businessUnitId: null,
             divisionId: null,
-            departmentId: null
+            departmentId: null,
+            locationId: null
         });
 
         // clear options
         setBusinessUnitOptions([]);
+        setLocationOptions([]);
         setDivisionOptions([]);
         setDepartmentOptions([]);
 
+        // 🔹 FILTER BUSINESS UNITS
         const filteredBU = allBusinessUnits.filter(
             (bu) => bu.mapperId === orgId
         );
@@ -111,6 +150,20 @@ const CreatePosition = () => {
                     ? `${bu.name} (${bu.code})`
                     : bu.name,
                 value: bu.id
+            }))
+        );
+
+        // 🔹 FILTER LOCATIONS
+        const filteredLocations = allLocations.filter(
+            (loc) => loc.mapperId === orgId && loc.status === 'ACTIVE'
+        );
+
+        setLocationOptions(
+            filteredLocations.map((loc: any) => ({
+                label: loc.code
+                    ? `${loc.label} (${loc.code})`
+                    : loc.label,
+                value: loc.value
             }))
         );
     };
@@ -162,24 +215,6 @@ const CreatePosition = () => {
             }))
         );
     };
-
-    useEffect(() => {
-        dispatch(getJobFamily());
-    }, []);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response: any = await dispatch(getAllJobCode());
-
-            const options = (response?.data?.content || []).map((item: string) => ({
-                label: item,
-                value: item,
-            }));
-            setJobFamilies(options);
-        };
-        fetchData();
-    }, [dispatch]);
-
 
     const [filters, setFilters] = useState({
         departmentId: null,
@@ -436,8 +471,23 @@ const CreatePosition = () => {
                                         name="locationId"
                                         label="Location Name"
                                     >
-                                        <InputNumber style={{ width: '100%' }} />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={locationOptions}
+                                        />
                                     </Form.Item>
+
+                                    {/* <Form.Item
+                                        name="locationId"
+                                        label="Location Name"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item> */}
 
                                     <Form.Item
                                         name="businessUnitId"

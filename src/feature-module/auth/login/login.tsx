@@ -6,7 +6,7 @@ import api from "../../../core/data/api";
 import { e } from "react-router/dist/development/route-data-BmvbmBej";
 import { userSignIn } from "../../../core/data/redux/actions/userActions";
 import { useAppDispatch } from "../../../core/data/redux/store";
-import { getBusinessUnit, getDepartmentLists, getDivision, getOrganisation, getPositions, getLocations } from "../../../core/data/redux/actions/requisitionActions";
+import { getBusinessUnit, getDepartmentLists, getDivision, getOrganisation, getPositions } from "../../../core/data/redux/actions/requisitionActions";
 type PasswordField = "password";
 
 const Login = () => {
@@ -42,13 +42,11 @@ const Login = () => {
         const promise3 = dispatch(getBusinessUnit());
         const promise4 = dispatch(getOrganisation());
         const promise5 = dispatch(getDivision());
-        const promise6 = dispatch(getLocations());
         
         // Wait for all promises to resolve
-        const results = await Promise.all([promise1, promise2, promise3, promise4, promise5, promise6]);
+        const results = await Promise.all([promise1, promise2, promise3, promise4, promise5]);
         if (results) {
           console.log(results);
-          return
           localStorage.setItem("token", response.data.jwtToken);
           setIsLoading(false);
           setTimeout(() => {

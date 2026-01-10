@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, Row, Col, Card, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
-import { getPositionById, getPositions, savePosition } from '../../../core/data/redux/actions/requisitionActions';
+import { getPositionById, getPositions, savePosition, getLocations } from '../../../core/data/redux/actions/requisitionActions';
 import { useAppDispatch, RootState } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
@@ -35,13 +35,45 @@ const EditPosition = () => {
     const [allBusinessUnits, setAllBusinessUnits] = useState<any[]>([]);
     const [allDivisions, setAllDivisions] = useState<any[]>([]);
     const [allDepartments, setAllDepartments] = useState<any[]>([]);
+    const [allLocations, setAllLocations] = useState<any[]>([]);
 
     const [organisationOptions, setOrganisationOptions] = useState<any[]>([]);
     const [businessUnitOptions, setBusinessUnitOptions] = useState<any[]>([]);
     const [divisionOptions, setDivisionOptions] = useState<any[]>([]);
     const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
+    const [locationOptions, setLocationOptions] = useState<any[]>([]);
 
     const [editData, setEditData] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response: any = await dispatch(getAllJobCode());
+
+            const options = (response?.data?.content || []).map((item: string) => ({
+                label: item,
+                value: item,
+            }));
+            setJobFamilies(options);
+        };
+        fetchData();
+    }, [dispatch]);
+
+    useEffect(() => {
+        const fetchLocation = async () => {
+            const response: any = await dispatch(getLocations());
+
+            const options = (response?.data?.content || []).map((item: any) => ({
+                label: item.name,        // dropdown text
+                value: item.id,          // dropdown value
+                mapperId: item.mapperId, // mapper id
+                status: item.status, // status
+                code: item.code, // code
+                version: item.version
+            }));
+            setAllLocations(options);
+        };
+        fetchLocation();
+    }, [dispatch]);
 
     useEffect(() => {
         const fetchPosition = async () => {
@@ -76,7 +108,8 @@ const EditPosition = () => {
                             organisationId: data.organisationId,
                             businessUnitId: data.businessUnitId,
                             divisionId: data.divisionId,
-                            departmentId: data.departmentId
+                            departmentId: data.departmentId,
+                            locationId: data.locationId
                         });
                         setLoading(false);
                     }, 500);
@@ -122,6 +155,15 @@ const EditPosition = () => {
             value: item.id
         }));
 
+    const mapOptionlocations = (list: any[]) =>
+        list.map(item => ({
+            label: item.code
+                ? `${item.label} (${item.code})`
+                : item.label,
+            value: item.value
+        }));
+
+
     useEffect(() => {
         if (!editData) return;
 
@@ -129,6 +171,13 @@ const EditPosition = () => {
         form.setFieldsValue({
             organisationId: editData.organisationId
         });
+
+        // Location
+        const locList = allLocations.filter(
+            loc => loc.mapperId === editData.organisationId
+        );
+        setLocationOptions(mapOptionlocations(locList));
+        form.setFieldsValue({ locationId: editData.locationId });
 
         // Business Unit
         const buList = allBusinessUnits.filter(
@@ -151,7 +200,7 @@ const EditPosition = () => {
         setDepartmentOptions(mapOptions(depList));
         form.setFieldsValue({ departmentId: editData.departmentId });
 
-    }, [editData, allBusinessUnits, allDivisions, allDepartments]);
+    }, [editData, allBusinessUnits, allDivisions, allDepartments, allLocations]);
 
 
     const handleOrganisationChange = (orgId: number) => {
@@ -161,14 +210,17 @@ const EditPosition = () => {
         form.setFieldsValue({
             businessUnitId: null,
             divisionId: null,
-            departmentId: null
+            departmentId: null,
+            locationId: null
         });
 
         // clear options
         setBusinessUnitOptions([]);
+        setLocationOptions([]);
         setDivisionOptions([]);
         setDepartmentOptions([]);
 
+        // 🔹 FILTER BUSINESS UNITS
         const filteredBU = allBusinessUnits.filter(
             (bu) => bu.mapperId === orgId
         );
@@ -179,6 +231,20 @@ const EditPosition = () => {
                     ? `${bu.name} (${bu.code})`
                     : bu.name,
                 value: bu.id
+            }))
+        );
+
+        // 🔹 FILTER LOCATIONS
+        const filteredLocations = allLocations.filter(
+            (loc) => loc.mapperId === orgId && loc.status === 'ACTIVE'
+        );
+
+        setLocationOptions(
+            filteredLocations.map((loc: any) => ({
+                label: loc.code
+                    ? `${loc.label} (${loc.code})`
+                    : loc.label,
+                value: loc.value
             }))
         );
     };
@@ -361,11 +427,24 @@ const EditPosition = () => {
                                     <Form.Item
                                         name="jobCode"
                                         label="Job Code"
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={jobFamilies}
+                                        />
+                                    </Form.Item>
+                                    {/* <Form.Item
+                                        name="jobCode"
+                                        label="Job Code"
                                         rules={[{ required: true, message: 'Please input the job code!' }]}
                                     >
                                         <Input placeholder="e.g. 1234" />
-                                    </Form.Item>
-
+                                    </Form.Item> */}
                                     <Form.Item
                                         name="payGrad"
                                         label="Pay Grade"
@@ -579,8 +658,23 @@ const EditPosition = () => {
                                         name="locationId"
                                         label="Location Name"
                                     >
-                                        <InputNumber style={{ width: '100%' }} />
+                                        <Select
+                                            showSearch
+                                            placeholder="Search to Select"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA: any, optionB: any) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={locationOptions}
+                                        />
                                     </Form.Item>
+
+                                    {/* <Form.Item
+                                        name="locationId"
+                                        label="Location Name"
+                                    >
+                                        <InputNumber style={{ width: '100%' }} />
+                                    </Form.Item> */}
 
                                     <Form.Item
                                         name="businessUnitId"
