@@ -157,7 +157,9 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setCompetencyModalVisible(false);
                     resetForms();
-                    dispatch(getCompentancy());
+                    const response: any = await dispatch(getCompentancy());
+                    const data = response.data;
+                    setCompetencies(data.content)
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -216,7 +218,8 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setJobFamilyModalVisible(false);
                     resetForms();
-                    dispatch(getJobFamily());
+                    const response: any = await dispatch(getJobFamily());
+                    setJobFamilies(response.data.content)
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -275,7 +278,8 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setJobRoleModalVisible(false);
                     resetForms();
-                    dispatch(getJobRole());
+                    const response: any = await dispatch(getJobRole());
+                    setJobRoles(response.data.content)
                 } else {
                     console.log(response);
                     message.error('Failed!');
