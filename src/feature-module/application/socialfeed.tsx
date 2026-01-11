@@ -557,11 +557,11 @@ const SocialFeed = () => {
                         open={open1}
                         close={() => setOpen1(false)}
                         slides={[
-                            { src: "/react/template/assets/img/social/gallery-big-01.jpg" },
-                            { src: "/react/template/assets/img/social/gallery-big-02.jpg" },
-                            { src: "/react/template/assets/img/social/gallery-big-03.jpg" },
-                            { src: "/react/template/assets/img/social/gallery-big-04.jpg" },
-                            { src: "/react/template/assets/img/social/gallery-big-01.jpg" },
+                            { src: "/assets/img/social/gallery-big-01.jpg" },
+                            { src: "/assets/img/social/gallery-big-02.jpg" },
+                            { src: "/assets/img/social/gallery-big-03.jpg" },
+                            { src: "/assets/img/social/gallery-big-04.jpg" },
+                            { src: "/assets/img/social/gallery-big-01.jpg" },
                         ]}
                     />
                     <Slider {...settings2} className="social-gallery-slider owl-carousel mb-3">

@@ -1,6 +1,6 @@
 export const all_routes = {
   // dashboard routes
-  adminDashboard: "/index",
+  adminDashboard: "/dashboard",
   employeeDashboard: "/employee-dashboard",
   leadsDashboard: "/leads-dashboard",
   dealsDashboard: "/deals-dashboard",
@@ -54,6 +54,7 @@ export const all_routes = {
   apikey: "/api-keys",
   privacyPolicy: "/privacy-policy",
   termscondition: "/terms-condition",
+  career: "/careers",
 
   // auth routes routes
   login: "/login",
@@ -364,8 +365,17 @@ export const all_routes = {
   resignation: "/resignation",
   termination: "/termination",
   // RECRUITMENT
+  requsitionDashboard: "/requisition-dashboard",
+  positions: "/positions",
+  jobProfile: '/jobProfile',
+  createPosition: "/positions/create",
+  editPosition: "/positions/edit/:id",
+  viewPosition: "/positions/view/:id",
   jobgrid: "/job-grid",
   joblist: "/job-list",
+  jobrequsition: "/create/job-requisition",
+  jobrequsitionblank: "/create/job-blank-requisition",
+  jobPortal: "/create/job-portal",
   candidatesGrid: "/candidates-grid",
   candidateslist: "/candidates",
   candidateskanban: "/candidates-kanban",

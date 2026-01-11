@@ -291,13 +291,23 @@ import Promotion from "../hrm/promotion";
 import Trainers from "../training/trainers";
 import TrainingList from "../training/trainingList";
 import Invoices from "../finance-accounts/sales/invoices";
+import RequisitionPage from "../recruitment/create/jobRequisition";
+import CareerPage from "../pages/career";
+import PositionManagementPage from "../recruitment/positions";
+import CreatePosition from "../recruitment/positions/createPosition";
+import EditPosition from "../recruitment/positions/editPosition";
+import PositionDetails from "../recruitment/positions/viewPosition";
+import RecruitmentDashboard from "../recruitment/dashboard";
+import JobProfilePage from "../recruitment/jobProfile";
+import RequisitionBlankPage from "../recruitment/create/jobRequisitionBlank";
+import JobPortalProfile from "../recruitment/create/jobPortal";
 const routes = all_routes;
 
 export const publicRoutes = [
   {
     path: "/",
     name: "Root",
-    element: <Navigate to="/index" />,
+    element: <Navigate to="/dashboard" />,
     route: Route,
   },
   {
@@ -1340,6 +1350,51 @@ export const publicRoutes = [
     route: Route,
   },
   {
+    path: routes.positions,
+    element: <PositionManagementPage />,
+    route: Route,
+  },
+  {
+    path: routes.requsitionDashboard,
+    element: <RecruitmentDashboard />,
+    route: Route,
+  },
+  {
+    path: routes.jobProfile,
+    element: <JobProfilePage />,
+    route: Route,
+  },
+  {
+    path: routes.createPosition,
+    element: <CreatePosition />,
+    route: Route,
+  },
+  {
+    path: routes.editPosition,
+    element: <EditPosition />,
+    route: Route,
+  },
+  {
+    path: routes.viewPosition,
+    element: <PositionDetails />,
+    route: Route,
+  },
+  {
+    path: routes.jobrequsition,
+    element: <RequisitionPage />,
+    route: Route,
+  },
+  {
+    path: routes.jobrequsitionblank,
+    element: <RequisitionBlankPage />,
+    route: Route,
+  },
+  {
+    path: routes.jobPortal,
+    element: <JobPortalProfile />,
+    route: Route,
+  },
+  {
     path: routes.joblist,
     element: <JobList />,
     route: Route,
@@ -1652,6 +1707,11 @@ export const authRoutes = [
   {
     path: routes.comingSoon,
     element: <ComingSoon />,
+    route: Route,
+  },
+  {
+    path: routes.career,
+    element: <CareerPage />,
     route: Route,
   },
   {

@@ -1,0 +1,130 @@
+
+.career-layout {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.career-header {
+  background: #1890ff;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.career-content {
+  padding: 0 50px;
+  margin-top: 64px;
+}
+
+.career-footer {
+  text-align: center;
+  background: #f0f2f5;
+  padding: 24px 50px;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: -24px -50px 24px -50px;
+  border-radius: 0 0 8px 8px;
+}
+
+.section-why-join,
+.section-open-positions,
+.section-culture {
+  padding: 48px 0;
+}
+
+.benefit-card {
+  height: 100%;
+  text-align: center;
+  padding: 24px 16px;
+  transition: all 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.job-card {
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.job-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .career-content {
+    padding: 0 24px;
+  }
+  
+  .hero-section {
+    padding: 40px 0;
+  }
+  
+  .job-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+/* Add to src/pages/CareerPage.css */
+
+.search-filters {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 24px 0;
+}
+
+.search-input .ant-input-group-addon button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .search-filters {
+    padding: 16px;
+  }
+  
+  .search-input,
+  .ant-select {
+    margin-bottom: 12px;
+  }
+}
+
+/* Add to src/pages/CareerPage.css */
+
+.pagination-container {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pagination-container .ant-pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .pagination-container .ant-pagination-item,
+  .pagination-container .ant-pagination-prev,
+  .pagination-container .ant-pagination-next,
+  .pagination-container .ant-pagination-jump-prev,
+  .pagination-container .ant-pagination-jump-next {
+    margin-bottom: 8px;
+  }
+}

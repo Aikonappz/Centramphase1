@@ -11,10 +11,12 @@ import {
 } from "../../data/redux/sidebarSlice";
 import { all_routes } from "../../../feature-module/router/all_routes";
 import { HorizontalSidebarData } from '../../data/json/horizontalSidebar'
+import { RootState } from '../../data/redux/store';
 const Header = () => {
   const routes = all_routes;
   const dispatch = useDispatch();
   const dataLayout = useSelector((state: any) => state.themeSetting.dataLayout);
+  const user: any = useSelector((state: RootState) => state.user);
   const Location = useLocation();
 
   const [subOpen, setSubopen] = useState<any>("");
@@ -103,6 +105,11 @@ const Header = () => {
 					<div className="nav user-menu nav-list">
 
 						<div className="me-auto d-flex align-items-center" id="header-search">
+							<div className="sidebar-logo">
+								<Link to="routes.index" className="logo logo-normal">
+									<ImageWithBasePath src="assets/img/logo.svg" alt="Logo" />
+								</Link>
+							</div>
 							<Link id="toggle_btn" to="#" onClick={handleToggleMiniSidebar} className="btn btn-menubar me-1">
 								<i className="ti ti-arrow-bar-to-left"></i>
 							</Link>
@@ -413,8 +420,8 @@ const Header = () => {
 													<ImageWithBasePath src="assets/img/profiles/avatar-12.jpg" alt="img"/>
 												</span>
 												<div>
-													<h5 className="mb-0">Kevin Larry</h5>
-													<p className="fs-12 fw-medium mb-0">warren@example.com</p>
+													<h5 className="mb-0">{user?.userSession?.name}</h5>
+													<p className="fs-12 fw-medium mb-0">{user?.userSession?.email}</p>
 												</div>
 											</div>
 										</div>

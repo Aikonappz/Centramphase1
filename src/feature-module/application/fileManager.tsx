@@ -1133,7 +1133,7 @@ const FileManager = () => {
                         type="video/mp4"
                       />
                     </video>
-                    {/* <div className="plyr__poster" style={{backgroundImage: `url('/react/template/assets/img/file-manager/video-03.jpg')`}}></div> */}
+                    {/* <div className="plyr__poster" style={{backgroundImage: `url('/assets/img/file-manager/video-03.jpg')`}}></div> */}
                     <div className="d-flex align-items-center justify-content-between video-content">
                       <h6 className="fw-medium">
                         <Link
@@ -1494,7 +1494,7 @@ const FileManager = () => {
                         type="video/mp4"
                       />
                     </video>
-                    {/* <div className="plyr__poster" style={{backgroundImage: `url('/react/template/assets/img/file-manager/video-03.jpg')`}}></div> */}
+                    {/* <div className="plyr__poster" style={{backgroundImage: `url('/assets/img/file-manager/video-03.jpg')`}}></div> */}
                     <div className="d-flex align-items-center justify-content-between video-content">
                       <h6 className="fw-medium">
                         <Link
