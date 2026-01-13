@@ -26,6 +26,7 @@ import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { createCompentancy, createJobFamily, createJobRole, getCompentancy, getJobFamily, getJobProfile, getJobRole, postJobProfile } from '../../../core/data/redux/actions/jobProfileActions';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
+import { deleteJobFamily, deleteJobRole, deleteJobProfile, deleteCompetency } from '../../../core/data/redux/actions/jobProfileActions';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
@@ -143,7 +144,7 @@ const JobProfilePage: React.FC = () => {
                 const newCompetency: Competency = {
                     id: null,
                     ...values,
-                    jobRoleId : values.jobRoleId,
+                    jobRoleId: values.jobRoleId,
                 };
                 setCompetencies([...competencies, newCompetency]);
                 updatedValues = newCompetency;
@@ -172,9 +173,19 @@ const JobProfilePage: React.FC = () => {
         });
     };
 
-    const handleDeleteCompetency = (id: number) => {
-        setCompetencies(competencies.filter((c: { id: number; }) => c.id !== id));
-        message.success('Competency deleted successfully');
+    const handleDeleteCompetency = async (id: number) => {
+        const response: any = await dispatch(deleteCompetency(id));
+        const data = response.data;
+        // console.log(data)
+        if (response.status !== 200) {
+            message.error("Error fetching position");
+        } else {
+            message.success('Competency deleted successfully');
+            const res: any = await dispatch(getCompentancy());
+            setCompetencies(res?.data?.content ?? []);
+        }
+        // setCompetencies(competencies.filter((c: { id: number; }) => c.id !== id));
+        // message.success('Competency deleted successfully');
     };
 
     // Handlers for Job Family
@@ -232,10 +243,20 @@ const JobProfilePage: React.FC = () => {
         });
     };
 
-    const handleDeleteJobFamily = (id: number) => {
-        setJobFamilies(jobFamilies.filter((jf: { id: number; }) => jf.id !== id));
-        setJobRoles(jobRoles.filter((jr: { jobFamilyId: number; }) => jr.jobFamilyId !== id));
-        message.success('Job Family deleted successfully');
+    const handleDeleteJobFamily = async (id: number) => {
+        const response: any = await dispatch(deleteJobFamily(id));
+        const data = response.data;
+        // console.log(data)
+        if (response.status !== 200) {
+            message.error("Error fetching position");
+        } else {
+            message.success('JobFamily deleted successfully');
+            const res: any = await dispatch(getJobFamily());
+            setJobFamilies(res?.data?.content ?? []);
+        }
+        // setJobFamilies(jobFamilies.filter((jf: { id: number; }) => jf.id !== id));
+        // setJobRoles(jobRoles.filter((jr: { jobFamilyId: number; }) => jr.jobFamilyId !== id));
+        // message.success('Job Family deleted successfully');
     };
 
     // Handlers for Job Role
@@ -292,9 +313,19 @@ const JobProfilePage: React.FC = () => {
         });
     };
 
-    const handleDeleteJobRole = (id: number) => {
-        setJobRoles(jobRoles.filter((jr: { id: number; }) => jr.id !== id));
-        message.success('Job Role deleted successfully');
+    const handleDeleteJobRole = async (id: number) => {
+        const response: any = await dispatch(deleteJobRole(id));
+        const data = response.data;
+        // console.log(data)
+        if (response.status !== 200) {
+            message.error("Error fetching JobRole");
+        } else {
+            message.success('JobRole deleted successfully');
+            const res: any = await dispatch(getJobRole());
+            setJobRoles(res?.data?.content ?? []);
+        }
+        // setJobRoles(jobRoles.filter((jr: { id: number; }) => jr.id !== id));
+        // message.success('Job Role deleted successfully');
     };
 
     // Handlers for Job Profile
@@ -356,6 +387,23 @@ const JobProfilePage: React.FC = () => {
             }
         });
     };
+
+    const handleDeleteJobProfile = async (id: number) => {
+        if (!id) {
+            message.error('Invalid Job Profile ID');
+            return;
+        }
+        const response: any = await dispatch(deleteJobProfile(id));
+        if (response?.status === 200) {
+            message.success('Job Profile deleted successfully');
+
+            const res: any = await dispatch(getJobProfile());
+            setjobProfiles(res?.data?.content ?? []);
+        } else {
+            message.error('Failed to delete Job Profile');
+        }
+    };
+
 
     // Table columns
     const competencyColumns = [
@@ -504,19 +552,29 @@ const JobProfilePage: React.FC = () => {
                         <Card
                             title={jobFamilies.find((f: { id: number; }) => f.id === jobProfile.jobRoleId)?.jobFamilyName || 'N/A'}
                             extra={
-                                <Button
-                                    type="link"
-                                    icon={<EditOutlined />}
-                                    onClick={() => {
-                                        setSelectedJobProfile(jobProfile);
-                                        setIsCreatingNewProfile(false);
-                                        jobProfileForm.setFieldsValue({
-                                            ...jobProfile,
-                                            jobRoleName: jobRoles.find((f: { id: number; }) => f.id === jobProfile.jobRoleId)?.jobRoleName || 'N/A'
-                                        });
-                                        setJobProfileModalVisible(true);
-                                    }}
-                                />
+                                <>
+                                    <Button
+                                        type="link"
+                                        icon={<EditOutlined />}
+                                        onClick={() => {
+                                            setSelectedJobProfile(jobProfile);
+                                            setIsCreatingNewProfile(false);
+                                            jobProfileForm.setFieldsValue({
+                                                ...jobProfile,
+                                                jobRoleName: jobRoles.find((f: { id: number; }) => f.id === jobProfile.jobRoleId)?.jobRoleName || 'N/A'
+                                            });
+                                            setJobProfileModalVisible(true);
+                                        }}
+                                    />
+                                    <Popconfirm
+                                        title="Are you sure to delete this job profile?"
+                                        onConfirm={() => handleDeleteJobProfile(jobProfile.id)}
+                                        okText="Yes"
+                                        cancelText="No"
+                                    >
+                                        <Button type="link" danger icon={<DeleteOutlined />} />
+                                    </Popconfirm>
+                                </>
                             }
                             actions={[
                                 <Button
@@ -575,31 +633,6 @@ const JobProfilePage: React.FC = () => {
     const items: TabsProps['items'] = [
         {
             key: '1',
-            label: 'Competencies',
-            children: (
-                <Card
-                    title="Competencies"
-                    extra={
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() => showCompetencyModal()}
-                        >
-                            Add Competency
-                        </Button>
-                    }
-                >
-                    <Table
-                        columns={competencyColumns}
-                        dataSource={competencies}
-                        rowKey="id"
-                        pagination={false}
-                    />
-                </Card>
-            ),
-        },
-        {
-            key: '2',
             label: 'Job Families',
             children: (
                 <Card
@@ -624,7 +657,7 @@ const JobProfilePage: React.FC = () => {
             ),
         },
         {
-            key: '3',
+            key: '2',
             label: 'Job Roles',
             children: (
                 <Card
@@ -642,6 +675,30 @@ const JobProfilePage: React.FC = () => {
                     <Table
                         columns={jobRoleColumns}
                         dataSource={jobRoles}
+                        rowKey="id"
+                        pagination={false}
+                    />
+                </Card>
+            ),
+        }, {
+            key: '3',
+            label: 'Competencies',
+            children: (
+                <Card
+                    title="Competencies"
+                    extra={
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => showCompetencyModal()}
+                        >
+                            Add Competency
+                        </Button>
+                    }
+                >
+                    <Table
+                        columns={competencyColumns}
+                        dataSource={competencies}
                         rowKey="id"
                         pagination={false}
                     />

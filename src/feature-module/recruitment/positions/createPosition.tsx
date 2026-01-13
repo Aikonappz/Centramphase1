@@ -376,6 +376,7 @@ const CreatePosition = () => {
                                     <Form.Item
                                         name="jobCode"
                                         label="Job Code"
+                                        rules={[{ required: true, message: 'Missing the Job Code!' }]}
                                     >
                                         <Select
                                             showSearch

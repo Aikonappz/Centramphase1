@@ -33,6 +33,22 @@ export const DELETE_POSITION_REQUEST = 'DELETE_POSITION_REQUEST';
 export const DELETE_POSITION_SUCCESS = 'DELETE_POSITION_SUCCESS';
 export const DELETE_POSITION_FAILURE = 'DELETE_POSITION_FAILURE';
 
+export const DELETE_JOBFAMILY_REQUEST = 'DELETE_JOBFAMILY_REQUEST';
+export const DELETE_JOBFAMILY_SUCCESS = 'DELETE_JOBFAMILY_SUCCESS';
+export const DELETE_JOBFAMILY_FAILURE = 'DELETE_JOBFAMILY_FAILURE';
+
+export const DELETE_JOBROLE_REQUEST = 'DELETE_JOBROLE_REQUEST';
+export const DELETE_JOBROLE_SUCCESS = 'DELETE_JOBROLE_SUCCESS';
+export const DELETE_JOBROLE_FAILURE = 'DELETE_JOBROLE_FAILURE';
+
+export const DELETE_JOBPROFILE_REQUEST = 'DELETE_JOBPROFILE_REQUEST';
+export const DELETE_JOBPROFILE_SUCCESS = 'DELETE_JOBPROFILE_SUCCESS';
+export const DELETE_JOBPROFILE_FAILURE = 'DELETE_JOBPROFILE_FAILURE';
+
+export const DELETE_COMPETENCY_REQUEST = 'DELETE_COMPETENCY_REQUEST';
+export const DELETE_COMPETENCY_SUCCESS = 'DELETE_COMPETENCY_SUCCESS';
+export const DELETE_COMPETENCY_FAILURE = 'DELETE_COMPETENCY_FAILURE';
+
 export const GET_REQRUITER_DETAILS_REQUEST = 'GET_REQRUITER_DETAILS_REQUEST';
 export const GET_REQRUITER_DETAILS_SUCCESS = 'GET_REQRUITER_DETAILS_SUCCESS';
 export const GET_REQRUITER_DETAILS_FAILURE = 'GET_REQRUITER_DETAILS_FAILURE';
@@ -118,6 +134,50 @@ interface DeleteJobCodeFailureAction {
   type: typeof DELETE_POSITION_FAILURE;
   payload: string;
 }
+interface DeleteJobFamilyRequestAction {
+  type: typeof DELETE_JOBFAMILY_REQUEST;
+}
+interface DeleteJobFamilySuccessAction {
+  type: typeof DELETE_JOBFAMILY_SUCCESS;
+  payload: any;
+}
+interface DeleteJobFamilyFailureAction {
+  type: typeof DELETE_JOBFAMILY_FAILURE;
+  payload: string;
+}
+interface DeleteJobRoleRequestAction {
+  type: typeof DELETE_JOBROLE_REQUEST;
+}
+interface DeleteJobRoleSuccessAction {
+  type: typeof DELETE_JOBROLE_SUCCESS;
+  payload: any;
+}
+interface DeleteJobRoleFailureAction {
+  type: typeof DELETE_JOBROLE_FAILURE;
+  payload: string;
+}
+interface DeleteJobProfileRequestAction {
+  type: typeof DELETE_JOBPROFILE_REQUEST;
+}
+interface DeleteJobProfileSuccessAction {
+  type: typeof DELETE_JOBPROFILE_SUCCESS;
+  payload: any;
+}
+interface DeleteJobProfileFailureAction {
+  type: typeof DELETE_JOBPROFILE_FAILURE;
+  payload: string;
+}
+interface DeleteCompetencyRequestAction {
+  type: typeof DELETE_COMPETENCY_REQUEST;
+}
+interface DeleteCompetencySuccessAction {
+  type: typeof DELETE_COMPETENCY_SUCCESS;
+  payload: any;
+}
+interface DeleteCompetencyFailureAction {
+  type: typeof DELETE_COMPETENCY_FAILURE;
+  payload: string;
+}
 interface GetReqruiterDetailsRequestAction {
   type: typeof GET_REQRUITER_DETAILS_REQUEST;
 }
@@ -200,6 +260,18 @@ export type JobProfileActionTypes =
   | DeleteJobCodeRequestAction
   | DeleteJobCodeSuccessAction
   | DeleteJobCodeFailureAction
+  | DeleteJobFamilyRequestAction
+  | DeleteJobFamilySuccessAction
+  | DeleteJobFamilyFailureAction
+  | DeleteJobRoleRequestAction
+  | DeleteJobRoleSuccessAction
+  | DeleteJobRoleFailureAction
+  | DeleteJobProfileRequestAction
+  | DeleteJobProfileSuccessAction
+  | DeleteJobProfileFailureAction
+  | DeleteCompetencyRequestAction
+  | DeleteCompetencySuccessAction
+  | DeleteCompetencyFailureAction
   | GetReqruiterDetailsRequestAction
   | GetReqruiterDetailsSuccessAction
   | GetReqruiterDetailsFailureAction
@@ -374,6 +446,102 @@ export const deleteposition = (id: any) => {
       }
       dispatch({
         type: DELETE_POSITION_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const deleteJobFamily = (id: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: DELETE_JOBFAMILY_REQUEST });
+    try {
+      const response = await api.delete(`/delete/job-family/${id}`);
+      dispatch({
+        type: DELETE_JOBFAMILY_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to delete job-family';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: DELETE_JOBFAMILY_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const deleteJobRole = (id: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: DELETE_JOBROLE_REQUEST });
+    try {
+      const response = await api.delete(`/delete/job-role/${id}`);
+      dispatch({
+        type: DELETE_JOBROLE_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to delete job-role';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: DELETE_JOBROLE_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const deleteJobProfile = (id: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: DELETE_JOBPROFILE_REQUEST });
+    try {
+      const response = await api.delete(`/delete/job-profile/${id}`);
+      dispatch({
+        type: DELETE_JOBPROFILE_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to delete job-profile';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: DELETE_JOBPROFILE_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const deleteCompetency = (id: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: DELETE_COMPETENCY_REQUEST });
+    try {
+      const response = await api.delete(`/delete/competency/${id}`);
+      dispatch({
+        type: DELETE_COMPETENCY_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to delete competency';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: DELETE_COMPETENCY_FAILURE,
         payload: errorMessage
       });
       return error;

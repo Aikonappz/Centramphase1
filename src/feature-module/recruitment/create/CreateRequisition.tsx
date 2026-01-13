@@ -18,7 +18,7 @@ const CreateRequisition = (props: any) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const positionId = searchParams.get('positionId');
     //const jobId = searchParams.get('id');
-    
+
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
@@ -38,6 +38,11 @@ const CreateRequisition = (props: any) => {
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
     const [positions, setPositions] = useState<any>({});
+
+    const [organisationName, setOrganisationName] = useState<any[]>([]);
+    const [businessUnitName, setBusinessUnitName] = useState<any[]>([]);
+    const [divisionName, setDivisionName] = useState<any[]>([]);
+    const [departmentName, setDepartmentName] = useState<any[]>([]);
 
 
     const jobtype = [
@@ -110,7 +115,7 @@ const CreateRequisition = (props: any) => {
                     jobPostingEndDate: data.endDate ? moment(data?.endDate) : null,
                     jobStartDate: moment(data?.startDate),
                     startDate: moment(data?.startDate),
-                    endDate: data.endDate ? moment(data?.endDate) : null
+                    endDate: data.endDate ? moment(data?.endDate) : null,
                 });
                 setPositions(data);
                 setIsLoading(false);
@@ -123,6 +128,33 @@ const CreateRequisition = (props: any) => {
         searchParams.delete(paramName);
         setSearchParams(searchParams);
     };
+
+    const handlePositionChange = async (posi_id: number) => {
+        const response: any = await dispatch(getPositionById(posi_id));
+        const data = response.data;
+        console.log('fetchJobByPosition', data);
+        if (response.status !== 200) {
+            message.error('Error fetching position');
+        } else {
+            setTimeout(() => {
+                form.setFieldsValue({
+                    ...data,
+                    ...jobData,
+                    positionId: data.id,
+                    payRangeMin: data.minPay,
+                    payRangeMax: data.maxPay,
+                    payRangeMid: data.midPay,
+                    jobPostingEndDate: data.endDate ? moment(data?.endDate) : null,
+                    jobStartDate: moment(data?.startDate),
+                    startDate: moment(data?.startDate),
+                    endDate: data.endDate ? moment(data?.endDate) : null
+                });
+                setPositions(data);
+                setIsLoading(false);
+            }, 500);
+            console.log('fetchJobByPosition payRangeMin', data.m)
+        }
+    }
 
     const handleSubmit = async (formValues: any) => {
         setIsLoading(true);
@@ -236,7 +268,163 @@ const CreateRequisition = (props: any) => {
                                     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                 }
                                 options={jobLevel}
+                                onChange={(value: any) => {
+                                    handlePositionChange(value)
+                                }}
                             />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="jobCode"
+                            label="Job Code"
+                            rules={[{ required: true, message: 'Missing the Job Code!' }]}
+                        >
+                            <Input readOnly  style={{cursor: 'not-allowed' }}/>
+                        </Form.Item>
+                    </Col>
+                    {/* <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="organisationId"
+                            label="Organisation"
+                            rules={[{ required: true, message: 'Please select organisation!' }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={organisation}
+                            />
+                        </Form.Item>
+                    </Col> */}
+                    <Col className="gutter-row" span={12}>
+                        {/* Display only */}
+                        <Form.Item name="organisationName" label="Organisation">
+                            <Input
+                                readOnly
+                                value={organisationName}
+                                style={{cursor: 'not-allowed' }}
+                            />
+                        </Form.Item>
+
+                        {/* Actual submitted value */}
+                        <Form.Item
+                            name="organisationId"
+                            hidden
+                            rules={[{ required: true, message: 'Please select organisation!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    {/* <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="businessUnitId"
+                            label="Business Unit"
+                            rules={[{ required: true, message: 'Please select business unit!' }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={businessUnit}
+                            />
+                        </Form.Item>
+                    </Col> */}
+                    <Col className="gutter-row" span={12}>
+                        {/* Display only */}
+                        <Form.Item name="businessUnitName" label="Business Unit">
+                            <Input
+                                readOnly
+                                value={businessUnitName}
+                                style={{cursor: 'not-allowed' }}
+                            />
+                        </Form.Item>
+
+                        {/* Actual submitted value */}
+                        <Form.Item
+                            name="businessUnitId"
+                            hidden
+                            rules={[{ required: true, message: 'Please select business unit!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    {/* <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="divisionId"
+                            label="Division"
+                            rules={[{ required: true, message: 'Please select division!' }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={division}
+                            />
+                        </Form.Item>
+                    </Col> */}
+                    <Col className="gutter-row" span={12}>
+                        {/* Display only */}
+                        <Form.Item name="divisionName" label="Division">
+                            <Input
+                                readOnly
+                                value={divisionName}
+                                style={{cursor: 'not-allowed' }}
+                            />
+                        </Form.Item>
+
+                        {/* Actual submitted value */}
+                        <Form.Item
+                            name="divisionId"
+                            hidden
+                            rules={[{ required: true, message: 'Please select division!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    {/* <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="departmentId"
+                            label="Department"
+                            rules={[{ required: true, message: 'Please select department!' }]}
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={jobDepartment}
+                            />
+                        </Form.Item>
+                    </Col> */}
+                    <Col className="gutter-row" span={12}>
+                        {/* Display only */}
+                        <Form.Item name="departmentName" label="Department">
+                            <Input
+                                readOnly
+                                value={departmentName}
+                                style={{cursor: 'not-allowed' }}
+                            />
+                        </Form.Item>
+
+                        {/* Actual submitted value */}
+                        <Form.Item
+                            name="departmentId"
+                            hidden
+                            rules={[{ required: true, message: 'Please select department!' }]}
+                        >
+                            <Input />
                         </Form.Item>
                     </Col>
                     <Col className="gutter-row" span={12}>
@@ -275,23 +463,6 @@ const CreateRequisition = (props: any) => {
                     </Col>
                     <Col className="gutter-row" span={12}>
                         <Form.Item
-                            name="departmentId"
-                            label="Department"
-                            rules={[{ required: true, message: 'Please select department!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={jobDepartment}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
                             name="jobPostingType"
                             label="Job Posting Type"
                             rules={[{ required: true, message: 'Please select posting type!' }]}
@@ -321,57 +492,6 @@ const CreateRequisition = (props: any) => {
                                     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                 }
                                 options={jobtype}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="organisationId"
-                            label="Organisation"
-                            rules={[{ required: true, message: 'Please select organisation!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={organisation}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="businessUnitId"
-                            label="Business Unit"
-                            rules={[{ required: true, message: 'Please select business unit!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={businessUnit}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="divisionId"
-                            label="Division"
-                            rules={[{ required: true, message: 'Please select division!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={division}
                             />
                         </Form.Item>
                     </Col>
