@@ -44,6 +44,8 @@ const CreateRequisition = (props: any) => {
     const [divisionName, setDivisionName] = useState<any[]>([]);
     const [departmentName, setDepartmentName] = useState<any[]>([]);
 
+    const [recruiterName, setRecruiterName] = useState<any[]>([]);
+
 
     const jobtype = [
         { value: "Full-Time", label: "Full Time" },
@@ -61,11 +63,11 @@ const CreateRequisition = (props: any) => {
         { value: "Open", label: "Open" },
         { value: "Closed", label: "Closed" },
     ];
-    const recruiterName = [
-        // { value: "Select", label: "Select" },
-        { value: "William Stones", label: "William Stones" },
-        { value: "Lorem Ipsum", label: "Lorem Ipsum" },
-    ];
+    // const recruiterName = [
+    //     // { value: "Select", label: "Select" },
+    //     { value: "William Stones", label: "William Stones" },
+    //     { value: "Lorem Ipsum", label: "Lorem Ipsum" },
+    // ];
 
     useEffect(() => {
         const jobId = localStorage.getItem('requisitionId');
@@ -428,6 +430,16 @@ const CreateRequisition = (props: any) => {
                         </Form.Item>
                     </Col>
                     <Col className="gutter-row" span={12}>
+                        {/* Display only */}
+                        <Form.Item name="recruiterName" label="Recruiter Name">
+                            <Input
+                                readOnly
+                                value={recruiterName}
+                                style={{cursor: 'not-allowed' }}
+                            />
+                        </Form.Item>
+                    </Col>
+                    {/* <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="recruiterName"
                             label="Recruiter Name"
@@ -443,7 +455,7 @@ const CreateRequisition = (props: any) => {
                                 options={recruiterName}
                             />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="requisitionStatus"

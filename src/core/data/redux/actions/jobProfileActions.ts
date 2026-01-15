@@ -385,7 +385,7 @@ export const getAllJobCode = () => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
     dispatch({ type: GET_JOB_CODE_REQUEST });
     try {
-      const response = await api.get(`/position/get-all/jobcodes`);
+      const response = await api.get(`/get-all/jobcodes`);
       dispatch({
         type: GET_JOB_CODE_SUCCESS,
         payload: response.data

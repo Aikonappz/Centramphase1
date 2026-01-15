@@ -158,8 +158,8 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setCompetencyModalVisible(false);
                     resetForms();
-                    const response: any = await dispatch(getCompentancy());
-                    const data = response.data;
+                    const res: any = await dispatch(getCompentancy());
+                    const data = res.data;
                     setCompetencies(data.content)
                 } else {
                     console.log(response);
@@ -179,10 +179,14 @@ const JobProfilePage: React.FC = () => {
         // console.log(data)
         if (response.status !== 200) {
             message.error("Error fetching position");
+            const res1: any = await dispatch(getJobProfile());
+            setjobProfiles(res1?.data?.content ?? []);
         } else {
             message.success('Competency deleted successfully');
             const res: any = await dispatch(getCompentancy());
             setCompetencies(res?.data?.content ?? []);
+            const res1: any = await dispatch(getJobProfile());
+            setjobProfiles(res1?.data?.content ?? []);
         }
         // setCompetencies(competencies.filter((c: { id: number; }) => c.id !== id));
         // message.success('Competency deleted successfully');
@@ -229,8 +233,8 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setJobFamilyModalVisible(false);
                     resetForms();
-                    const response: any = await dispatch(getJobFamily());
-                    setJobFamilies(response.data.content)
+                    const res: any = await dispatch(getJobFamily());
+                    setJobFamilies(res.data.content)
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -244,19 +248,33 @@ const JobProfilePage: React.FC = () => {
     };
 
     const handleDeleteJobFamily = async (id: number) => {
-        const response: any = await dispatch(deleteJobFamily(id));
-        const data = response.data;
-        // console.log(data)
-        if (response.status !== 200) {
-            message.error("Error fetching position");
-        } else {
-            message.success('JobFamily deleted successfully');
-            const res: any = await dispatch(getJobFamily());
-            setJobFamilies(res?.data?.content ?? []);
+        try {
+            const response: any = await dispatch(deleteJobFamily(id));
+
+            if (response?.status !== 200) {
+                message.error("Failed to delete Job Family");
+                return;
+            }
+
+            message.success("Job Family deleted successfully");
+            const [
+                jobFamilyRes,
+                jobRoleRes,
+                competencyRes,
+                jobProfileRes
+            ]: any[] = await Promise.all([
+                dispatch(getJobFamily()),
+                dispatch(getJobRole()),
+                dispatch(getCompentancy()),
+                dispatch(getJobProfile())
+            ]);
+            setJobFamilies(jobFamilyRes?.data?.content ?? []);
+            setJobRoles(jobRoleRes?.data?.content ?? []);
+            setCompetencies(competencyRes?.data?.content ?? []);
+            setjobProfiles(jobProfileRes?.data?.content ?? []);
+        } catch (error) {
+            message.error("Something went wrong while deleting Job Family");
         }
-        // setJobFamilies(jobFamilies.filter((jf: { id: number; }) => jf.id !== id));
-        // setJobRoles(jobRoles.filter((jr: { jobFamilyId: number; }) => jr.jobFamilyId !== id));
-        // message.success('Job Family deleted successfully');
     };
 
     // Handlers for Job Role
@@ -299,8 +317,8 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setJobRoleModalVisible(false);
                     resetForms();
-                    const response: any = await dispatch(getJobRole());
-                    setJobRoles(response.data.content)
+                    const res: any = await dispatch(getJobRole());
+                    setJobRoles(res.data.content)
                 } else {
                     console.log(response);
                     message.error('Failed!');
@@ -315,17 +333,19 @@ const JobProfilePage: React.FC = () => {
 
     const handleDeleteJobRole = async (id: number) => {
         const response: any = await dispatch(deleteJobRole(id));
-        const data = response.data;
-        // console.log(data)
-        if (response.status !== 200) {
-            message.error("Error fetching JobRole");
-        } else {
-            message.success('JobRole deleted successfully');
-            const res: any = await dispatch(getJobRole());
-            setJobRoles(res?.data?.content ?? []);
+
+        if (response?.status !== 200) {
+            message.error("Error deleting JobRole");
+            return;
         }
-        // setJobRoles(jobRoles.filter((jr: { id: number; }) => jr.id !== id));
-        // message.success('Job Role deleted successfully');
+        message.success("JobRole deleted successfully");
+        const jobRoleRes: any = await dispatch(getJobRole());
+        const competencyRes: any = await dispatch(getCompentancy());
+        const jobProfileRes: any = await dispatch(getJobProfile());
+
+        setJobRoles(jobRoleRes?.data?.content ?? []);
+        setCompetencies(competencyRes?.data?.content ?? []);
+        setjobProfiles(jobProfileRes?.data?.content ?? []);
     };
 
     // Handlers for Job Profile
@@ -339,48 +359,93 @@ const JobProfilePage: React.FC = () => {
         setJobProfileModalVisible(true);
     };
 
+    // const handleSaveJobProfile = () => {
+    //     jobProfileForm.validateFields().then(async (values) => {
+    //         console.log(values)
+    //         let updatedValues;
+    //         if (isCreatingNewProfile) {
+    //             // Create new job role with profile
+    //             setjobProfiles([...jobProfiles, values]);
+    //             updatedValues = values;
+    //             // message.success('Job Profile created successfully');
+    //         } else {
+    //             // Update existing profile
+    //             const updatedJobRoles = jobProfiles.map((role: { id: number | undefined; }) => {
+    //                 if (role.id === values?.id) {
+    //                     return {
+    //                         ...role,
+    //                         values
+    //                     };
+    //                 }
+    //                 return role;
+    //             });
+    //             setjobProfiles(updatedJobRoles);
+    //             updatedValues = {
+    //                 id: values.id,
+    //                 ...values
+    //             };
+    //             // message.success('Job Profile updated successfully');
+    //         }
+    //         try {
+    //             // Format dates before submission
+    //             const response: any = await dispatch(postJobProfile(updatedValues));
+    //             if (response.status === 200) {
+    //                 message.success('Job Profile created successfully!');
+    //                 // navigate('/positions');
+    //                 setJobProfileModalVisible(false);
+    //                 setIsCreatingNewProfile(false);
+    //                 dispatch(getJobProfile());
+    //                 resetForms();
+    //             } else {
+    //                 console.log(response);
+    //                 message.error('Failed!');
+    //             }
+    //         } catch (error) {
+    //             message.error('Failed to create position');
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     });
+    // };
     const handleSaveJobProfile = () => {
         jobProfileForm.validateFields().then(async (values) => {
-            console.log(values)
             let updatedValues;
             if (isCreatingNewProfile) {
-                // Create new job role with profile
-                setjobProfiles([...jobProfiles, values]);
                 updatedValues = values;
-                // message.success('Job Profile created successfully');
             } else {
-                // Update existing profile
-                const updatedJobRoles = jobProfiles.map((role: { id: number | undefined; }) => {
-                    if (role.id === values?.id) {
-                        return {
-                            ...role,
-                            values
-                        };
-                    }
-                    return role;
-                });
+                const updatedJobRoles = jobProfiles.map((role: any) =>
+                    role.id === values?.id ? { ...role, ...values } : role
+                );
                 setjobProfiles(updatedJobRoles);
+
                 updatedValues = {
                     id: values.id,
                     ...values
                 };
-                // message.success('Job Profile updated successfully');
             }
             try {
-                // Format dates before submission
                 const response: any = await dispatch(postJobProfile(updatedValues));
-                if (response.status === 200) {
+
+                if (response?.status === 200) {
                     message.success('Job Profile created successfully!');
-                    // navigate('/positions');
+
+                    // ✅ ADD ONLY ONCE (after API success)
+                    if (isCreatingNewProfile) {
+                        setjobProfiles((prev: any) => {
+                            const safePrev = Array.isArray(prev) ? prev : [];
+                            return [...safePrev, response.data];
+                        });
+                    }
                     setJobProfileModalVisible(false);
                     setIsCreatingNewProfile(false);
-                    dispatch(getJobProfile());
                     resetForms();
                 } else {
-                    console.log(response);
+                    alert("Already have a Job Role mapped to Job Profile So you cant create any changes means do modify")
+                    setJobProfileModalVisible(false);
+                    setIsCreatingNewProfile(false);
                     message.error('Failed!');
                 }
-            } catch (error) {
+            } catch {
                 message.error('Failed to create position');
             } finally {
                 setLoading(false);
@@ -388,17 +453,34 @@ const JobProfilePage: React.FC = () => {
         });
     };
 
+
+    // const handleDeleteJobProfile = async (id: number) => {
+    //     if (id === undefined || id === null) {
+    //         message.error('Invalid Job Profile ID');
+    //         return;
+    //     }
+    //     const response: any = await dispatch(deleteJobProfile(id));
+    //     if (response && response.status === 200) {
+    //         message.success('Job Profile deleted successfully');
+
+    //         const res: any = await dispatch(getJobProfile());
+    //         setjobProfiles(res?.data?.content ?? []);
+    //     } else {
+    //         message.error('Failed to delete Job Profile');
+    //     }
+    // };
     const handleDeleteJobProfile = async (id: number) => {
-        if (!id) {
+        if (id == null) {
             message.error('Invalid Job Profile ID');
             return;
         }
         const response: any = await dispatch(deleteJobProfile(id));
         if (response?.status === 200) {
             message.success('Job Profile deleted successfully');
-
-            const res: any = await dispatch(getJobProfile());
-            setjobProfiles(res?.data?.content ?? []);
+            // ✅ remove locally, NO getAll call
+            setjobProfiles((prev: any[]) =>
+                Array.isArray(prev) ? prev.filter(p => p.id !== id) : []
+            );
         } else {
             message.error('Failed to delete Job Profile');
         }
@@ -418,7 +500,7 @@ const JobProfilePage: React.FC = () => {
             key: 'competencyName',
         },
         {
-            title: 'job Role',
+            title: 'Job Role',
             dataIndex: 'jobRoleId',
             key: 'jobRoleId',
             render: (id: number) => jobRoles.find((f: { id: number; }) => f.id === id)?.jobRoleName || 'N/A'
@@ -433,14 +515,14 @@ const JobProfilePage: React.FC = () => {
                         icon={<EditOutlined />}
                         onClick={() => showCompetencyModal(record)}
                     />
-                    <Popconfirm
+                    {/* <Popconfirm
                         title="Are you sure to delete this competency?"
                         onConfirm={() => handleDeleteCompetency(record.id)}
                         okText="Yes"
                         cancelText="No"
                     >
                         <Button type="link" danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
+                    </Popconfirm> */}
                 </Space>
             ),
         },
