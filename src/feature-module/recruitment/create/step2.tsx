@@ -22,20 +22,24 @@ const Step2 = (props: any) => {
     const navigate = useNavigate()
     const [form] = Form.useForm();
 
-    const onFinish = (values: any) => {
-        console.log('Received values of form: ', values);
-        handleSubmit(values);
-    };
-    const [jobCode, setJobCode] = useState('889AB');
+    // const onFinish = (values: any) => {
+    //     console.log('Received values of form: ', values);
+    //     handleSubmit(values);
+    // };
+    const [jobCode, setJobCode] = useState('');
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
     const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
     const [businessUnit, setBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
+    const [isSaveLoading, setIsSaveLoading] = useState<any>(jobs.loading);
+    const [isSendBackLoading, setIsSendBackLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
+    const [businessUnitName, setBusinessUnitName] = useState<any[]>([]);
+    const [divisionName, setDivisionName] = useState<any[]>([]);
 
     const joblevel = [
         { value: "Entry-Level", label: "Entry Level" },
@@ -53,7 +57,9 @@ const Step2 = (props: any) => {
             form.setFieldsValue({
                 internalJobTitle: jobs.jobById?.jobTitle,
                 internalJobDescription: jobs.jobById?.jobDescription,
-                ...jobs.jobById
+                jobStartDate: jobs.jobPostingStartDate,
+                jobPostingEndDate: jobs.jobPostingEndDate,
+                ...jobs.jobById,
             });
             setJobData(jobs.jobById);
         }
@@ -66,7 +72,7 @@ const Step2 = (props: any) => {
             type: 'loading',
             content: 'Loading...',
         });
-    
+
         Object.entries(formValues).forEach(([key, value]) => {
             if (
                 key === "payRangeMin" ||
@@ -79,7 +85,7 @@ const Step2 = (props: any) => {
                 formValues[key] = isNaN(value as any) ? value : Number(value);
             }
         });
-    
+
         formValues.status = jobData?.requisitionStatus || undefined;
         formValues.requisition = {
             id: jobData?.id,
@@ -97,10 +103,10 @@ const Step2 = (props: any) => {
         formValues.hiringManager = "Jane Smith";
         formValues.headOfBusinessUnit = "Michael Johnson";
         formValues.headOfRecruitment = "Sarah Williams";
-    
+
         // ✅ ensure id is not present
         delete formValues.id;
-    
+
         const response: any = await dispatch(saveManagerReview(formValues));
         if (response.status === 200) {
             setIsLoading(false);
@@ -125,7 +131,65 @@ const Step2 = (props: any) => {
             });
         }
     };
-    
+
+    const handleSendBack = async (formValues: any) => {
+        setIsSendBackLoading(true);
+        messageApi.open({
+            key,
+            type: 'loading',
+            content: 'Loading...',
+        });
+
+        Object.entries(formValues).forEach(([key, value]) => {
+            if (
+                key === "payRangeMin" ||
+                key === "payRangeMid" ||
+                key === "payRangeMax" ||
+                key === "approvedBudget"
+            ) {
+                formValues[key] = toNumber(value, 2);
+            } else {
+                formValues[key] = isNaN(value as any) ? value : Number(value);
+            }
+        });
+
+        formValues.status = jobData?.requisitionStatus || undefined;
+        formValues.requisition = {
+            id: jobData?.id,
+        };
+        // ❌ removed formValues.id assignment
+        formValues.positionId = jobData?.positionId || undefined;
+        formValues.jobStartDate = formatDate(new Date());
+        formValues.reasonForVacancy = "New Position";
+        formValues.notificationStatus = "Approver 0";
+        // ✅ ensure id is not present
+        delete formValues.id;
+
+        const response: any = await dispatch(saveManagerReview(formValues));
+        if (response.status === 200) {
+            setIsSendBackLoading(false);
+            messageApi.open({
+                key,
+                type: 'success',
+                content: jobData?.id ? 'Updated successfully!' : 'Saved successfully!',
+                duration: 7,
+            });
+            localStorage.setItem('managerReviewId', response?.data?.id);
+            setTimeout(() => {
+                setCurrent(2);
+            }, 700);
+        } else {
+            console.log(response);
+            setIsSendBackLoading(false);
+            messageApi.open({
+                key,
+                type: 'error',
+                content: response?.response?.data?.message || 'Internal Server Error!',
+                duration: 7,
+            });
+        }
+    };
+
 
     const formItemLayout = {
         labelCol: {
@@ -143,7 +207,7 @@ const Step2 = (props: any) => {
             form={form}
             layout={'vertical'}
             name="requisition"
-            onFinish={onFinish}
+            // onFinish={onFinish}
             initialValues={jobData}
             // style={{ maxWidth: 600 }}
             scrollToFirstError
@@ -151,7 +215,7 @@ const Step2 = (props: any) => {
 
             <Row gutter={{ xs: 6, sm: 12, md: 12, lg: 12 }}>
                 <Col className="gutter-row" span={12}>
-                    <Form.Item
+                    {/* <Form.Item
                         name="requisitionStatus"
                         label="Requisition Status"
                         rules={[{ required: true, message: 'Please enter requisition status!' }]}
@@ -165,6 +229,13 @@ const Step2 = (props: any) => {
                             }
                             options={requisitionStatus}
                         />
+                    </Form.Item> */}
+                    <Form.Item
+                        name="requisitionStatus"
+                        label="Requisition Status"
+                        rules={[{ required: true, message: 'Please enter requisition status!' }]}
+                    >
+                        <Input readOnly style={{ cursor: 'not-allowed' }} />
                     </Form.Item>
                 </Col>
                 <Col className="gutter-row" span={12}>
@@ -180,13 +251,13 @@ const Step2 = (props: any) => {
                     <Form.Item
                         name="jobCode"
                         label="Job Code"
-                        rules={[{ required: false, message: 'Please enter job code!' }]}
+                        rules={[{ required: true, message: 'Please enter job code!' }]}
                     >
-                        <Paragraph editable={{ onChange: setJobCode }}>{jobCode}</Paragraph>
+                        <Input readOnly style={{ cursor: 'not-allowed' }} />
                     </Form.Item>
                 </Col>
                 <Col className="gutter-row" span={12}>
-                    <Form.Item
+                    {/* <Form.Item
                         name="jobStartDate"
                         label="Job Start Date"
                         rules={[{ required: true, message: 'Please select job start date!' }]}
@@ -194,10 +265,17 @@ const Step2 = (props: any) => {
                         getValueFromEvent={(momentObj) => momentObj ? momentObj.format('YYYY-MM-DD') : null}
                     >
                         <DatePicker />
+                    </Form.Item> */}
+                    <Form.Item
+                        name="jobStartDate"
+                        label="Job Start Date"
+                        rules={[{ required: true, message: 'Please enter job start date!' }]}
+                    >
+                        <Input readOnly style={{ cursor: 'not-allowed' }} />
                     </Form.Item>
                 </Col>
                 <Col className="gutter-row" span={12}>
-                    <Form.Item
+                    {/* <Form.Item
                         name="jobEndDate"
                         label="Job Expired Date"
                         rules={[{ required: true, message: 'Please select job expired date!' }]}
@@ -205,6 +283,50 @@ const Step2 = (props: any) => {
                         getValueFromEvent={(momentObj) => momentObj ? momentObj.format('YYYY-MM-DD') : null}
                     >
                         <DatePicker />
+                    </Form.Item> */}
+                    <Form.Item
+                        name="jobPostingEndDate"
+                        label="Job Expired Date"
+                        rules={[{ required: true, message: 'Please enter job expired date!' }]}
+                    >
+                        <Input readOnly style={{ cursor: 'not-allowed' }} />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    {/* Display only */}
+                    <Form.Item name="businessUnitName" label="Business Unit">
+                        <Input
+                            readOnly
+                            value={businessUnitName}
+                            style={{ cursor: 'not-allowed' }}
+                        />
+                    </Form.Item>
+                    {/* Actual submitted value */}
+                    <Form.Item
+                        name="businessUnitId"
+                        hidden
+                        rules={[{ required: true, message: 'Please select business unit!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col className="gutter-row" span={12}>
+                    {/* Display only */}
+                    <Form.Item name="divisionName" label="Division">
+                        <Input
+                            readOnly
+                            value={divisionName}
+                            style={{ cursor: 'not-allowed' }}
+                        />
+                    </Form.Item>
+
+                    {/* Actual submitted value */}
+                    <Form.Item
+                        name="divisionId"
+                        hidden
+                        rules={[{ required: true, message: 'Please select division!' }]}
+                    >
+                        <Input />
                     </Form.Item>
                 </Col>
                 <Col className="gutter-row" span={12}>
@@ -241,40 +363,6 @@ const Step2 = (props: any) => {
                         rules={[{ required: true, message: 'Please enter job description!' }]}
                     >
                         <Input showCount maxLength={100} suffix={<Button type="link" onClick={() => form.setFieldValue('externalJobDescription', (form.getFieldValue('internalJobDescription')))}>Same as internal</Button>} />
-                    </Form.Item>
-                </Col>
-                <Col className="gutter-row" span={12}>
-                    <Form.Item
-                        name="businessUnitId"
-                        label="Business Unit"
-                        rules={[{ required: true, message: 'Please select business unit!' }]}
-                    >
-                        <Select
-                            showSearch
-                            placeholder="Search to Select"
-                            optionFilterProp="label"
-                            filterSort={(optionA: any, optionB: any) =>
-                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                            }
-                            options={businessUnit}
-                        />
-                    </Form.Item>
-                </Col>
-                <Col className="gutter-row" span={12}>
-                    <Form.Item
-                        name="divisionId"
-                        label="Division"
-                        rules={[{ required: true, message: 'Please select division!' }]}
-                    >
-                        <Select
-                            showSearch
-                            placeholder="Search to Select"
-                            optionFilterProp="label"
-                            filterSort={(optionA: any, optionB: any) =>
-                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                            }
-                            options={division}
-                        />
                     </Form.Item>
                 </Col>
                 <Col className="gutter-row" span={12}>
@@ -395,6 +483,35 @@ const Step2 = (props: any) => {
                     <button
                         className="btn btn-primary ml-5"
                         onClick={async () => {
+                            setIsSaveLoading(true);
+                            await handleSubmit(form.getFieldsValue());
+                            setTimeout(() => {
+                                setIsSaveLoading(false);
+                                navigate('/job-grid');
+                            }, 2000);
+                        }}
+                    >
+                        {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                        Save & Close
+                    </button>
+                    <button
+                        className="btn btn-primary ml-5"
+                        onClick={async () => {
+                            setIsSendBackLoading(true);
+                            await handleSendBack(form.getFieldsValue());
+                            setTimeout(() => {
+                                setIsSendBackLoading(false);
+                                navigate('/job-grid');
+                            }, 1000);
+                        }}
+                    >
+                        {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                        Send Back
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={async () => {
                             setIsLoading(true);
                             await handleSubmit(form.getFieldsValue());
                             setTimeout(() => {
@@ -402,13 +519,6 @@ const Step2 = (props: any) => {
                                 navigate('/job-grid');
                             }, 2000);
                         }}
-                    >
-                        {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Save & Close
-                    </button>
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
                     >
                         {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Create & Send to Approver 2

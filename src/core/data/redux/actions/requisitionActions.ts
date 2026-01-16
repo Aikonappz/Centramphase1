@@ -35,6 +35,10 @@ export const GET_POSITION_BY_ID_REQUEST = 'GET_POSITION_BY_ID_REQUEST';
 export const GET_POSITION_BY_ID_SUCCESS = 'GET_POSITION_BY_ID_SUCCESS';
 export const GET_POSITION_BY_ID_FAILURE = 'GET_POSITION_BY_ID_FAILURE';
 
+export const GET_JOB_DETAILS_BY_JOB_CODE_REQUEST = 'GET_JOB_DETAILS_BY_JOB_CODE_REQUEST';
+export const GET_JOB_DETAILS_BY_JOB_CODE_SUCCESS = 'GET_JOB_DETAILS_BY_JOB_CODE_SUCCESS';
+export const GET_JOB_DETAILS_BY_JOB_CODE_FAILURE = 'GET_JOB_DETAILS_BY_JOB_CODE_FAILURE';
+
 export const GET_DIVISION_REQUEST = 'GET_DIVISION_REQUEST';
 export const GET_DIVISION_SUCCESS = 'GET_DIVISION_SUCCESS';
 export const GET_DIVISION_FAILURE = 'GET_DIVISION_FAILURE';
@@ -160,6 +164,20 @@ interface GetPositionByIdSuccessAction {
 
 interface GetPositionByIdFailureAction {
   type: typeof GET_POSITION_BY_ID_FAILURE;
+  payload: string;
+}
+
+interface GetJobDetailsByJobCodeRequestAction {
+  type: typeof GET_JOB_DETAILS_BY_JOB_CODE_REQUEST;
+}
+
+interface GetJobDetailsByJobCodeSuccessAction {
+  type: typeof GET_JOB_DETAILS_BY_JOB_CODE_SUCCESS;
+  payload: any;
+}
+
+interface GetJobDetailsByJobCodeFailureAction {
+  type: typeof GET_JOB_DETAILS_BY_JOB_CODE_FAILURE;
   payload: string;
 }
 
@@ -325,6 +343,9 @@ export type JobActionTypes =
   | GetPositionByIdRequestAction 
   | GetPositionByIdSuccessAction 
   | GetPositionByIdFailureAction
+  | GetJobDetailsByJobCodeRequestAction 
+  | GetJobDetailsByJobCodeSuccessAction 
+  | GetJobDetailsByJobCodeFailureAction
   | GetDivisionRequestAction 
   | GetDivisionSuccessAction 
   | GetDivisionFailureAction
@@ -595,6 +616,30 @@ export const getPositionById = (id: any) => {
       }
       dispatch({
         type: GET_POSITION_BY_ID_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getJobByJobCode = (id: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_JOB_DETAILS_BY_JOB_CODE_REQUEST });
+    try {
+      const response = await api.get(`/job-code/${id}`);
+      dispatch({
+        type: GET_JOB_DETAILS_BY_JOB_CODE_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_JOB_DETAILS_BY_JOB_CODE_FAILURE,
         payload: errorMessage
       });
       return error;
