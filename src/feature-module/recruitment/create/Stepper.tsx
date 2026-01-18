@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Steps, Button, Card, Row, Col } from 'antd';
+import { Steps, Button, Card, Row, Col, message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import CreateRequisition from './CreateRequisition';
 import CreateBlankRequisition from './CreateBlankRequisition';
@@ -7,9 +7,10 @@ import Step2 from './step2';
 import Step3 from './step3';
 import FinalStep from './finalStep';
 import Step4 from './step4';
+import { getJobLists } from "../../../core/data/redux/actions/requisitionActions";
+import { RootState, useAppDispatch } from "../../../core/data/redux/store";
 
 const { Step } = Steps;
-
 // Step components
 
 const Approver1 = () => (
@@ -51,6 +52,7 @@ const StepperForm = (props: any) => {
   const { setCurrentStep } = props;
   const location = useLocation();
   const isBlankTemplate = location.pathname === '/create/job-blank-requisition';
+  const dispatch = useAppDispatch();
 
   const [current, setCurrent] = useState(() => {
     const saved = localStorage.getItem('currentStep');
@@ -60,6 +62,26 @@ const StepperForm = (props: any) => {
   useEffect(() => {
     localStorage.setItem('currentStep', current.toString());
   }, [current]);
+
+  useEffect(() => {
+    const jobId = localStorage.getItem('requisitionId');
+    console.log("jobId", jobId);
+    if (jobId) {
+      getJobs(jobId);
+    }
+  }, []);
+
+  const getJobs = async (reqId: any) => {
+    const response: any = await dispatch(getJobLists(reqId));
+    const data = response.data;
+    if (response.status !== 200) {
+      message.error('Error fetching position');
+    } else {
+      setTimeout(() => {
+        setCurrent(data.requisitionLatestStatus)
+      }, 500);
+    }
+  }
 
 
   const prev = () => {
@@ -125,7 +147,7 @@ const StepperForm = (props: any) => {
   const next = () => {
     setCurrent(current + 1);
   };
-  
+
 
   const handleStepClick = (step: any) => {
     setCurrent(step);
@@ -135,16 +157,16 @@ const StepperForm = (props: any) => {
 
   return (
     <div>
-    <Steps current={current} size="small">
-      {activeSteps.map((item) => (
-        <Step key={item.title} title={item.title} />
-      ))}
-    </Steps>
+      <Steps current={current} size="small">
+        {activeSteps.map((item) => (
+          <Step key={item.title} title={item.title} />
+        ))}
+      </Steps>
 
-    <Card style={{ margin: '24px 0', minHeight: '300px' }}>
-      {activeSteps[current].content}
-    </Card>
-  </div>
+      <Card style={{ margin: '24px 0', minHeight: '300px' }}>
+        {activeSteps[current].content}
+      </Card>
+    </div>
     // <div>
     //   <div className='requisitionvia-position'>
     //     <Steps current={current} size="small">
@@ -171,7 +193,7 @@ const StepperForm = (props: any) => {
     //   </div>
     // </div>
 
-    
+
   );
 };
 

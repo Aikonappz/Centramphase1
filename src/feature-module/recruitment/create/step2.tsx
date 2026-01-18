@@ -65,8 +65,26 @@ const Step2 = (props: any) => {
         }
     }, [jobs.jobById, form]);
 
-    const handleSubmit = async (formValues: any) => {
-        setIsLoading(true);
+    const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 2') => {
+        const titl = form.getFieldValue("externalJobTitle");
+        const desc = form.getFieldValue("externalJobDescription");
+        const exp = form.getFieldValue("levelOfExperience");
+
+        const hasAnyValue = [titl, desc, exp].every(v =>
+            typeof v === "string"
+                ? v.trim() !== ""
+                : v !== undefined && v !== null
+        );
+        if (!hasAnyValue) {
+            messageApi.error("Please fill at least one field");
+            return; // ⛔ HARD STOP — API will NOT run
+        }
+
+        if (sts === 'Draft') {
+            setIsSaveLoading(true);
+        } else {
+            setIsLoading(true);
+        }
         messageApi.open({
             key,
             type: 'loading',
@@ -94,22 +112,27 @@ const Step2 = (props: any) => {
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
-        formValues.jobPostingStartDate = formatDate(new Date());
-        formValues.jobClassification = "IT";
-        formValues.locationId = 1;
-        formValues.currencyId = 1;
-        formValues.payGrade = "G5";
-        formValues.recruiter = "John Doe";
-        formValues.hiringManager = "Jane Smith";
-        formValues.headOfBusinessUnit = "Michael Johnson";
-        formValues.headOfRecruitment = "Sarah Williams";
+        // formValues.jobPostingStartDate = formatDate(new Date());
+        formValues.notificationStatus = sts;
+        // formValues.jobClassification = "IT";
+        // formValues.locationId = 1;
+        // formValues.currencyId = 1;
+        // formValues.payGrade = "G5";
+        // formValues.recruiter = "John Doe";
+        // formValues.hiringManager = "Jane Smith";
+        // formValues.headOfBusinessUnit = "Michael Johnson";
+        // formValues.headOfRecruitment = "Sarah Williams";
 
         // ✅ ensure id is not present
-        delete formValues.id;
+        if(localStorage.getItem('stepper2Id') !== ""){
+        formValues.id = localStorage.getItem('stepper2Id') || undefined;
+        }
+        // delete formValues.id;
 
         const response: any = await dispatch(saveManagerReview(formValues));
         if (response.status === 200) {
             setIsLoading(false);
+            setIsSaveLoading(false);
             messageApi.open({
                 key,
                 type: 'success',
@@ -117,12 +140,15 @@ const Step2 = (props: any) => {
                 duration: 7,
             });
             localStorage.setItem('managerReviewId', response?.data?.id);
+            localStorage.setItem('stepper2Id', response?.data?.id);
             setTimeout(() => {
-                setCurrent(2);
+                navigate('/job-grid');
+                // setCurrent(2);
             }, 700);
         } else {
             console.log(response);
             setIsLoading(false);
+            setIsSaveLoading(false);
             messageApi.open({
                 key,
                 type: 'error',
@@ -176,7 +202,8 @@ const Step2 = (props: any) => {
             });
             localStorage.setItem('managerReviewId', response?.data?.id);
             setTimeout(() => {
-                setCurrent(2);
+                navigate('/job-grid');
+                // setCurrent(2);
             }, 700);
         } else {
             console.log(response);
@@ -484,11 +511,11 @@ const Step2 = (props: any) => {
                         className="btn btn-primary ml-5"
                         onClick={async () => {
                             setIsSaveLoading(true);
-                            await handleSubmit(form.getFieldsValue());
+                            await handleSubmit(form.getFieldsValue(), 'Draft');
                             setTimeout(() => {
                                 setIsSaveLoading(false);
-                                navigate('/job-grid');
-                            }, 2000);
+                                // navigate('/job-grid');
+                            }, 700);
                         }}
                     >
                         {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
@@ -501,7 +528,7 @@ const Step2 = (props: any) => {
                             await handleSendBack(form.getFieldsValue());
                             setTimeout(() => {
                                 setIsSendBackLoading(false);
-                                navigate('/job-grid');
+                                // navigate('/job-grid');
                             }, 1000);
                         }}
                     >
@@ -513,11 +540,11 @@ const Step2 = (props: any) => {
                         className="btn btn-primary"
                         onClick={async () => {
                             setIsLoading(true);
-                            await handleSubmit(form.getFieldsValue());
+                            await handleSubmit(form.getFieldsValue(), 'Approver 2');
                             setTimeout(() => {
                                 setIsLoading(false);
-                                navigate('/job-grid');
-                            }, 2000);
+                                // navigate('/job-grid');
+                            }, 700);
                         }}
                     >
                         {isLoading && <i className="fas fa-spinner fa-spin me-2" />}

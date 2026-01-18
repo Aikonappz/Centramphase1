@@ -22,10 +22,10 @@ const Step4 = (props: any) => {
     const navigate = useNavigate()
     const [form] = Form.useForm();
 
-    const onFinish = (values: any) => {
-        console.log('Received values of form: ', values);
-        handleSubmit(values);
-    };
+    // const onFinish = (values: any) => {
+    //     console.log('Received values of form: ', values);
+    //     handleSubmit(values);
+    // };
     const [jobCode, setJobCode] = useState('889AB');
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
     const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
@@ -33,6 +33,8 @@ const Step4 = (props: any) => {
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
+    const [isSaveLoading, setIsSaveLoading] = useState<any>(jobs.loading);
+    const [isSendBackLoading, setIsSendBackLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
@@ -59,8 +61,82 @@ const Step4 = (props: any) => {
         }
     }, [jobs.jobById, form]);
 
-    const handleSubmit = async (formValues: any) => {
-        setIsLoading(true);
+    const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 4') => {
+        const query = form.getFieldValue("internalQuery");
+
+        const hasAnyValue = [query].every(v =>
+            typeof v === "string"
+                ? v.trim() !== ""
+                : v !== undefined && v !== null
+        );
+        if (!hasAnyValue) {
+            messageApi.error("Please fill at least one field");
+            return; // ⛔ HARD STOP — API will NOT run
+        }
+        if (sts === 'Draft') {
+            setIsSaveLoading(true);
+        } else {
+            setIsLoading(true);
+        }
+        messageApi.open({
+            key,
+            type: 'loading',
+            content: 'Loading...',
+        });
+
+        Object.entries(formValues).forEach(([key, value]) => {
+            if (key === "payRangeMin" || key === "payRangeMid" || key === "payRangeMax" || key === "approvedBudget") {
+                formValues[key] = toNumber(value, 2);
+            } else {
+                formValues[key] = isNaN(value as any) ? value : Number(value);
+            }
+        });
+        formValues.status = jobData?.requisitionStatus || undefined;
+        formValues.requisition = {
+            id: jobData?.id
+        };
+        if(localStorage.getItem('recruiterLeadReviewId') !== ""){
+        formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
+        }
+        formValues.positionId = jobData?.positionId || undefined;
+        formValues.jobStartDate = formatDate(new Date());
+        formValues.reasonForVacancy = "New Position";
+        formValues.notificationStatus = sts;
+        // formValues.jobPostingStartDate = formatDate(new Date());
+
+        const response: any = await dispatch(saveRecruiterReview(formValues));
+        if (response.status === 200) {
+            setIsLoading(false);
+            setIsSaveLoading(true);
+            messageApi.open({
+                key,
+                type: 'success',
+                content: jobData?.id ? 'Updated successfully!' : 'Saved successfully!',
+                duration: 7,
+            });
+            localStorage.setItem('recruiterReviewId', response?.data?.id);
+            setTimeout(() => {
+                if(sts === "Draft"){
+                    navigate('/job-grid');
+                }else{
+                    setCurrent(4);
+                }
+            }, 700)
+        } else {
+            console.log(response);
+            setIsLoading(false);
+            setIsSaveLoading(true);
+            messageApi.open({
+                key,
+                type: 'error',
+                content: response?.response?.data?.message || 'Internal Server Error!',
+                duration: 7,
+            });
+        }
+    };
+
+    const handleSendBack = async (formValues: any) => {
+        setIsSendBackLoading(true);
         messageApi.open({
             key,
             type: 'loading',
@@ -82,18 +158,10 @@ const Step4 = (props: any) => {
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
-        formValues.jobPostingStartDate = formatDate(new Date());
-        formValues.jobClassification = "IT";
-        formValues.locationId = 1;
-        formValues.currencyId = 1;
-        formValues.payGrade = "G5";
-        formValues.recruiter = "John Doe";
-        formValues.hiringManager = "Jane Smith";
-        formValues.headOfBusinessUnit = "Michael Johnson";
-        formValues.headOfRecruitment = "Sarah Williams";
+        formValues.notificationStatus = "Approver 1";
         const response: any = await dispatch(saveRecruiterReview(formValues));
         if (response.status === 200) {
-            setIsLoading(false);
+            setIsSendBackLoading(false);
             messageApi.open({
                 key,
                 type: 'success',
@@ -102,11 +170,12 @@ const Step4 = (props: any) => {
             });
             localStorage.setItem('recruiterReviewId', response?.data?.id);
             setTimeout(() => {
-                setCurrent(4);
+                navigate('/job-grid');
+                // setCurrent(4);
             }, 700)
         } else {
             console.log(response);
-            setIsLoading(false);
+            setIsSendBackLoading(false);
             messageApi.open({
                 key,
                 type: 'error',
@@ -132,7 +201,7 @@ const Step4 = (props: any) => {
             form={form}
             layout={'vertical'}
             name="requisition"
-            onFinish={onFinish}
+            // onFinish={onFinish}
             initialValues={jobData}
             // style={{ maxWidth: 600 }}
             scrollToFirstError
@@ -140,7 +209,7 @@ const Step4 = (props: any) => {
 
             <Row gutter={{ xs: 6, sm: 12, md: 12, lg: 12 }}>
                 <Col className="gutter-row" span={12}>
-                    <Form.Item
+                    {/* <Form.Item
                         name="requisitionStatus"
                         label="Requisition Status"
                         rules={[{ required: true, message: 'Please enter requisition status!' }]}
@@ -154,6 +223,13 @@ const Step4 = (props: any) => {
                             }
                             options={requisitionStatus}
                         />
+                    </Form.Item> */}
+                    <Form.Item
+                        name="requisitionStatus"
+                        label="Requisition Status"
+                        rules={[{ required: true, message: 'Please enter requisition status!' }]}
+                    >
+                        <Input readOnly style={{ cursor: 'not-allowed' }} />
                     </Form.Item>
                 </Col>
                 <Col className="gutter-row" span={12}>
@@ -180,7 +256,7 @@ const Step4 = (props: any) => {
             </Row>
             <div className="modal-footer">
                 <Space size="middle">
-                    {currentStep > 0 && (
+                    {/* {currentStep > 0 && (
                         <Button
                             style={{ margin: '0 8px' }}
                             onClick={() => prev()}
@@ -188,7 +264,7 @@ const Step4 = (props: any) => {
                         >
                             Send Back to Recruiter
                         </Button>
-                    )}
+                    )} */}
                     <button
                         type="button"
                         className="btn btn-light me-2"
@@ -197,8 +273,44 @@ const Step4 = (props: any) => {
                         Cancel & Return to Form
                     </button>
                     <button
-                        type="submit"
+                        className="btn btn-primary ml-5"
+                        onClick={async () => {
+                            setIsSaveLoading(true);
+                            await handleSubmit(form.getFieldsValue(), 'Draft');
+                            setTimeout(() => {
+                                setIsSaveLoading(false);
+                                // navigate('/job-grid');
+                            }, 700);
+                        }}
+                    >
+                        {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                        Save & Close
+                    </button>
+                    <button
+                        className="btn btn-primary ml-5"
+                        onClick={async () => {
+                            setIsSendBackLoading(true);
+                            await handleSendBack(form.getFieldsValue());
+                            setTimeout(() => {
+                                setIsSendBackLoading(false);
+                                // navigate('/job-grid');
+                            }, 1000);
+                        }}
+                    >
+                        {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                        Send Back
+                    </button>
+                    <button
+                        type="button"
                         className="btn btn-primary"
+                        onClick={async () => {
+                            setIsLoading(true);
+                            await handleSubmit(form.getFieldsValue(), 'Approver 4');
+                            setTimeout(() => {
+                                setIsLoading(false);
+                                // navigate('/job-grid');
+                            }, 700);
+                        }}
                     >
                         {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Create Requisition
