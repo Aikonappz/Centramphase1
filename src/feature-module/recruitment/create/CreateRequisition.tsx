@@ -40,6 +40,7 @@ const CreateRequisition = (props: any) => {
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
+    const [isSaveLoading, setIsSaveLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
     const [positions, setPositions] = useState<any>({});
 
@@ -87,7 +88,7 @@ const CreateRequisition = (props: any) => {
         } else if (jobId) {
             getJobs(jobId);
         }
-        if(reqIdFromUrl){
+        if (reqIdFromUrl) {
             getJobs(reqIdFromUrl);
             setCurrent(stepperFromUrl);
         }
@@ -301,7 +302,11 @@ const CreateRequisition = (props: any) => {
 
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 1') => {
-        setIsLoading(true);
+        if (sts === 'Draft') {
+            setIsSaveLoading(true);
+        } else {
+            setIsLoading(true);
+        }
         messageApi.open({
             key,
             type: 'loading',
@@ -347,6 +352,7 @@ const CreateRequisition = (props: any) => {
         } else {
             console.log(response);
             setIsLoading(false);
+             setIsSaveLoading(false);
             messageApi.open({
                 key,
                 type: 'error',
@@ -823,46 +829,46 @@ const CreateRequisition = (props: any) => {
                         >
                             Cancel Job Requisition
                         </button>
-                        {form_notifyStatus === ""  &&(
-                        <button
-                            className="btn btn-primary ml-5"
-                            onClick={async () => {
-                                setIsLoading(true);
-                                const formattedValues = {
-                                    ...form.getFieldsValue(),
-                                    jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
-                                };
-                                await handleSubmit(formattedValues, 'Draft');
-                                setTimeout(() => {
-                                    setIsLoading(false);
-                                    navigate('/job-grid');
-                                }, 2000);
-                            }}
-                        >
-                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Save & Close
-                        </button>
+                        {form_notifyStatus === "" && (
+                            <button
+                                className="btn btn-primary ml-5"
+                                onClick={async () => {
+                                    setIsSaveLoading(true);
+                                    const formattedValues = {
+                                        ...form.getFieldsValue(),
+                                        jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
+                                    };
+                                    await handleSubmit(formattedValues, 'Draft');
+                                    setTimeout(() => {
+                                        setIsSaveLoading(false);
+                                        navigate('/job-grid');
+                                    }, 2000);
+                                }}
+                            >
+                                {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Save & Close
+                            </button>
                         )}
                         {(form_notifyStatus === 'Draft' || form_notifyStatus === '') && (
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={async () => {
-                                setIsLoading(true);
-                                const formattedValues = {
-                                    ...form.getFieldsValue(),
-                                    jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
-                                };
-                                await handleSubmit(formattedValues, 'Approver 1');
-                                setTimeout(() => {
-                                    setIsLoading(false);
-                                    navigate('/job-grid');
-                                }, 2000);
-                            }}
-                        >
-                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Create & Send to Approver 1
-                        </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    const formattedValues = {
+                                        ...form.getFieldsValue(),
+                                        jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
+                                    };
+                                    await handleSubmit(formattedValues, 'Approver 1');
+                                    setTimeout(() => {
+                                        setIsLoading(false);
+                                        navigate('/job-grid');
+                                    }, 2000);
+                                }}
+                            >
+                                {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Create & Send to Approver 1
+                            </button>
                         )}
                     </Space>
                 </div>

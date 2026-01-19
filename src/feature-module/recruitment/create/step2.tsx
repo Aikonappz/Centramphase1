@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space, Typo
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { postJob, saveManagerReview } from "../../../core/data/redux/actions/requisitionActions";
+import { postJob, saveManagerReview, getJobLists } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -21,7 +21,6 @@ const Step2 = (props: any) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate()
     const [form] = Form.useForm();
-
     // const onFinish = (values: any) => {
     //     console.log('Received values of form: ', values);
     //     handleSubmit(values);
@@ -51,6 +50,7 @@ const Step2 = (props: any) => {
         { value: "pre-approved", label: "Pre-approved" },
         { value: "rejected", label: "Rejected" },
     ];
+    const [stepper1_Status, setStepper1_Status] = useState("");
 
     useEffect(() => {
         if (jobs.jobById) {
@@ -64,6 +64,27 @@ const Step2 = (props: any) => {
             setJobData(jobs.jobById);
         }
     }, [jobs.jobById, form]);
+
+    useEffect(() => {
+        const jobId = localStorage.getItem('requisitionId');
+        if (jobId) {
+            getJobs(jobId);
+        }
+    }, []);
+
+    const getJobs = async (reqId: any) => {
+        setIsLoading(true);
+        const response: any = await dispatch(getJobLists(reqId));
+        const data = response.data;
+        if (response.status !== 200) {
+            message.error('Error fetching position');
+        } else {
+            setTimeout(() => {
+                setStepper1_Status(data.stepper1Status || "")
+                setIsLoading(false);
+            }, 500);
+        }
+    }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 2') => {
         const titl = form.getFieldValue("externalJobTitle");
@@ -124,8 +145,9 @@ const Step2 = (props: any) => {
         // formValues.headOfRecruitment = "Sarah Williams";
 
         // ✅ ensure id is not present
-        if(localStorage.getItem('stepper2Id') !== ""){
-        formValues.id = localStorage.getItem('stepper2Id') || undefined;
+        delete formValues.id;
+        if (localStorage.getItem('stepper2Id') !== "") {
+            formValues.id = localStorage.getItem('stepper2Id') || undefined;
         }
         // delete formValues.id;
 
@@ -507,20 +529,22 @@ const Step2 = (props: any) => {
                     >
                         Post
                     </button>
-                    <button
-                        className="btn btn-primary ml-5"
-                        onClick={async () => {
-                            setIsSaveLoading(true);
-                            await handleSubmit(form.getFieldsValue(), 'Draft');
-                            setTimeout(() => {
-                                setIsSaveLoading(false);
-                                // navigate('/job-grid');
-                            }, 700);
-                        }}
-                    >
-                        {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Save & Close
-                    </button>
+                    {stepper1_Status === "" && (
+                        <button
+                            className="btn btn-primary ml-5"
+                            onClick={async () => {
+                                setIsSaveLoading(true);
+                                await handleSubmit(form.getFieldsValue(), 'Draft');
+                                setTimeout(() => {
+                                    setIsSaveLoading(false);
+                                    // navigate('/job-grid');
+                                }, 700);
+                            }}
+                        >
+                            {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Save & Close
+                        </button>
+                    )}
                     <button
                         className="btn btn-primary ml-5"
                         onClick={async () => {
@@ -535,21 +559,23 @@ const Step2 = (props: any) => {
                         {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Send Back
                     </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={async () => {
-                            setIsLoading(true);
-                            await handleSubmit(form.getFieldsValue(), 'Approver 2');
-                            setTimeout(() => {
-                                setIsLoading(false);
-                                // navigate('/job-grid');
-                            }, 700);
-                        }}
-                    >
-                        {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Create & Send to Approver 2
-                    </button>
+                    {(stepper1_Status === 'Draft' || stepper1_Status === '') && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={async () => {
+                                setIsLoading(true);
+                                await handleSubmit(form.getFieldsValue(), 'Approver 2');
+                                setTimeout(() => {
+                                    setIsLoading(false);
+                                    // navigate('/job-grid');
+                                }, 700);
+                            }}
+                        >
+                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Create & Send to Approver 2
+                        </button>
+                    )}
                 </Space>
             </div>
         </Form>

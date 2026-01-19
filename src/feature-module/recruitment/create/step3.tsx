@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space, Typo
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { postJob, saveManagerReview, saveRecruiterLeadReview } from "../../../core/data/redux/actions/requisitionActions";
+import { postJob, saveManagerReview, saveRecruiterLeadReview, getJobLists } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -51,6 +51,7 @@ const Step3 = (props: any) => {
         { value: "pre-approved", label: "Pre-approved" },
         { value: "rejected", label: "Rejected" },
     ];
+    const [stepper2_Status, setStepper2_Status] = useState("");
 
     useEffect(() => {
         if (jobs.jobById) {
@@ -64,6 +65,27 @@ const Step3 = (props: any) => {
             setJobData(jobs.jobById);
         }
     }, [jobs.jobById, form]);
+
+    useEffect(() => {
+        const jobId = localStorage.getItem('requisitionId');
+        if (jobId) {
+            getJobs(jobId);
+        }
+    }, []);
+
+    const getJobs = async (reqId: any) => {
+        setIsLoading(true);
+        const response: any = await dispatch(getJobLists(reqId));
+        const data = response.data;
+        if (response.status !== 200) {
+            message.error('Error fetching position');
+        } else {
+            setTimeout(() => {
+                setStepper2_Status(data.stepper2Status || "")
+                setIsLoading(false);
+            }, 500);
+        }
+    }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 3') => {
         const titl = form.getFieldValue("externalJobTitle");
@@ -101,8 +123,10 @@ const Step3 = (props: any) => {
         formValues.requisition = {
             id: jobData?.id
         };
-        if(localStorage.getItem('recruiterLeadReviewId') !== ""){
-        formValues.id = localStorage.getItem('recruiterLeadReviewId') || undefined;
+        delete formValues.id;
+        if (localStorage.getItem('stepper3Id') !== "") {
+            // formValues.id = localStorage.getItem('recruiterLeadReviewId') || undefined;
+            formValues.id = localStorage.getItem('stepper3Id') || undefined;
         }
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
@@ -127,6 +151,7 @@ const Step3 = (props: any) => {
                 duration: 7,
             });
             localStorage.setItem('recruiterLeadReviewId', response?.data?.id);
+            localStorage.setItem('stepper3Id', response?.data?.id);
             setTimeout(() => {
                 navigate('/job-grid');
                 // setCurrent(3);
@@ -492,6 +517,7 @@ const Step3 = (props: any) => {
                     >
                         Post
                     </button>
+                    {stepper2_Status === "" && (
                     <button
                         className="btn btn-primary ml-5"
                         onClick={async () => {
@@ -506,6 +532,7 @@ const Step3 = (props: any) => {
                         {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Save & Close
                     </button>
+                    )}
                     <button
                         className="btn btn-primary ml-5"
                         onClick={async () => {
@@ -520,6 +547,7 @@ const Step3 = (props: any) => {
                         {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Send Back
                     </button>
+                    {(stepper2_Status === 'Draft' || stepper2_Status === '') && (
                     <button
                         type="button"
                         className="btn btn-primary"
@@ -535,6 +563,7 @@ const Step3 = (props: any) => {
                         {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Create & Send to Approver 3
                     </button>
+                    )}
                 </Space>
             </div>
         </Form>

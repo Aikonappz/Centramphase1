@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space, Typo
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { postJob, saveManagerReview, saveRecruiterLeadReview, saveRecruiterReview } from "../../../core/data/redux/actions/requisitionActions";
+import { postJob, saveManagerReview, saveRecruiterLeadReview, saveRecruiterReview, getJobLists } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -38,6 +38,7 @@ const Step4 = (props: any) => {
     const [jobData, setJobData] = useState<any>({});
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
+    const [stepper3_Status, setStepper3_Status] = useState("");
 
     const joblevel = [
         { value: "Entry-Level", label: "Entry Level" },
@@ -60,6 +61,27 @@ const Step4 = (props: any) => {
             setJobData(jobs.jobById);
         }
     }, [jobs.jobById, form]);
+
+    useEffect(() => {
+        const jobId = localStorage.getItem('requisitionId');
+        if (jobId) {
+            getJobs(jobId);
+        }
+    }, []);
+
+    const getJobs = async (reqId: any) => {
+        setIsLoading(true);
+        const response: any = await dispatch(getJobLists(reqId));
+        const data = response.data;
+        if (response.status !== 200) {
+            message.error('Error fetching position');
+        } else {
+            setTimeout(() => {
+                setStepper3_Status(data.stepper3Status || "")
+                setIsLoading(false);
+            }, 500);
+        }
+    }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 4') => {
         const query = form.getFieldValue("internalQuery");
@@ -95,8 +117,10 @@ const Step4 = (props: any) => {
         formValues.requisition = {
             id: jobData?.id
         };
-        if(localStorage.getItem('recruiterLeadReviewId') !== ""){
-        formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
+        delete formValues.id;
+        if (localStorage.getItem('stepper4Id') !== "") {
+            // formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
+            formValues.id = localStorage.getItem('stepper4Id') || undefined;
         }
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
@@ -115,10 +139,11 @@ const Step4 = (props: any) => {
                 duration: 7,
             });
             localStorage.setItem('recruiterReviewId', response?.data?.id);
+            localStorage.setItem('stepper4Id', response?.data?.id);
             setTimeout(() => {
-                if(sts === "Draft"){
+                if (sts === "Draft") {
                     navigate('/job-grid');
-                }else{
+                } else {
                     setCurrent(4);
                 }
             }, 700)
@@ -272,20 +297,22 @@ const Step4 = (props: any) => {
                     >
                         Cancel & Return to Form
                     </button>
-                    <button
-                        className="btn btn-primary ml-5"
-                        onClick={async () => {
-                            setIsSaveLoading(true);
-                            await handleSubmit(form.getFieldsValue(), 'Draft');
-                            setTimeout(() => {
-                                setIsSaveLoading(false);
-                                // navigate('/job-grid');
-                            }, 700);
-                        }}
-                    >
-                        {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Save & Close
-                    </button>
+                    {stepper3_Status === "" && (
+                        <button
+                            className="btn btn-primary ml-5"
+                            onClick={async () => {
+                                setIsSaveLoading(true);
+                                await handleSubmit(form.getFieldsValue(), 'Draft');
+                                setTimeout(() => {
+                                    setIsSaveLoading(false);
+                                    // navigate('/job-grid');
+                                }, 700);
+                            }}
+                        >
+                            {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Save & Close
+                        </button>
+                    )}
                     <button
                         className="btn btn-primary ml-5"
                         onClick={async () => {
@@ -300,21 +327,23 @@ const Step4 = (props: any) => {
                         {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Send Back
                     </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={async () => {
-                            setIsLoading(true);
-                            await handleSubmit(form.getFieldsValue(), 'Approver 4');
-                            setTimeout(() => {
-                                setIsLoading(false);
-                                // navigate('/job-grid');
-                            }, 700);
-                        }}
-                    >
-                        {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Create Requisition
-                    </button>
+                    {(stepper3_Status === 'Draft' || stepper3_Status === '') && (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={async () => {
+                                setIsLoading(true);
+                                await handleSubmit(form.getFieldsValue(), 'Approver 4');
+                                setTimeout(() => {
+                                    setIsLoading(false);
+                                    // navigate('/job-grid');
+                                }, 700);
+                            }}
+                        >
+                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Create Requisition
+                        </button>
+                    )}
                 </Space>
             </div>
         </Form>

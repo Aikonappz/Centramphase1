@@ -79,6 +79,7 @@ const StepperForm = (props: any) => {
     } else {
       setTimeout(() => {
         setCurrent(data.requisitionLatestStatus)
+        // setCurrent(3)
       }, 500);
     }
   }
