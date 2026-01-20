@@ -313,6 +313,7 @@ const Step4 = (props: any) => {
                             Save & Close
                         </button>
                     )}
+                    {(stepper3_Status === 'Draft' || stepper3_Status === '') && (
                     <button
                         className="btn btn-primary ml-5"
                         onClick={async () => {
@@ -327,6 +328,7 @@ const Step4 = (props: any) => {
                         {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
                         Send Back
                     </button>
+                    )}
                     {(stepper3_Status === 'Draft' || stepper3_Status === '') && (
                         <button
                             type="button"

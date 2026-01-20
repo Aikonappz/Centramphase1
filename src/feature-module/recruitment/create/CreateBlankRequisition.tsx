@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space } fro
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { blankpostJob, getJobLists, getPositionById, postJob } from "../../../core/data/redux/actions/requisitionActions";
+import { blankpostJob, getJobLists, getPositionById, postJob, getLocations } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -10,6 +10,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import DebounceSelect from "../../../components/DebounceSelect";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import moment from "moment";
+import { getReqruiterDetails_BasedCriteria } from '../../../core/data/redux/actions/jobProfileActions';
 
 const CreateBlankRequisition = (props: any) => {
     const { currentStep, setCurrent, prev } = props;
@@ -38,6 +39,24 @@ const CreateBlankRequisition = (props: any) => {
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
     const [positions, setPositions] = useState<any>({});
+
+    //Hierarchy Based modification
+    const [allOrganisations, setAllOrganisations] = useState<any[]>([]);
+    const [allBusinessUnits, setAllBusinessUnits] = useState<any[]>([]);
+    const [allDivisions, setAllDivisions] = useState<any[]>([]);
+    const [allDepartments, setAllDepartments] = useState<any[]>([]);
+    const [allLocations, setAllLocations] = useState<any[]>([]);
+
+    const [organisationOptions, setOrganisationOptions] = useState<any[]>([]);
+    const [businessUnitOptions, setBusinessUnitOptions] = useState<any[]>([]);
+    const [divisionOptions, setDivisionOptions] = useState<any[]>([]);
+    const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
+    const [locationOptions, setLocationOptions] = useState<any[]>([]);
+
+    const [hiringManager, setHiringManagerOptions] = useState<any[]>([]);
+    const [headOfBusinessUnit, setHeadOfBusinessUnitOptions] = useState<any[]>([]);
+    const [headOfRecruitment, setHeadOfRecruitmentOptions] = useState<any[]>([]);
+    const [recruiter, setRecruitOptions] = useState<any[]>([]);
 
 
     const jobtype = [
@@ -110,6 +129,190 @@ const CreateBlankRequisition = (props: any) => {
             }, 500);
         }
     }
+
+    useEffect(() => {
+        const fetchLocation = async () => {
+            const response: any = await dispatch(getLocations());
+
+            const options = (response?.data?.content || []).map((item: any) => ({
+                label: item.name,        // dropdown text
+                value: item.id,          // dropdown value
+                mapperId: item.mapperId, // mapper id
+                status: item.status, // status
+                code: item.code, // code
+                version: item.version
+            }));
+            setAllLocations(options);
+        };
+        fetchLocation();
+    }, [dispatch]);
+
+
+
+    useEffect(() => {
+        if (jobs?.organisation?.content) {
+            setAllOrganisations(jobs.organisation.content);
+            setOrganisationOptions(
+                jobs.organisation.content.map((org: any) => ({
+                    label: org.code
+                        ? `${org.name} (${org.code})`
+                        : org.name,
+                    value: org.id
+                }))
+            );
+        }
+
+        if (jobs?.businessUnit?.content) {
+            setAllBusinessUnits(jobs.businessUnit.content);
+        }
+
+        if (jobs?.division?.content) {
+            setAllDivisions(jobs.division.content);
+        }
+
+        if (jobs?.department?.content) {
+            setAllDepartments(jobs.department.content);
+        }
+    }, [jobs]);
+
+    const handleOrganisationChange = (orgId: number) => {
+        handleFilterChange('organisationId', orgId);
+
+        // 🔥 RESET FORM VALUES
+        form.setFieldsValue({
+            businessUnitId: null,
+            divisionId: null,
+            departmentId: null,
+            locationId: null,
+            recruiter: null,
+            headOfRecruitment: null,
+            headOfBusinessUnit: null,
+            hiringManager: null
+        });
+
+        // clear options
+        setBusinessUnitOptions([]);
+        setLocationOptions([]);
+        setDivisionOptions([]);
+        setDepartmentOptions([]);
+
+        // 🔹 FILTER BUSINESS UNITS
+        const filteredBU = allBusinessUnits.filter(
+            (bu) => bu.mapperId === orgId
+        );
+
+        setBusinessUnitOptions(
+            filteredBU.map((bu: any) => ({
+                label: bu.code
+                    ? `${bu.name} (${bu.code})`
+                    : bu.name,
+                value: bu.id
+            }))
+        );
+
+        // 🔹 FILTER LOCATIONS
+        const filteredLocations = allLocations.filter(
+            (loc) => loc.mapperId === orgId && loc.status === 'ACTIVE'
+        );
+
+        setLocationOptions(
+            filteredLocations.map((loc: any) => ({
+                label: loc.code
+                    ? `${loc.label} (${loc.code})`
+                    : loc.label,
+                value: loc.value
+            }))
+        );
+    };
+
+    const handleBusinessUnitChange = (businessUnitId: number) => {
+        handleFilterChange('businessUnitId', businessUnitId);
+
+        form.setFieldsValue({
+            divisionId: null,
+            departmentId: null
+        });
+
+        setDivisionOptions([]);
+        setDepartmentOptions([]);
+
+        const filteredDivisions = allDivisions.filter(
+            (div) => div.mapperId === businessUnitId
+        );
+
+        setDivisionOptions(
+            filteredDivisions.map((div: any) => ({
+                label: div.code
+                    ? `${div.name} (${div.code})`
+                    : div.name,
+                value: div.id
+            }))
+        );
+    };
+
+    const handleDivisionChange = (divisionId: number) => {
+        handleFilterChange('divisionId', divisionId);
+
+        form.setFieldsValue({
+            departmentId: null
+        });
+
+        setDepartmentOptions([]);
+
+        const filteredDepartments = allDepartments.filter(
+            (dep) => dep.mapperId === divisionId
+        );
+
+        setDepartmentOptions(
+            filteredDepartments.map((dep: any) => ({
+                label: dep.code
+                    ? `${dep.name} (${dep.code})`
+                    : dep.name,
+                value: dep.id
+            }))
+        );
+    };
+
+    const [filters, setFilters] = useState({
+        departmentId: null,
+        businessUnitId: null,
+        organisationId: null,
+        divisionId: null
+    });
+    const mapToSelectOptions = (data: string[]) =>
+        data.map(name => ({
+            label: name,
+            value: name
+        }));
+
+    const getSelectValue = (arr: any[]) =>
+        Array.isArray(arr) && arr.length > 0 ? arr[0].value : null;
+
+    const handleFilterChange = (
+        key: keyof typeof filters,
+        value: any
+    ) => {
+        const updatedFilters = {
+            ...filters,
+            [key]: value
+        };
+        setFilters(updatedFilters);
+        const allSelected =
+            updatedFilters.departmentId &&
+            updatedFilters.businessUnitId &&
+            updatedFilters.organisationId &&
+            updatedFilters.divisionId;
+        if (!allSelected) return;
+        dispatch(
+            getReqruiterDetails_BasedCriteria(updatedFilters)).then((res: any) => {
+                const options = mapToSelectOptions(res.data);
+                setHiringManagerOptions(options);
+                setHeadOfBusinessUnitOptions(options);
+                setHeadOfRecruitmentOptions(options);
+                setRecruitOptions(options);
+            });
+    };
+
 
     const removeQueryParam = (paramName: any) => {
         searchParams.delete(paramName);
@@ -197,24 +400,6 @@ const CreateBlankRequisition = (props: any) => {
                 <Row gutter={{ xs: 6, sm: 12, md: 12, lg: 12 }}>
                     <Col className="gutter-row" span={12}>
                         <Form.Item
-                            name="hiringManager"
-                            label="Hiring Manager"
-                            rules={[{ required: true, message: 'Please enter hiring manager name!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="recruiterDetails"
-                            label="Recruiter Details"
-                            rules={[{ required: true, message: 'Please enter recruiter details!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
                             name="jobTitle"
                             label="Job Title"
                             rules={[{ required: true, message: 'Please enter job title!' }]}
@@ -231,7 +416,7 @@ const CreateBlankRequisition = (props: any) => {
                             <Input.TextArea showCount />
                         </Form.Item>
                     </Col>
-                    <Col className="gutter-row" span={12}>
+                    {/* <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="positionId"
                             label="Position"
@@ -247,7 +432,188 @@ const CreateBlankRequisition = (props: any) => {
                                 options={jobLevel}
                             />
                         </Form.Item>
+                    </Col> */}
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="positionName"
+                            label="Position"
+                            rules={[{ required: true, message: 'Please enter Position Name!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
                     </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="jobCode"
+                            label="Job Code"
+                            rules={[{ required: true, message: 'Please enter Job Code!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="organisationId"
+                            label="Organization Name"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={organisationOptions}
+                                onChange={(value: any) => {
+                                    handleOrganisationChange(value)
+                                    handleFilterChange('organisationId', value)
+                                    console.log(value);
+                                }}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="locationId"
+                            label="Location Name"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={locationOptions}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="businessUnitId"
+                            label="Business Unit Name"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                onChange={(value) => {
+                                    handleBusinessUnitChange(value)
+                                    handleFilterChange('businessUnitId', value)
+                                }}
+                                options={businessUnitOptions}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="divisionId"
+                            label="Division Name"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                onChange={(value) => {
+                                    handleDivisionChange(value)
+                                    handleFilterChange('divisionId', value)
+                                }}
+                                options={divisionOptions}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="departmentId"
+                            label="Department Name"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                onChange={(value) =>
+                                    handleFilterChange('departmentId', value)
+                                }
+                                options={departmentOptions}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="hiringManager"
+                            label="Hiring Manager"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={hiringManager}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="headOfBusinessUnit"
+                            label="Head Of Business Unit"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={headOfBusinessUnit}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="headOfRecruitment"
+                            label="Head Of Recruitment"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={headOfRecruitment}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col className="gutter-row" span={12}>
+                        <Form.Item
+                            name="recruiter"
+                            label="Recruiter"
+                        >
+                            <Select
+                                showSearch
+                                placeholder="Search to Select"
+                                optionFilterProp="label"
+                                filterSort={(optionA: any, optionB: any) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={recruiter}
+                            />
+                        </Form.Item>
+                    </Col>
+
+
+
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="requisitionStatus"
@@ -262,23 +628,6 @@ const CreateBlankRequisition = (props: any) => {
                                     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                 }
                                 options={requisitionStatus}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="departmentId"
-                            label="Department"
-                            rules={[{ required: true, message: 'Please select department!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={jobDepartment}
                             />
                         </Form.Item>
                     </Col>
@@ -301,7 +650,7 @@ const CreateBlankRequisition = (props: any) => {
                     </Col>
                     <Col className="gutter-row" span={12}>
                         <Form.Item
-                            name="fte"
+                            name="jobType"
                             label="Job Type"
                             rules={[{ required: true, message: 'Please select job type!' }]}
                         >
@@ -316,70 +665,6 @@ const CreateBlankRequisition = (props: any) => {
                             />
                         </Form.Item>
                     </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="organisationId"
-                            label="Organisation"
-                            rules={[{ required: true, message: 'Please select organisation!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={organisation}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="businessUnitId"
-                            label="Business Unit"
-                            rules={[{ required: true, message: 'Please select business unit!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={businessUnit}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Form.Item
-                            name="divisionId"
-                            label="Division"
-                            rules={[{ required: true, message: 'Please select division!' }]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="label"
-                                filterSort={(optionA: any, optionB: any) =>
-                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
-                                options={division}
-                            />
-                        </Form.Item>
-                    </Col>
-                    {/* <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Experience <span className="text-danger"> *</span>
-                            </label>
-                            <CommonSelect
-                              className='select'
-                              options={experience}
-                              defaultValue={experience[0]}
-                              name='experience'
-                            />
-                          </div>
-                        </div> */}
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="referralBonus"

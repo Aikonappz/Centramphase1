@@ -798,7 +798,7 @@ const CreateRequisition = (props: any) => {
                             label="End Date"
                             rules={[{ required: true, message: 'Please select job expired date!' }]}
                         >
-                            <DatePicker style={{ width: '100%' }} />
+                            <DatePicker style={{ width: '100%', pointerEvents: 'none' }} />
                         </Form.Item>
                         {/* <Form.Item
                             name="jobPostingEndDate"
