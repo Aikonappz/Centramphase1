@@ -18,7 +18,7 @@ const JobGrid = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
-    
+
     const [isLoading, setIsLoading] = React.useState<any>(jobs.loading);
     const [jobData, setJobData] = React.useState<any>({});
 
@@ -107,26 +107,33 @@ const JobGrid = () => {
                                 </div>
                             </div>
                             {/* <div className="mb-2"> */}
-                                <Link
-                                    to="/create/job-requisition"
-                                    className="btn btn-primary d-flex align-items-center btn-space"
-                                >
-                                    <i className="ti ti-circle-plus me-2" />
-                                    Create via Position
-                                </Link>
-                                <Link
-                                    to="/create/job-blank-requisition"
-                                    className="btn btn-secondary-light d-flex align-items-center btn-space"
-                                >
-                                    <i className="ti ti-circle-plus me-2" />
-                                    Create via blank template
-                                </Link>
-                                <Link
-                                    to="/create/job-portal"
-                                    className="btn bg-info d-flex align-items-center"
-                                >
-                                    Job Application Portal
-                                </Link>
+                            <Link
+                                to="/create/job-requisition"
+                                className="btn btn-primary d-flex align-items-center btn-space"
+                            >
+                                <i className="ti ti-circle-plus me-2" />
+                                Create via Position
+                            </Link>
+                            <Link
+                                to="/create/job-blank-requisition"
+                                className="btn btn-secondary-light d-flex align-items-center btn-space"
+                            >
+                                <i className="ti ti-circle-plus me-2" />
+                                Create via blank template
+                            </Link>
+                            {/* <Link
+                                to="/post/job-portal"
+                                className="btn btn-job-portal d-flex align-items-center btn-space"
+                            >
+                                <i className="ti ti-bell-share me-2" />
+                                Post to Job Portals
+                            </Link> */}
+                            <Link
+                                to="/create/job-portal"
+                                className="btn bg-info d-flex align-items-center"
+                            >
+                                Job Application Portal
+                            </Link>
                             {/* </div> */}
                             <div className="head-icons ms-2">
                                 <CollapseHeader />
@@ -320,6 +327,21 @@ const JobGrid = () => {
                                         </div>
                                         <div>
                                             <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
+                                        </div>
+                                        <div>
+                                            <Link
+                                                to={job.notificationStatus === "Approver 1" ? "#" : "#"}
+                                                className={`btn btn-job-portal d-flex align-items-center btn-space ${job.notificationStatus !== "Approver 1" ? "disabled-btn" : ""
+                                                    }`}
+                                                onClick={(e) => {
+                                                    if (job.notificationStatus !== "Approver 1") {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                            >
+                                                <i className="ti ti-bell-share me-2" />
+                                                Post Job
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

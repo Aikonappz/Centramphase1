@@ -83,6 +83,8 @@ const Step3 = (props: any) => {
             setTimeout(() => {
                 setStepper2_Status(data.stepper2Status || "")
                 setIsLoading(false);
+                setIsSaveLoading(false);
+                setIsSendBackLoading(false);
             }, 500);
         }
     }

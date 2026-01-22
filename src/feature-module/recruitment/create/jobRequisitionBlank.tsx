@@ -18,7 +18,8 @@ const RequisitionBlankPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [title, setTitle] = useState('Create Requisition via Blank Template');
+  // const [title, setTitle] = useState('Create Requisition via Blank Template');
+  const [title, setTitle] = useState('Requisition Details');
   
   // Fetch requisition data when component mounts or ID changes
   useEffect(() => {

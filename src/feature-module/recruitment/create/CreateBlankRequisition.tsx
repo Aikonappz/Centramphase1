@@ -23,13 +23,13 @@ const CreateBlankRequisition = (props: any) => {
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
-    const onFinish = (values: any) => {
-        const formattedValues = {
-            ...values,
-            jobPostingEndDate: values.jobPostingEndDate?.format('YYYY-MM-DD') || null
-        };
-        handleSubmit(formattedValues);
-    };
+    // const onFinish = (values: any) => {
+    //     const formattedValues = {
+    //         ...values,
+    //         jobPostingEndDate: values.jobPostingEndDate?.format('YYYY-MM-DD') || null
+    //     };
+    //     handleSubmit(formattedValues);
+    // };
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
     const [jobLevel, setJobLevel] = useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
     const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
@@ -37,6 +37,7 @@ const CreateBlankRequisition = (props: any) => {
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
     const [division, setDivision] = useState<any>(transformArrayToLabelValue(jobs.division?.content || []));
     const [isLoading, setIsLoading] = useState<any>(jobs.loading);
+    const [isSaveLoading, setIsSaveLoading] = useState<any>(jobs.loading);
     const [jobData, setJobData] = useState<any>({});
     const [positions, setPositions] = useState<any>({});
 
@@ -101,6 +102,7 @@ const CreateBlankRequisition = (props: any) => {
                 });
                 setJobData(data);
                 setIsLoading(false);
+                setIsSaveLoading(false);
             }, 500);
         }
     }
@@ -126,6 +128,7 @@ const CreateBlankRequisition = (props: any) => {
                 });
                 setPositions(data);
                 setIsLoading(false);
+                setIsSaveLoading(false);
             }, 500);
         }
     }
@@ -319,7 +322,7 @@ const CreateBlankRequisition = (props: any) => {
         setSearchParams(searchParams);
     };
 
-    const handleSubmit = async (formValues: any) => {
+    const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 1') => {
         setIsLoading(true);
         messageApi.open({
             key,
@@ -340,12 +343,12 @@ const CreateBlankRequisition = (props: any) => {
         formValues.jobPostingStartDate = formatDate(new Date());
         formValues.jobClassification = "";
         formValues.locationId = 1;
-        formValues.payGrade = "PG06";
-        formValues.recruiter = "Harris Kumar";
-        formValues.hiringManager = "Monika Gupta";
-        formValues.headOfBusinessUnit = "Harris Kumar";
-        formValues.headOfRecruitment = "Monika Gupta";
-        formValues.jobCode = "JC-001"
+        // formValues.payGrade = "PG06";
+        // formValues.recruiter = "Harris Kumar";
+        // formValues.hiringManager = "Monika Gupta";
+        // formValues.headOfBusinessUnit = "Harris Kumar";
+        // formValues.headOfRecruitment = "Monika Gupta";
+        // formValues.jobCode = "JC-001"
         const response: any = await dispatch(blankpostJob(formValues));
         if (response.status === 200) {
             setIsLoading(false);
@@ -391,7 +394,7 @@ const CreateBlankRequisition = (props: any) => {
                 form={form}
                 layout={'vertical'}
                 name="requisition"
-                onFinish={onFinish}
+                // onFinish={onFinish}
                 initialValues={jobData}
                 // style={{ maxWidth: 600 }}
                 scrollToFirstError
@@ -437,7 +440,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="positionName"
                             label="Position"
-                            rules={[{ required: true, message: 'Please enter Position Name!' }]}
+                            rules={[{ required: false, message: 'Please enter Position Name!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -446,7 +449,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="jobCode"
                             label="Job Code"
-                            rules={[{ required: true, message: 'Please enter Job Code!' }]}
+                            rules={[{ required: false, message: 'Please enter Job Code!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -455,6 +458,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="organisationId"
                             label="Organization Name"
+                            rules={[{ required: true, message: 'Please select Organization Name!' }]}
                         >
                             <Select
                                 showSearch
@@ -476,6 +480,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="locationId"
                             label="Location Name"
+                            rules={[{ required: true, message: 'Please select Location Name!' }]}
                         >
                             <Select
                                 showSearch
@@ -492,6 +497,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="businessUnitId"
                             label="Business Unit Name"
+                            rules={[{ required: true, message: 'Please select Business Unit Name!' }]}
                         >
                             <Select
                                 showSearch
@@ -512,6 +518,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="divisionId"
                             label="Division Name"
+                            rules={[{ required: true, message: 'Please select Division Name!' }]}
                         >
                             <Select
                                 showSearch
@@ -532,6 +539,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="departmentId"
                             label="Department Name"
+                            rules={[{ required: true, message: 'Please select Department Name!' }]}
                         >
                             <Select
                                 showSearch
@@ -551,6 +559,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="hiringManager"
                             label="Hiring Manager"
+                            rules={[{ required: true, message: 'Please select Hiring Manager!' }]}
                         >
                             <Select
                                 showSearch
@@ -567,6 +576,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="headOfBusinessUnit"
                             label="Head Of Business Unit"
+                            rules={[{ required: true, message: 'Please select Head Of Business Unit!' }]}
                         >
                             <Select
                                 showSearch
@@ -583,6 +593,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="headOfRecruitment"
                             label="Head Of Recruitment"
+                            rules={[{ required: true, message: 'Please select Head Of Recruitment!' }]}
                         >
                             <Select
                                 showSearch
@@ -599,6 +610,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="recruiter"
                             label="Recruiter"
+                            rules={[{ required: true, message: 'Please select Recruiter!' }]}
                         >
                             <Select
                                 showSearch
@@ -779,24 +791,36 @@ const CreateBlankRequisition = (props: any) => {
                         <button
                             className="btn btn-primary ml-5"
                             onClick={async () => {
-                                setIsLoading(true);
+                                setIsSaveLoading(true);
                                 const formattedValues = {
                                     ...form.getFieldsValue(),
                                     jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
                                 };
-                                await handleSubmit(formattedValues);
+                                await handleSubmit(formattedValues, 'Draft');
                                 setTimeout(() => {
-                                    setIsLoading(false);
+                                    setIsSaveLoading(false);
                                     navigate('/job-grid');
                                 }, 2000);
                             }}
                         >
-                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
                             Save & Close
                         </button>
                         <button
                             type="submit"
                             className="btn btn-primary"
+                            onClick={async () => {
+                                setIsLoading(true);
+                                const formattedValues = {
+                                    ...form.getFieldsValue(),
+                                    jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
+                                };
+                                await handleSubmit(formattedValues, 'Approver 1');
+                                setTimeout(() => {
+                                    setIsLoading(false);
+                                    navigate('/job-grid');
+                                }, 2000);
+                            }}
                         >
                             {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
                             Create & Send to Approver 1
