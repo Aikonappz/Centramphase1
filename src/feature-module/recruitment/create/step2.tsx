@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space, Typo
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { postJob, saveManagerReview, getJobLists } from "../../../core/data/redux/actions/requisitionActions";
+import { postJob, saveManagerReview, getJobLists, getManagerReviewByRequisitionID } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -51,6 +51,7 @@ const Step2 = (props: any) => {
         { value: "rejected", label: "Rejected" },
     ];
     const [stepper1_Status, setStepper1_Status] = useState("");
+    const [managerReview_Id, setManagerReview_Id] = useState("");
 
     useEffect(() => {
         if (jobs.jobById) {
@@ -84,11 +85,31 @@ const Step2 = (props: any) => {
                 setIsLoading(false);
                 setIsSaveLoading(false);
                 setIsSendBackLoading(false);
+                if(data.stepper1Status === "Draft"){
+                    getManagerReviewDetails(reqId)
+                }
+            }, 500);
+        }
+    }
+
+    const getManagerReviewDetails = async (reqId: any) => {
+        setIsLoading(true);
+        const response: any = await dispatch(getManagerReviewByRequisitionID(reqId));
+        const data = response.data;
+        if (response.status !== 200) {
+            message.error('Error fetching Manager Review by Req Id');
+        } else {
+            setTimeout(() => {
+                setManagerReview_Id(data.id)
+                // form.setFieldsValue({
+                //     internalJobTitle: jobs.jobById?.jobTitle,
+                // });
             }, 500);
         }
     }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 2') => {
+        alert(managerReview_Id)
         const titl = form.getFieldValue("externalJobTitle");
         const desc = form.getFieldValue("externalJobDescription");
         const exp = form.getFieldValue("levelOfExperience");
@@ -548,20 +569,20 @@ const Step2 = (props: any) => {
                         </button>
                     )}
                     {(stepper1_Status === 'Draft' || stepper1_Status === '') && (
-                    <button
-                        className="btn btn-primary ml-5"
-                        onClick={async () => {
-                            setIsSendBackLoading(true);
-                            await handleSendBack(form.getFieldsValue());
-                            setTimeout(() => {
-                                setIsSendBackLoading(false);
-                                // navigate('/job-grid');
-                            }, 1000);
-                        }}
-                    >
-                        {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Send Back
-                    </button>
+                        <button
+                            className="btn btn-primary ml-5"
+                            onClick={async () => {
+                                setIsSendBackLoading(true);
+                                await handleSendBack(form.getFieldsValue());
+                                setTimeout(() => {
+                                    setIsSendBackLoading(false);
+                                    // navigate('/job-grid');
+                                }, 1000);
+                            }}
+                        >
+                            {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Send Back
+                        </button>
                     )}
                     {(stepper1_Status === 'Draft' || stepper1_Status === '') && (
                         <button

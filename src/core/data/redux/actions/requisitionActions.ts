@@ -15,6 +15,18 @@ export const GET_JOB_BY_ID_REQUEST = 'GET_JOB_BY_ID_REQUEST';
 export const GET_JOB_BY_ID_SUCCESS = 'GET_JOB_BY_ID_SUCCESS';
 export const GET_JOB_BY_ID_FAILURE = 'GET_JOB_BY_ID_FAILURE';
 
+export const GET_MANAGER_REVIEW_BY_ID_REQUEST = 'GET_MANAGER_REVIEW_BY_ID_REQUEST';
+export const GET_MANAGER_REVIEW_BY_ID_SUCCESS = 'GET_MANAGER_REVIEW_BY_ID_SUCCESS';
+export const GET_MANAGER_REVIEW_BY_ID_FAILURE = 'GET_MANAGER_REVIEW_BY_ID_FAILURE';
+
+export const GET_RECRUITER_TEAM_LEAD_BY_ID_REQUEST = 'GET_RECRUITER_TEAM_LEAD_BY_ID_REQUEST';
+export const GET_RECRUITER_TEAM_LEAD_BY_ID_SUCCESS = 'GET_RECRUITER_TEAM_LEAD_BY_ID_SUCCESS';
+export const GET_RECRUITER_TEAM_LEAD_BY_ID_FAILURE = 'GET_RECRUITER_TEAM_LEAD_BY_ID_FAILURE';
+
+export const GET_RECRUITER_REVIEW_BY_ID_REQUEST = 'GET_RECRUITER_REVIEW_BY_ID_REQUEST';
+export const GET_RECRUITER_REVIEW_BY_ID_SUCCESS = 'GET_RECRUITER_REVIEW_BY_ID_SUCCESS';
+export const GET_RECRUITER_REVIEW_BY_ID_FAILURE = 'GET_RECRUITER_REVIEW_BY_ID_FAILURE';
+
 export const DELETE_JOB_REQUEST = 'DELETE_JOB_REQUEST';
 export const DELETE_JOB_SUCCESS = 'DELETE_JOB_SUCCESS';
 export const DELETE_JOB_FAILURE = 'DELETE_JOB_FAILURE';
@@ -125,6 +137,47 @@ interface GetJobByIdFailureAction {
   payload: string;
 }
 
+interface GetManagerReviewByIdRequestAction {
+  type: typeof GET_MANAGER_REVIEW_BY_ID_REQUEST;
+}
+
+interface GetManagerReviewByIdSuccessAction {
+  type: typeof GET_MANAGER_REVIEW_BY_ID_SUCCESS;
+  payload: any;
+}
+
+interface GetManagerReviewByIdFailureAction {
+  type: typeof GET_MANAGER_REVIEW_BY_ID_FAILURE;
+  payload: string;
+}
+
+interface GetRecruiterTeamLeadByIdRequestAction {
+  type: typeof GET_RECRUITER_TEAM_LEAD_BY_ID_REQUEST;
+}
+
+interface GetRecruiterTeamLeadByIdSuccessAction {
+  type: typeof GET_RECRUITER_TEAM_LEAD_BY_ID_SUCCESS;
+  payload: any;
+}
+
+interface GetRecruiterTeamLeadByIdFailureAction {
+  type: typeof GET_RECRUITER_TEAM_LEAD_BY_ID_FAILURE;
+  payload: string;
+}
+
+interface GetRecruiterReviewByIdRequestAction {
+  type: typeof GET_RECRUITER_REVIEW_BY_ID_REQUEST;
+}
+
+interface GetRecruiterReviewByIdSuccessAction {
+  type: typeof GET_RECRUITER_REVIEW_BY_ID_SUCCESS;
+  payload: any;
+}
+
+interface GetRecruiterReviewByIdFailureAction {
+  type: typeof GET_RECRUITER_REVIEW_BY_ID_FAILURE;
+  payload: string;
+}
 
 interface GetPositionRequestAction {
   type: typeof GET_POSITION_REQUEST;
@@ -323,46 +376,55 @@ interface SaveFinalReviewFailureAction {
 
 
 
-export type JobActionTypes = 
-  | PostJobRequestAction 
+export type JobActionTypes =
+  | PostJobRequestAction
   | BlankPostJobRequestAction
-  | PostJobSuccessAction 
+  | PostJobSuccessAction
   | PostJobFailureAction
-  | GetJobRequestAction 
-  | GetJobSuccessAction 
+  | GetJobRequestAction
+  | GetJobSuccessAction
   | GetJobFailureAction
-  | GetJobByIdRequestAction 
-  | GetJobByIdSuccessAction 
+  | GetJobByIdRequestAction
+  | GetJobByIdSuccessAction
   | GetJobByIdFailureAction
-  | GetPositionRequestAction 
-  | GetPositionSuccessAction 
+  | GetManagerReviewByIdRequestAction
+  | GetManagerReviewByIdSuccessAction
+  | GetManagerReviewByIdFailureAction
+  | GetRecruiterTeamLeadByIdRequestAction
+  | GetRecruiterTeamLeadByIdSuccessAction
+  | GetRecruiterTeamLeadByIdFailureAction
+  | GetRecruiterReviewByIdRequestAction
+  | GetRecruiterReviewByIdSuccessAction
+  | GetRecruiterReviewByIdFailureAction
+  | GetPositionRequestAction
+  | GetPositionSuccessAction
   | GetPositionFailureAction
-  | PostPositionRequestAction 
-  | PostPositionSuccessAction 
+  | PostPositionRequestAction
+  | PostPositionSuccessAction
   | PostPositionFailureAction
-  | GetPositionByIdRequestAction 
-  | GetPositionByIdSuccessAction 
+  | GetPositionByIdRequestAction
+  | GetPositionByIdSuccessAction
   | GetPositionByIdFailureAction
-  | GetJobDetailsByJobCodeRequestAction 
-  | GetJobDetailsByJobCodeSuccessAction 
+  | GetJobDetailsByJobCodeRequestAction
+  | GetJobDetailsByJobCodeSuccessAction
   | GetJobDetailsByJobCodeFailureAction
-  | GetDivisionRequestAction 
-  | GetDivisionSuccessAction 
+  | GetDivisionRequestAction
+  | GetDivisionSuccessAction
   | GetDivisionFailureAction
-  | GetDepartmentRequestAction 
-  | GetDepartmentSuccessAction 
+  | GetDepartmentRequestAction
+  | GetDepartmentSuccessAction
   | GetDepartmentFailureAction
-  | GetBusinessUnitRequestAction 
-  | GetBusinessUnitSuccessAction 
+  | GetBusinessUnitRequestAction
+  | GetBusinessUnitSuccessAction
   | GetBusinessUnitFailureAction
-  | GetOrganisationRequestAction 
-  | GetOrganisationSuccessAction 
+  | GetOrganisationRequestAction
+  | GetOrganisationSuccessAction
   | GetOrganisationFailureAction
-  | GetLocationRequestAction 
-  | GetLocationSuccessAction 
+  | GetLocationRequestAction
+  | GetLocationSuccessAction
   | GetLocationFailureAction
-  | SaveOrganisationRequestAction 
-  | SaveOrganisationSuccessAction 
+  | SaveOrganisationRequestAction
+  | SaveOrganisationSuccessAction
   | SaveOrganisationFailureAction
   | SaveManagerReviewRequestAction
   | SaveManagerReviewSuccessAction
@@ -424,6 +486,78 @@ export const blankpostJob = (data: any) => {
       }
       dispatch({
         type: POST_JOB_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getManagerReviewByRequisitionID = (id?: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_MANAGER_REVIEW_BY_ID_REQUEST });
+    try {
+      const response = await api.get(`/requisition/manager_review/${id}`);
+      dispatch({
+        type: GET_MANAGER_REVIEW_BY_ID_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_MANAGER_REVIEW_BY_ID_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getRecruiterTeamLeadByRequisitionID = (id?: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_RECRUITER_TEAM_LEAD_BY_ID_REQUEST });
+    try {
+      const response = await api.get(`/requisition/recruiter_team_lead/${id}`);
+      dispatch({
+        type: GET_RECRUITER_TEAM_LEAD_BY_ID_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_RECRUITER_TEAM_LEAD_BY_ID_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
+export const getRecruiterReviewByRequisitionID = (id?: any) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_RECRUITER_REVIEW_BY_ID_REQUEST });
+    try {
+      const response = await api.get(`/requisition/recruiter_review/${id}`);
+      dispatch({
+        type: GET_RECRUITER_REVIEW_BY_ID_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_RECRUITER_REVIEW_BY_ID_FAILURE,
         payload: errorMessage
       });
       return error;

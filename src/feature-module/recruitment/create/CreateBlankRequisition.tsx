@@ -341,6 +341,7 @@ const CreateBlankRequisition = (props: any) => {
         // formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "";
         formValues.jobPostingStartDate = formatDate(new Date());
+        formValues.notificationStatus = sts;
         formValues.jobClassification = "";
         formValues.locationId = 1;
         // formValues.payGrade = "PG06";

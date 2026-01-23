@@ -330,11 +330,11 @@ const JobGrid = () => {
                                         </div>
                                         <div>
                                             <Link
-                                                to={job.notificationStatus === "Approver 1" ? "#" : "#"}
-                                                className={`btn btn-job-portal d-flex align-items-center btn-space ${job.notificationStatus !== "Approver 1" ? "disabled-btn" : ""
+                                                to={job.finalStatus === "4" ? "#" : "#"}
+                                                className={`btn btn-job-portal d-flex align-items-center btn-space ${job.finalStatus !== "4" ? "disabled-btn" : ""
                                                     }`}
                                                 onClick={(e) => {
-                                                    if (job.notificationStatus !== "Approver 1") {
+                                                    if (job.finalStatus !== "4") {
                                                         e.preventDefault();
                                                     }
                                                 }}

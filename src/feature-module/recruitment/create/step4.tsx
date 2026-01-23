@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space, Typo
 import CommonSelect from "../../../core/common/commonSelect";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { RootState, useAppDispatch } from "../../../core/data/redux/store";
-import { postJob, saveManagerReview, saveRecruiterLeadReview, saveRecruiterReview, getJobLists } from "../../../core/data/redux/actions/requisitionActions";
+import { postJob, saveManagerReview, saveRecruiterLeadReview, saveRecruiterReview, getJobLists, getRecruiterReviewByRequisitionID } from "../../../core/data/redux/actions/requisitionActions";
 import { formatDate, toNumber, transformArrayToLabelValue } from "../../../utils/misc";
 import { useSelector } from "react-redux";
 import NumericInput from "../../../components/NumericInput";
@@ -39,6 +39,7 @@ const Step4 = (props: any) => {
     const [messageApi, contextHolder] = message.useMessage();
     const key = 'updatable';
     const [stepper3_Status, setStepper3_Status] = useState("");
+    const [recruiterReview_Id, setRecruiterReview_Id] = useState("");
 
     const joblevel = [
         { value: "Entry-Level", label: "Entry Level" },
@@ -81,9 +82,28 @@ const Step4 = (props: any) => {
                 setIsLoading(false);
                 setIsSaveLoading(false);
                 setIsSendBackLoading(false);
+                if (data.stepper3Status === "Draft") {
+                    getRecruiterReviewDetails(reqId)
+                }
             }, 500);
         }
     }
+
+    const getRecruiterReviewDetails = async (reqId: any) => {
+            setIsLoading(true);
+            const response: any = await dispatch(getRecruiterReviewByRequisitionID(reqId));
+            const data = response.data;
+            if (response.status !== 200) {
+                message.error('Error fetching Manager Review by Req Id');
+            } else {
+                setTimeout(() => {
+                    setRecruiterReview_Id(data.id)
+                    // form.setFieldsValue({
+                    //     internalJobTitle: jobs.jobById?.jobTitle,
+                    // });
+                }, 500);
+            }
+        }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 4') => {
         const query = form.getFieldValue("internalQuery");
