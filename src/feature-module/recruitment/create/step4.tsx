@@ -82,7 +82,7 @@ const Step4 = (props: any) => {
                 setIsLoading(false);
                 setIsSaveLoading(false);
                 setIsSendBackLoading(false);
-                if (data.stepper3Status === "Draft") {
+                if (data.stepper3Status === "Draft" || data.stepper3Status === "Approver 2") {
                     getRecruiterReviewDetails(reqId)
                 }
             }, 500);
@@ -90,20 +90,21 @@ const Step4 = (props: any) => {
     }
 
     const getRecruiterReviewDetails = async (reqId: any) => {
-            setIsLoading(true);
-            const response: any = await dispatch(getRecruiterReviewByRequisitionID(reqId));
-            const data = response.data;
-            if (response.status !== 200) {
-                message.error('Error fetching Manager Review by Req Id');
-            } else {
-                setTimeout(() => {
-                    setRecruiterReview_Id(data.id)
-                    // form.setFieldsValue({
-                    //     internalJobTitle: jobs.jobById?.jobTitle,
-                    // });
-                }, 500);
-            }
+        setIsLoading(true);
+        const response: any = await dispatch(getRecruiterReviewByRequisitionID(reqId));
+        const data = response.data;
+        if (response.status !== 200) {
+            message.error('Error fetching Manager Review by Req Id');
+        } else {
+            setTimeout(() => {
+                setRecruiterReview_Id(data.id)
+                form.setFieldsValue({
+                   internalQuery: data?.internalQuery
+                });
+                setIsLoading(false);
+            }, 500);
         }
+    }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 4') => {
         const query = form.getFieldValue("internalQuery");
@@ -140,10 +141,13 @@ const Step4 = (props: any) => {
             id: jobData?.id
         };
         delete formValues.id;
-        if (localStorage.getItem('stepper4Id') !== "") {
-            // formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
-            formValues.id = localStorage.getItem('stepper4Id') || undefined;
+         if (recruiterReview_Id !== "") {
+            formValues.id = recruiterReview_Id;
         }
+        // if (localStorage.getItem('stepper4Id') !== "") {
+        //     // formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
+        //     formValues.id = localStorage.getItem('stepper4Id') || undefined;
+        // }
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
@@ -201,11 +205,15 @@ const Step4 = (props: any) => {
         formValues.requisition = {
             id: jobData?.id
         };
-        formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
+        // formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
+        delete formValues.id;
+         if (recruiterReview_Id !== "") {
+            formValues.id = recruiterReview_Id;
+        }
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
-        formValues.notificationStatus = "Approver 1";
+        formValues.notificationStatus = "Approver 2";
         const response: any = await dispatch(saveRecruiterReview(formValues));
         if (response.status === 200) {
             setIsSendBackLoading(false);
@@ -335,23 +343,23 @@ const Step4 = (props: any) => {
                             Save & Close
                         </button>
                     )}
-                    {(stepper3_Status === 'Draft' || stepper3_Status === '') && (
-                    <button
-                        className="btn btn-primary ml-5"
-                        onClick={async () => {
-                            setIsSendBackLoading(true);
-                            await handleSendBack(form.getFieldsValue());
-                            setTimeout(() => {
-                                setIsSendBackLoading(false);
-                                // navigate('/job-grid');
-                            }, 1000);
-                        }}
-                    >
-                        {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                        Send Back
-                    </button>
+                    {(stepper3_Status === 'Draft' || stepper3_Status === '' || stepper3_Status === 'Approver 2') && (
+                        <button
+                            className="btn btn-primary ml-5"
+                            onClick={async () => {
+                                setIsSendBackLoading(true);
+                                await handleSendBack(form.getFieldsValue());
+                                setTimeout(() => {
+                                    setIsSendBackLoading(false);
+                                    // navigate('/job-grid');
+                                }, 1000);
+                            }}
+                        >
+                            {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                            Send Back
+                        </button>
                     )}
-                    {(stepper3_Status === 'Draft' || stepper3_Status === '') && (
+                    {(stepper3_Status === 'Draft' || stepper3_Status === '' || stepper3_Status === 'Approver 2') && (
                         <button
                             type="button"
                             className="btn btn-primary"

@@ -338,12 +338,12 @@ const CreateBlankRequisition = (props: any) => {
             }
         });
         formValues.id = jobData?.id || undefined;
-        // formValues.jobStartDate = formatDate(new Date());
+        formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "";
         formValues.jobPostingStartDate = formatDate(new Date());
         formValues.notificationStatus = sts;
         formValues.jobClassification = "";
-        formValues.locationId = 1;
+        // formValues.locationId = 1;
         // formValues.payGrade = "PG06";
         // formValues.recruiter = "Harris Kumar";
         // formValues.hiringManager = "Monika Gupta";
@@ -800,7 +800,7 @@ const CreateBlankRequisition = (props: any) => {
                                 await handleSubmit(formattedValues, 'Draft');
                                 setTimeout(() => {
                                     setIsSaveLoading(false);
-                                    navigate('/job-grid');
+                                    // navigate('/job-grid');
                                 }, 2000);
                             }}
                         >
@@ -819,7 +819,7 @@ const CreateBlankRequisition = (props: any) => {
                                 await handleSubmit(formattedValues, 'Approver 1');
                                 setTimeout(() => {
                                     setIsLoading(false);
-                                    navigate('/job-grid');
+                                    // navigate('/job-grid');
                                 }, 2000);
                             }}
                         >

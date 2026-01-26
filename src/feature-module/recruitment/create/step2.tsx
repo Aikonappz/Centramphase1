@@ -85,7 +85,7 @@ const Step2 = (props: any) => {
                 setIsLoading(false);
                 setIsSaveLoading(false);
                 setIsSendBackLoading(false);
-                if(data.stepper1Status === "Draft"){
+                if (data.stepper1Status === "Draft" || data.stepper1Status === "Approver 0") {
                     getManagerReviewDetails(reqId)
                 }
             }, 500);
@@ -101,15 +101,17 @@ const Step2 = (props: any) => {
         } else {
             setTimeout(() => {
                 setManagerReview_Id(data.id)
-                // form.setFieldsValue({
-                //     internalJobTitle: jobs.jobById?.jobTitle,
-                // });
+                form.setFieldsValue({
+                    externalJobTitle: data?.externalJobTitle,
+                    externalJobDescription: data?.externalJobDescription,
+                    levelOfExperience: data?.levelOfExperience,
+                });
+                setIsLoading(false);
             }, 500);
         }
     }
 
     const handleSubmit = async (formValues: any, sts: 'Draft' | 'Approver 2') => {
-        alert(managerReview_Id)
         const titl = form.getFieldValue("externalJobTitle");
         const desc = form.getFieldValue("externalJobDescription");
         const exp = form.getFieldValue("levelOfExperience");
@@ -169,8 +171,8 @@ const Step2 = (props: any) => {
 
         // ✅ ensure id is not present
         delete formValues.id;
-        if (localStorage.getItem('stepper2Id') !== "") {
-            formValues.id = localStorage.getItem('stepper2Id') || undefined;
+        if (managerReview_Id !== "") {
+            formValues.id = managerReview_Id;
         }
         // delete formValues.id;
 
@@ -235,6 +237,9 @@ const Step2 = (props: any) => {
         formValues.notificationStatus = "Approver 0";
         // ✅ ensure id is not present
         delete formValues.id;
+        if (managerReview_Id !== "") {
+            formValues.id = managerReview_Id;
+        }
 
         const response: any = await dispatch(saveManagerReview(formValues));
         if (response.status === 200) {
@@ -568,7 +573,7 @@ const Step2 = (props: any) => {
                             Save & Close
                         </button>
                     )}
-                    {(stepper1_Status === 'Draft' || stepper1_Status === '') && (
+                    {(stepper1_Status === 'Draft' || stepper1_Status === '' || stepper1_Status === 'Approver 0') && (
                         <button
                             className="btn btn-primary ml-5"
                             onClick={async () => {
@@ -584,7 +589,7 @@ const Step2 = (props: any) => {
                             Send Back
                         </button>
                     )}
-                    {(stepper1_Status === 'Draft' || stepper1_Status === '') && (
+                    {(stepper1_Status === 'Draft' || stepper1_Status === '' || stepper1_Status === 'Approver 0') && (
                         <button
                             type="button"
                             className="btn btn-primary"

@@ -86,7 +86,7 @@ const Step3 = (props: any) => {
                 setIsLoading(false);
                 setIsSaveLoading(false);
                 setIsSendBackLoading(false);
-                if (data.stepper2Status === "Draft") {
+                if (data.stepper2Status === "Draft"  || data.stepper2Status === "Approver 1") {
                     getRecruiterTeamLeadReviewDetails(reqId)
                 }
             }, 500);
@@ -102,9 +102,12 @@ const Step3 = (props: any) => {
         } else {
             setTimeout(() => {
                 setRecruiter_TeamLead_Id(data.id)
-                // form.setFieldsValue({
-                //     internalJobTitle: jobs.jobById?.jobTitle,
-                // });
+                form.setFieldsValue({
+                    externalJobTitle: data?.externalJobTitle,
+                    externalJobDescription: data?.externalJobDescription,
+                    levelOfExperience: data?.levelOfExperience,
+                });
+                setIsLoading(false);
             }, 500);
         }
     }
@@ -145,15 +148,18 @@ const Step3 = (props: any) => {
         formValues.requisition = {
             id: jobData?.id
         };
-        delete formValues.id;
-        if (localStorage.getItem('stepper3Id') !== "") {
-            // formValues.id = localStorage.getItem('recruiterLeadReviewId') || undefined;
-            formValues.id = localStorage.getItem('stepper3Id') || undefined;
-        }
+        // delete formValues.id;
+        // if (localStorage.getItem('stepper3Id') !== "") {
+        //     formValues.id = localStorage.getItem('stepper3Id') || undefined;
+        // }
         formValues.positionId = jobData?.positionId || undefined;
         formValues.jobStartDate = formatDate(new Date());
         formValues.reasonForVacancy = "New Position";
         formValues.notificationStatus = sts;
+        delete formValues.id;
+        if (recruiter_TeamLead_Id !== "") {
+            formValues.id = recruiter_TeamLead_Id;
+        }
         // formValues.jobPostingStartDate = formatDate(new Date());
         // formValues.jobClassification = "IT";
         // formValues.locationId = 1;
@@ -222,8 +228,10 @@ const Step3 = (props: any) => {
         formValues.notificationStatus = "Approver 1";
         // ✅ ensure id is not present
         delete formValues.id;
-
-        const response: any = await dispatch(saveManagerReview(formValues));
+        if (recruiter_TeamLead_Id) {
+            formValues.id = recruiter_TeamLead_Id;
+        }
+        const response: any = await dispatch(saveRecruiterLeadReview(formValues));
         if (response.status === 200) {
             setIsSendBackLoading(false);
             messageApi.open({
@@ -555,7 +563,7 @@ const Step3 = (props: any) => {
                             Save & Close
                         </button>
                     )}
-                    {(stepper2_Status === 'Draft' || stepper2_Status === '') && (
+                    {(stepper2_Status === 'Draft' || stepper2_Status === '' || stepper2_Status === 'Approver 1') && (
                         <button
                             className="btn btn-primary ml-5"
                             onClick={async () => {
@@ -571,7 +579,7 @@ const Step3 = (props: any) => {
                             Send Back
                         </button>
                     )}
-                    {(stepper2_Status === 'Draft' || stepper2_Status === '') && (
+                    {(stepper2_Status === 'Draft' || stepper2_Status === '' || stepper2_Status === 'Approver 1') && (
                         <button
                             type="button"
                             className="btn btn-primary"

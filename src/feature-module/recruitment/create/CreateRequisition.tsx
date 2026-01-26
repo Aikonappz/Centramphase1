@@ -841,7 +841,7 @@ const CreateRequisition = (props: any) => {
                                     await handleSubmit(formattedValues, 'Draft');
                                     setTimeout(() => {
                                         setIsSaveLoading(false);
-                                        navigate('/job-grid');
+                                        // navigate('/job-grid');
                                     }, 2000);
                                 }}
                             >
@@ -862,7 +862,7 @@ const CreateRequisition = (props: any) => {
                                     await handleSubmit(formattedValues, 'Approver 1');
                                     setTimeout(() => {
                                         setIsLoading(false);
-                                        navigate('/job-grid');
+                                        // navigate('/job-grid');
                                     }, 2000);
                                 }}
                             >
