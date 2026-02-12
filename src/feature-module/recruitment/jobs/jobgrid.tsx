@@ -8,15 +8,42 @@ import CommonSelect from '../../../core/common/commonSelect'
 import CollapseHeader from '../../../core/common/collapse-header/collapse-header'
 import { RootState, useAppDispatch } from '../../../core/data/redux/store'
 import { getBusinessUnit, getDepartmentLists, getDivision, getJobLists, getPositions, postJob, resetJobById } from '../../../core/data/redux/actions/requisitionActions'
+import { postJobportal, fetchPostedJobDetails, updateJobportal } from '../../../core/data/redux/actions/postJobActions'
 import { useSelector } from 'react-redux'
 import { transformArrayToLabelValue } from '../../../utils/misc'
 import PostJobModal from '../create/CreateRequisition';
 import CardGridSkeleton from '../../../components/CardGridSkeleton';
 import { useNavigate } from "react-router";
+import JobPostingModal from "../../../core/modals/postJobModal";
+import PostJobMainModal from '../../../core/modals/postJobMainModal';
+import moment from "moment";
+import JobPostAlertModal from '../../../core/modals/postJobAlertModal'
+import PostingReviewModal from '../../../core/modals/PostingReviewModal'
+
+type PostJobData = {
+    jobPortalCareerSite: string;
+    jobPortalPostingStartDate: string;
+    jobPortalPostingEndDate: string;
+    repostAfterExpiration: boolean;
+};
 
 const JobGrid = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const [showModal, setShowModal] = React.useState(false);
+    const [selectedJobId, setSelectedJobId] = React.useState(null);
+    const [showPostJobMainModal, setShowPostJobMainModal] = React.useState(false);
+    const [postJobMode, setPostJobMode] = React.useState<"CREATE" | "EDIT">("CREATE");
+    const [postJobInitialData, setPostJobInitialData] = React.useState<any>(null);
+    const [showAlertModal, setShowAlertModal] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState("");
+    const [showPostingReview, setShowPostingReview] = React.useState(false);
+    const [showJobPreview, setShowJobPreview] = React.useState(false);
+    const [selectedPostType, setSelectedPostType] =
+        React.useState<"INTERNAL" | "EXTERNAL" | "AGENT" | null>(null);
+
+
+
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
 
     const [isLoading, setIsLoading] = React.useState<any>(jobs.loading);
@@ -36,6 +63,158 @@ const JobGrid = () => {
     const handleJobDetails = (jobId: any) => {
         localStorage.setItem('requisitionId', jobId);
     }
+
+    const handleClick = (e: React.MouseEvent, jobId: any) => {
+        e.preventDefault();
+
+        setSelectedJobId(jobId);
+        setShowModal(true);
+    };
+
+    const handlePostJob = async () => {
+        setShowModal(false);
+        try {
+            const response: any = await dispatch(
+                fetchPostedJobDetails(Number(selectedJobId))
+            );
+            const postingStatus = response?.data.postingStatus;
+            // 🚫 BLOCK if already posted
+            if (postingStatus === "POSTED") {
+                setAlertMessage(
+                    "This job has already been posted. Please edit the posting if changes are required."
+                );
+                setShowAlertModal(true);
+                return;
+            }
+            // ✅ ALLOW post job modal
+            setPostJobMode("CREATE");
+            setPostJobInitialData(null);
+            setShowPostJobMainModal(true);
+        } catch (error) {
+            // ✅ No existing post → allow create
+            setPostJobMode("CREATE");
+            setPostJobInitialData(null);
+            setShowPostJobMainModal(true);
+        }
+    };
+
+    const mapApiToFormData = (data: any) => {
+        return {
+            jobPortalCareerSite: data.jobPortalCareerSite ?? "",
+            jobPortalPostingStartDate: data.jobPortalPostingStartDate
+                ? moment(data.jobPortalPostingStartDate).format("YYYY-MM-DD")
+                : "",
+            jobPortalPostingEndDate: data.jobPortalPostingEndDate
+                ? moment(data.jobPortalPostingEndDate).format("YYYY-MM-DD")
+                : "",
+            repostAfterExpiration: data.repostAfterExpiration ?? false,
+        };
+    };
+
+
+    const handleEditJob = async () => {
+        setShowModal(false);
+
+        try {
+            const response = await dispatch(fetchPostedJobDetails(Number(selectedJobId)));
+            const postingStatus = response?.data.postingStatus;
+            // 🚫 BLOCK if already posted
+            if (postingStatus === "POSTED") {
+                setPostJobMode("EDIT");
+                setShowPostJobMainModal(true);
+                const mappedData = mapApiToFormData(response.data);
+                setPostJobInitialData(mappedData);
+            } else if (postingStatus !== "POSTED") {
+                setAlertMessage(
+                    "Job was not posted yet. Please post the job first."
+                );
+                setShowAlertModal(true);
+                return;
+            }
+        } catch (error) {
+            alert("Failed to load job posting details");
+        }
+    };
+
+    const handlePreviewJob = async () => {
+        setShowPostingReview(true);
+    };
+
+
+    const handlePostJobSubmit = async (formData: PostJobData) => {
+        try {
+            const payload = {
+                requisitionId: Number(selectedJobId),
+                jobPortalCareerSite: formData.jobPortalCareerSite,
+                jobPortalPostingStartDate: formData.jobPortalPostingStartDate
+                    ? moment(formData.jobPortalPostingStartDate).format("YYYY-MM-DD")
+                    : moment().format("YYYY-MM-DD"),
+                jobPortalPostingEndDate: formData.jobPortalPostingEndDate
+                    ? moment(formData.jobPortalPostingEndDate).format("YYYY-MM-DD")
+                    : moment().format("YYYY-MM-DD"),
+                repostAfterExpiration: formData.repostAfterExpiration,
+            };
+
+            const update_payload = {
+                requisitionId: Number(selectedJobId),
+                postingBoard: formData.jobPortalCareerSite,
+                postingStartDate: formData.jobPortalPostingStartDate,
+                postingEndDate: formData.jobPortalPostingEndDate,
+                repostAfterExpiry: formData.repostAfterExpiration,
+            };
+
+            let response: any;
+            let response_update: any;
+
+            if (postJobMode === "CREATE") {
+                response = await dispatch(postJobportal(payload));
+            } else {
+                // response = await dispatch(updateJobportal(payload));
+                response_update = await dispatch(updateJobportal(payload));
+            }
+
+            // ✅ success check (safer)
+            if (response && (response.status === 200 || response.data)) {
+                setShowPostJobMainModal(false);
+                window.open("/job-portal");
+            }
+            if (response_update.status === 200) {
+                setShowPostJobMainModal(false);
+                window.open("/job-portal");
+            }
+        } catch (error: any) {
+            // const apiMessage =
+            //     error?.response?.data?.message ||
+            //     "Job already posted for this requisition";
+            // alert(apiMessage);
+        }
+    };
+
+
+
+    // const existingPostJobData = {
+    //     careerSite: "Internal Portal",
+    //     startDate: "2026-02-01",
+    //     endDate: "2026-02-28",
+    //     repostAfterExpiry: true,
+    // };
+
+
+    const postJobDetails = async (jobId: number) => {
+        try {
+            const response: any = await dispatch(postJobportal(jobId));
+            if (response.status === 200) {
+                setTimeout(() => {
+                    window.open("/job-portal");
+                }, 700);
+            }
+        } catch (error: any) {
+            const apiMessage =
+                error?.response?.data?.message ||
+                "Job already posted for this requisition";
+            alert(apiMessage); // ✅ BOOTSTRAP ALERT
+        }
+    };
 
     return (
         <>
@@ -329,19 +508,31 @@ const JobGrid = () => {
                                             <p className="fs-12 text-gray fw-normal">10 of 25 filled</p>
                                         </div>
                                         <div>
-                                            <Link
+                                            {/* <Link
                                                 to={job.finalStatus === "4" ? "#" : "#"}
                                                 className={`btn btn-job-portal d-flex align-items-center btn-space ${job.finalStatus !== "4" ? "disabled-btn" : ""
                                                     }`}
-                                                onClick={(e) => {
-                                                    if (job.finalStatus !== "4") {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
+                                            onClick={(e) => {
+                                                if (job.finalStatus === "4") {
+                                                    e.preventDefault();
+                                                    postJobDetails(job.id)
+                                                    // window.open("/job-portal")
+                                                }
+                                            }}
                                             >
                                                 <i className="ti ti-bell-share me-2" />
-                                                Post Job
+                                                Job Posting
+                                            </Link> */}
+                                            <Link
+                                                to="#"
+                                                onClick={(e) => handleClick(e, job.id)}
+                                                className={`btn btn-job-portal d-flex align-items-center btn-space ${job.finalStatus !== "4" ? "disabled-btn" : ""
+                                                    }`}
+                                            >
+                                                <i className="ti ti-bell-share me-2" />
+                                                Job Posting
                                             </Link>
+
                                         </div>
                                     </div>
                                 </div>
@@ -358,6 +549,38 @@ const JobGrid = () => {
                         </Link>
                     </p>
                 </div>
+                {showModal && (
+                    <JobPostingModal
+                        onClose={() => setShowModal(false)}
+                        onPostJob={handlePostJob}
+                        onEditJob={handleEditJob}
+                        onPreviewJob={handlePreviewJob}
+                    />
+                )}
+                {showPostJobMainModal && (
+                    <PostJobMainModal
+                        onClose={() => setShowPostJobMainModal(false)}
+                        onSubmit={handlePostJobSubmit}
+                        initialData={postJobInitialData}
+                    />
+                )}
+                {showAlertModal && (
+                    <JobPostAlertModal
+                        message={alertMessage}
+                        onClose={() => setShowAlertModal(false)}
+                    />
+                )}
+                {showPostingReview && (
+                    <PostingReviewModal
+                        onClose={() => setShowPostingReview(false)}
+                        onPreview={(type) => {
+                            setSelectedPostType(type);
+                            setShowPostingReview(false);
+                            setShowJobPreview(true);
+                        }}
+                    />
+                )}
+
             </div>
             {/* /Page Wrapper */}
             {/* Add Post */}

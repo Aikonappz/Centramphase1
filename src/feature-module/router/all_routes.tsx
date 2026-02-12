@@ -375,7 +375,6 @@ export const all_routes = {
   joblist: "/job-list",
   jobrequsition: "/create/job-requisition",
   jobrequsitionblank: "/create/job-blank-requisition",
-  postJobPortal: "/post/job-portal",
   jobPortal: "/create/job-portal",
   candidatesGrid: "/candidates-grid",
   candidateslist: "/candidates",
