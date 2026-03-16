@@ -171,6 +171,7 @@ export default function PortalApplyJob() {
 
     return (
         <div className="apply-wrapper">
+
             {/* LEFT CONTENT */}
             <div className="apply-form" ref={formRef}>
                 <div className="form-inner">
@@ -537,17 +538,22 @@ export default function PortalApplyJob() {
 
             {/* RIGHT SIDE STEPS */}
             <div className="apply-steps">
-                <ul>
-                    {sections.map(s => (
-                        <li
-                            key={s.id}
-                            className={active === s.id ? "active" : ""}
-                            onClick={() => scrollToSection(s.id)}
-                        >
-                            {s.label}
-                        </li>
-                    ))}
-                </ul>
+                <div className="steps-logo">
+                    <img src="/assets/img/logo.png" alt="Company Logo" />
+                </div>
+                <div className="steps-content">
+                    <ul>
+                        {sections.map(s => (
+                            <li
+                                key={s.id}
+                                className={active === s.id ? "active" : ""}
+                                onClick={() => scrollToSection(s.id)}
+                            >
+                                {s.label}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
 
             {showAlertModal && (

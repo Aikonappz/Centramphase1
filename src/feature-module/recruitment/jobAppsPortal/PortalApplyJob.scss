@@ -5,102 +5,65 @@
   font-family: "Poppins", sans-serif;
 }
 
+.apply-wrapper {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #f8fafc; // fallback color
+}
 
-// /* LEFT FORM */
-// .apply-form {
-//   width: 80%;
-//   padding: 40px 60px;
-//   overflow-y: auto;
+.apply-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
 
-//   section {
-//     margin-bottom: 40px;
-//   }
+  // background: url("../../../../public/assets/img/bg/career.png") center center no-repeat;
+  background-size: cover;
 
-//   h2 {
-//     font-size: 18px;
-//     margin-bottom: 16px;
-//     color: #0a2a66;
-//   }
+  opacity: 0.3; // 🔥 CONTROL IMAGE VISIBILITY HERE
+  z-index: 0;
+}
 
-//   input {
-//     width: 100%;
-//     padding: 12px 14px;
-//     margin-bottom: 16px;
-//     border-radius: 8px;
-//     border: 1px solid #ccd5e0;
-//     font-size: 14px;
+// .steps-logo {
+//   margin-top: 3vh;
+//   position: fixed;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+.steps-logo {
+  position: absolute;
+  /* change from fixed */
+  top: -6vh;
+  /* distance from top */
+  right: 20px;
+  /* distance from right */
+}
 
-//     &:focus {
-//       outline: none;
-//       border-color: #2563eb;
-//       box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-//     }
-//   }
-
-//   .row {
-//     display: flex;
-//     gap: 16px;
-
-//     input {
-//       flex: 1;
-//     }
-//   }
-
-//   .upload-box {
-//     border: 2px dashed #c7d2fe;
-//     padding: 30px;
-//     text-align: center;
-//     border-radius: 10px;
-//     background: #f5f7ff;
-//     cursor: pointer;
-
-//     p {
-//       margin-top: 10px;
-//       font-size: 13px;
-//       color: #555;
-//     }
-//   }
-
-//   .apply-btn {
-//     width: 260px;
-//     padding: 14px;
-//     background: #2563eb;
-//     color: #fff;
-//     border: none;
-//     border-radius: 8px;
-//     font-weight: 600;
-//     cursor: pointer;
-
-//     &:hover {
-//       background: #1d4ed8;
-//     }
-//   }
+// .steps-logo img {
+//   height: 50px;         /* adjust as needed */
+//   width: auto;
 // }
 
-// /* RIGHT STEPS */
-// .apply-steps {
-//   position: sticky;
-//   top: 100px;
+.apply-wrapper::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 450px;
+  height: 100%;
 
-//   ul {
-//     list-style: none;
-//     padding: 0;
+  background: linear-gradient(180deg,
+      #ff8c1a 50%,
+      #ff6a00 100%);
 
-//     li {
-//       padding: 10px 15px;
-//       cursor: pointer;
-//       border-left: 3px solid transparent;
-//       color: #555;
+  clip-path: ellipse(15% 100% at 100% 0%);
 
-//       &.active {
-//         border-left: 3px solid #ff6a00;
-//         color: #ff6a00;
-//         font-weight: 600;
-//         background: rgba(255, 106, 0, 0.05);
-//       }
-//     }
-//   }
-// }
+  z-index: 0;
+}
+
+
 
 .apply-form {
   width: 75%;
@@ -108,10 +71,16 @@
   padding: 40px 0; // remove side padding
 
   .form-inner {
-    max-width: 1100px;     // 🔥 centers content
+    max-width: 1100px; // 🔥 centers content
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 10px;
   }
+}
+
+.apply-form,
+.apply-steps {
+  position: relative;
+  z-index: 2;
 }
 
 .job-header {
@@ -175,7 +144,7 @@
   flex-direction: row;
   gap: 16px;
 
-  > * {
+  >* {
     flex: 1;
   }
 }
@@ -212,8 +181,8 @@
 }
 
 .apply-btn {
-  display: block;              // 🔑 important
-  margin: 40px auto 80px;      // center horizontally
+  display: block; // 🔑 important
+  margin: 40px auto 80px; // center horizontally
   width: 260px;
   padding: 14px;
   background: #ff6a00;
@@ -225,10 +194,9 @@
   text-align: center;
 
   &:hover {
-    background: #e85d00;       // slightly darker hover
+    background: #e85d00; // slightly darker hover
   }
 }
-
 
 .apply-steps {
   width: 20%;
@@ -246,7 +214,8 @@
     cursor: pointer;
     border-left: 3px solid transparent;
     color: #555;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 700;
 
     &:hover {
       background: #f3f4f6;
@@ -292,3 +261,24 @@
   }
 }
 
+@media (max-width: 992px) {
+
+  .apply-wrapper {
+    flex-direction: column;
+  }
+
+  .apply-form {
+    width: 100%;
+  }
+
+  .apply-steps {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .steps-logo {
+    margin-top: 20px;
+  }
+}

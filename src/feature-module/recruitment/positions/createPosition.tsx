@@ -44,6 +44,8 @@ const CreatePosition = () => {
     const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
     const [locationOptions, setLocationOptions] = useState<any[]>([]);
 
+    const [currency, setCurrency] = useState("$");
+
     // const hiringManager = [
     //     { value: 1, label: 'William Stones' },
     //     { value: 2, label: 'Amit Mishra' },
@@ -291,7 +293,7 @@ const CreatePosition = () => {
             <div className="content">
                 <div>
                     <Card
-                        title="Create New Position"
+                        title="Create a Position"
                         bordered={false}
                         style={{ maxWidth: '1200px', margin: '0 auto' }}
                         headStyle={{ borderBottom: 'none' }}
@@ -315,23 +317,42 @@ const CreatePosition = () => {
                                     <Form.Item
                                         name="name"
                                         label="Position Name"
-                                        rules={[{ required: true, message: 'Please input the position name!' }]}
+                                        rules={[
+                                            {
+                                                required: true, message: 'Please enter the position name!'
+
+                                            },
+                                            {
+                                                pattern: /^[A-Za-z\s]+$/,
+                                                message: "Only alphabets are allowed",
+                                            },
+                                            {
+                                                max: 39,
+                                                message: "Maximum 40 characters allowed",
+                                            },]}
                                     >
-                                        <Input placeholder="e.g. Senior Software Engineer" />
+                                        <Input placeholder="e.g. Senior Software Engineer"
+                                            maxLength={40}
+                                            onKeyDown={(e) => {
+                                                if (!/^[A-Za-z\s]$/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab") {
+                                                    e.preventDefault();
+                                                }
+                                            }}
+                                        />
                                     </Form.Item>
 
                                     <Form.Item
-                                        name="code"
-                                        label="Position Code"
-                                        rules={[{ required: true, message: 'Please input the position code!' }]}
+                                        name="startDate"
+                                        label="Start Date"
+                                        rules={[{ required: true, message: 'Please enter the start date!' }]}
                                     >
-                                        <Input placeholder="e.g. POS020" />
+                                        <DatePicker style={{ width: '100%' }} />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="payGrad"
                                         label="Pay Grade"
-                                        rules={[{ required: true, message: 'Please input the pay grade!' }]}
+                                        rules={[{ message: 'Please enter the pay grade!' }]}
                                     >
                                         <Input placeholder="e.g. G7" />
                                     </Form.Item>
@@ -340,7 +361,7 @@ const CreatePosition = () => {
                                         name="status"
                                         label="Status"
                                     >
-                                        <Select>
+                                        <Select style={{ width: '40%' }}>
                                             <Option value={1}>Active</Option>
                                             <Option value={0}>Inactive</Option>
                                         </Select>
@@ -348,7 +369,7 @@ const CreatePosition = () => {
                                     <Form.Item
                                         name="costCenter"
                                         label="Cost Center"
-                                        rules={[{ required: true, message: 'Please input the cost center!' }]}
+                                        rules={[{ required: true, message: 'Please enter the cost center!' }]}
                                     >
                                         <Input placeholder="e.g. CC-TECH" />
                                     </Form.Item>
@@ -359,11 +380,11 @@ const CreatePosition = () => {
                                     <h3 style={{ marginBottom: '16px', color: '#1890ff' }}>Employment Details</h3>
 
                                     <Form.Item
-                                        name="startDate"
-                                        label="Start Date"
-                                        rules={[{ required: true, message: 'Please select the start date!' }]}
+                                        name="code"
+                                        label="Position Code"
+                                        rules={[{ required: true, message: 'Please enter the position code!' }]}
                                     >
-                                        <DatePicker style={{ width: '100%' }} />
+                                        <Input placeholder="e.g. POS020" />
                                     </Form.Item>
 
                                     <Form.Item
@@ -376,7 +397,7 @@ const CreatePosition = () => {
                                     <Form.Item
                                         name="jobCode"
                                         label="Job Code"
-                                        rules={[{ required: true, message: 'Missing the Job Code!' }]}
+                                        rules={[{ required: true, message: 'Job Code is Missing!' }]}
                                     >
                                         <Select
                                             showSearch
@@ -393,8 +414,19 @@ const CreatePosition = () => {
                                         name="fte"
                                         label="FTE (Full-Time Equivalent)"
                                     >
-                                        <InputNumber min={0} max={2} step={0.1} style={{ width: '100%' }} />
+                                        <Select style={{ width: '40%' }}>
+                                            <Option value={1}>1</Option>
+                                            <Option value={0.75}>0.75</Option>
+                                            <Option value={0.5}>0.5</Option>
+                                            <Option value={0.25}>0.25</Option>
+                                        </Select>
                                     </Form.Item>
+                                    {/* <Form.Item
+                                        name="fte"
+                                        label="FTE (Full-Time Equivalent)"
+                                    >
+                                        <InputNumber min={0} max={2} step={0.1} style={{ width: '100%' }} />
+                                    </Form.Item> */}
 
                                     <Form.Item
                                         name="standardHour"
@@ -409,37 +441,53 @@ const CreatePosition = () => {
                                     <h3 style={{ marginBottom: '16px', color: '#1890ff' }}>Compensation</h3>
 
                                     <Form.Item
-                                        name="minPay"
-                                        label="Minimum Pay ($)"
+                                        name="currency"
+                                        label="Currency"
+                                        rules={[{ required: true, message: "Please select currency!" }]}
                                     >
-                                        <InputNumber
+                                        <Select
+                                            placeholder="Select Currency"
+                                            onChange={(value) => setCurrency(value)}
+                                        >
+                                            <Option value="$">Dollar ($)</Option>
+                                            <Option value="₹">Rupee (₹)</Option>
+                                            <Option value="€">Euro (€)</Option>
+                                            <Option value="£">Pound (£)</Option>
+                                        </Select>
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        name="minPay"
+                                        label="Minimum Pay"
+                                    >
+                                        <InputNumber addonBefore={currency}
                                             min={0}
                                             style={{ width: '100%' }}
-                                            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                             parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
                                         />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="midPay"
-                                        label="Mid Pay ($)"
+                                        label="Mid Pay"
                                     >
-                                        <InputNumber
+                                        <InputNumber addonBefore={currency}
                                             min={0}
                                             style={{ width: '100%' }}
-                                            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                             parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
                                         />
                                     </Form.Item>
 
                                     <Form.Item
                                         name="maxPay"
-                                        label="Maximum Pay ($)"
+                                        label="Maximum Pay"
                                     >
-                                        <InputNumber
+                                        <InputNumber addonBefore={currency}
                                             min={0}
                                             style={{ width: '100%' }}
-                                            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                             parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
                                         />
                                     </Form.Item>
@@ -451,7 +499,7 @@ const CreatePosition = () => {
 
                                     <Form.Item
                                         name="organisationId"
-                                        label="Organization Name"
+                                        label="Organization"
                                     >
                                         <Select
                                             showSearch
@@ -471,7 +519,7 @@ const CreatePosition = () => {
 
                                     <Form.Item
                                         name="locationId"
-                                        label="Location Name"
+                                        label="Location"
                                     >
                                         <Select
                                             showSearch
@@ -493,7 +541,7 @@ const CreatePosition = () => {
 
                                     <Form.Item
                                         name="businessUnitId"
-                                        label="Business Unit Name"
+                                        label="Business Unit"
                                     >
                                         <Select
                                             showSearch
@@ -512,7 +560,7 @@ const CreatePosition = () => {
 
                                     <Form.Item
                                         name="divisionId"
-                                        label="Division Name"
+                                        label="Division"
                                     >
                                         <Select
                                             showSearch
@@ -531,7 +579,7 @@ const CreatePosition = () => {
 
                                     <Form.Item
                                         name="departmentId"
-                                        label="Department Name"
+                                        label="Department"
                                     >
                                         <Select
                                             showSearch

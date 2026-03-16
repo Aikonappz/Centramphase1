@@ -534,6 +534,22 @@ const JobGrid = () => {
                                             </Link>
 
                                         </div>
+                                        <div>
+                                            <Link
+                                                to="/candidates-grid"
+                                                className={`btn btn-applied d-flex align-items-center btn-space ${job.finalStatus !== "4" ? "disabled-btn" : ""
+                                                    }`}
+                                                onClick={(e) => {
+                                                    if (job.finalStatus !== "4") {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                            >
+                                                <i className="ti ti-users me-2" />
+                                                Applied ({job.appliedCount || 7})
+                                            </Link>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

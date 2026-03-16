@@ -122,7 +122,7 @@
 }
 
 /* PRIMARY BUTTON */
-button[type="submit"] {
+.auth-content .button[type="submit"] {
     width: 100%;
     padding: 12px;
     background: linear-gradient(135deg, #ffb347, #ff6a00);
