@@ -35,6 +35,10 @@ export const UPDATE_JOB_REQUEST = 'UPDATE_JOB_REQUEST';
 export const UPDATE_JOB_SUCCESS = 'UPDATE_JOB_SUCCESS';
 export const UPDATE_JOB_FAILURE = 'UPDATE_JOB_FAILURE';
 
+export const GET_POSITION_NEXT_CODE_REQUEST = 'GET_POSITION_NEXT_CODE_REQUEST';
+export const GET_POSITION_NEXT_CODE_SUCCESS = 'GET_POSITION_NEXT_CODE_SUCCESS';
+export const GET_POSITION_NEXT_CODE_FAILURE = 'GET_POSITION_NEXT_CODE_FAILURE';
+
 export const GET_POSITION_REQUEST = 'GET_POSITION_REQUEST';
 export const GET_POSITION_SUCCESS = 'GET_POSITION_SUCCESS';
 export const GET_POSITION_FAILURE = 'GET_POSITION_FAILURE';
@@ -176,6 +180,20 @@ interface GetRecruiterReviewByIdSuccessAction {
 
 interface GetRecruiterReviewByIdFailureAction {
   type: typeof GET_RECRUITER_REVIEW_BY_ID_FAILURE;
+  payload: string;
+}
+
+interface GetPositionNextCodeRequestAction {
+  type: typeof GET_POSITION_NEXT_CODE_REQUEST;
+}
+
+interface GetPositionNextCodeSuccessAction {
+  type: typeof GET_POSITION_NEXT_CODE_SUCCESS;
+  payload: any;
+}
+
+interface GetPositionNextCodeFailureAction {
+  type: typeof GET_POSITION_NEXT_CODE_FAILURE;
   payload: string;
 }
 
@@ -396,6 +414,9 @@ export type JobActionTypes =
   | GetRecruiterReviewByIdRequestAction
   | GetRecruiterReviewByIdSuccessAction
   | GetRecruiterReviewByIdFailureAction
+  | GetPositionNextCodeRequestAction
+  | GetPositionNextCodeSuccessAction
+  | GetPositionNextCodeFailureAction
   | GetPositionRequestAction
   | GetPositionSuccessAction
   | GetPositionFailureAction
@@ -684,6 +705,37 @@ export const getDivision = () => {
     }
   };
 };
+
+export const getPositionNextCode = () => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_POSITION_NEXT_CODE_REQUEST });
+
+    try {
+      const response = await api.get(`/position/next-position-code`);
+
+      dispatch({
+        type: GET_POSITION_NEXT_CODE_SUCCESS,
+        payload: response.data
+      });
+
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to fetch next position code';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      dispatch({
+        type: GET_POSITION_NEXT_CODE_FAILURE,
+        payload: errorMessage
+      });
+
+      return error;
+    }
+  };
+};
+
 
 export const getPositions = (filters?: any) => {
   return async (dispatch: Dispatch<JobActionTypes>) => {

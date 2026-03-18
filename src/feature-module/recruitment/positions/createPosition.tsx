@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, Row, Col, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import { savePosition, getLocations } from '../../../core/data/redux/actions/requisitionActions';
+import { savePosition, getLocations, getPositionNextCode } from '../../../core/data/redux/actions/requisitionActions';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
@@ -65,6 +65,17 @@ const CreatePosition = () => {
     useEffect(() => {
         dispatch(getJobFamily());
     }, []);
+
+    useEffect(() => {
+        const fetchPositionNextCode = async () => {
+            const response: any = await dispatch(getPositionNextCode());
+            form.setFieldsValue({
+            code: response.data
+        });
+
+        };
+        fetchPositionNextCode();
+    }, [dispatch]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -377,14 +388,14 @@ const CreatePosition = () => {
 
                                 {/* Employment Details */}
                                 <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-                                    <h3 style={{ marginBottom: '16px', color: '#1890ff' }}>Employment Details</h3>
+                                    <h3 style={{ marginBottom: '16px', visibility: 'hidden' }}>Employment Details</h3>
 
                                     <Form.Item
                                         name="code"
                                         label="Position Code"
                                         rules={[{ required: true, message: 'Please enter the position code!' }]}
                                     >
-                                        <Input placeholder="e.g. POS020" />
+                                        <Input placeholder="e.g. POS020" readOnly/>
                                     </Form.Item>
 
                                     <Form.Item
