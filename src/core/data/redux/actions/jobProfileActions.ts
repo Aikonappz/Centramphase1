@@ -61,6 +61,10 @@ export const GET_JOB_ROLE_REQUEST = 'GET_JOB_ROLE_REQUEST';
 export const GET_JOB_ROLE_SUCCESS = 'GET_JOB_ROLE_SUCCESS';
 export const GET_JOB_ROLE_FAILURE = 'GET_JOB_ROLE_FAILURE';
 
+export const GET_JOB_CODE_NEXT_REQUEST = 'GET_JOB_CODE_NEXT_REQUEST';
+export const GET_JOB_CODE_NEXT_SUCCESS = 'GET_JOB_CODE_NEXT_SUCCESS';
+export const GET_JOB_CODE_NEXT_FAILURE = 'GET_JOB_CODE_NEXT_FAILURE';
+
 
 interface CreateJobProfileRequestAction {
   type: typeof CREATE_JOB_PROFILE_REQUEST;
@@ -233,8 +237,17 @@ interface CreateJobRoleFailureAction {
   type: typeof CREATE_JOB_ROLE_FAILURE;
   payload: string;
 }
-
-
+interface GetJobecodeNextRequestAction {
+  type: typeof GET_JOB_CODE_NEXT_REQUEST;
+}
+interface GetJobecodeNextSuccessAction {
+  type: typeof GET_JOB_CODE_NEXT_SUCCESS;
+  payload: any;
+}
+interface GetJobecodeNextFailureAction {
+  type: typeof GET_JOB_CODE_NEXT_FAILURE;
+  payload: string;
+}
 
 
 
@@ -283,7 +296,10 @@ export type JobProfileActionTypes =
   | CreateJobFamilyFailureAction
   | CreateJobRoleRequestAction
   | CreateJobRoleSuccessAction
-  | CreateJobRoleFailureAction;
+  | CreateJobRoleFailureAction
+  | GetJobecodeNextRequestAction
+  | GetJobecodeNextSuccessAction
+  | GetJobecodeNextFailureAction;
 
 export const postJobProfile = (data: any) => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
@@ -640,6 +656,36 @@ export const createJobRole = (data: any) => {
         type: CREATE_JOB_ROLE_FAILURE,
         payload: errorMessage
       });
+      return error;
+    }
+  };
+};
+
+export const getJobCode_NextCode = () => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: GET_JOB_CODE_NEXT_REQUEST });
+
+    try {
+      const response = await api.get(`/next-job-code`);
+
+      dispatch({
+        type: GET_JOB_CODE_NEXT_SUCCESS,
+        payload: response.data
+      });
+
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to fetch next position code';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      dispatch({
+        type: GET_JOB_CODE_FAILURE,
+        payload: errorMessage
+      });
+
       return error;
     }
   };

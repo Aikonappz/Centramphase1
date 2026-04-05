@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Table, Card, Button, Radio, Input, Popconfirm, Tag, Space,
-    Row, Col, Statistic, Divider, Dropdown, Menu, Badge, Avatar,
-    Tooltip, Modal, message
+    Row, Col, Statistic, Divider, Dropdown, Menu, Badge, Avatar, Modal, message, Tooltip
 } from 'antd';
 import {
     PlusOutlined, UnorderedListOutlined, AppstoreOutlined,
@@ -15,9 +14,13 @@ import { useNavigate } from 'react-router-dom';
 import PositionFilters from './positionFilters';
 import PositionStatusChart from './positionStatusChart';
 import { useAppDispatch } from '../../../core/data/redux/store';
-import { getPositions, resetJobById } from '../../../core/data/redux/actions/requisitionActions';
+import { getPositionBulkUpload, getPositionDownloadTemplate, getPositions, resetJobById } from '../../../core/data/redux/actions/requisitionActions';
 import { deleteposition } from '../../../core/data/redux/actions/jobProfileActions';
 import { removeEmptyParams } from '../../../utils/misc';
+import { EllipsisOutlined } from '@ant-design/icons';
+import JobPostAlertModal from '../../../core/modals/postJobAlertModal';
+import { OverlayTrigger, Tooltip as BootstrapTooltip } from "react-bootstrap";
+
 
 const PositionManagement = () => {
     const [viewMode, setViewMode] = useState('list');
@@ -29,6 +32,9 @@ const PositionManagement = () => {
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const [showAlertModal, setShowAlertModal] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState("");
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     // Sample data
     const [positions, setPositions] = useState([]);
@@ -141,22 +147,29 @@ const PositionManagement = () => {
             <Menu.Item icon={<FileAddOutlined />} onClick={() => handleCreateJob(record.id)}>
                 Create Job
             </Menu.Item>
-            <Menu.Item icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>
+            {/* <Menu.Item icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>
                 Edit
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Divider />
-            <Menu.Item
-                icon={<DeleteOutlined />}
-                danger
-                onClick={() => handleDelete(record.id)}
-            //     Modal.confirm({
-            //     title: 'Confirm Delete',
-            //     content: `Are you sure you want to delete ${record.name}?`,
-            //     onOk: () => handleDelete(record.id)
-            // })}
+            <Popconfirm
+                title={`Do you really want to delete this position? `}
+                onConfirm={() => handleDelete(record.id)}
+                okText="Yes"
+                cancelText="No"
             >
-                Delete
-            </Menu.Item>
+                <Menu.Item
+                    icon={<DeleteOutlined />}
+                    danger
+                // onClick={() => handleDelete(record.id)}
+                //     Modal.confirm({
+                //     title: 'Confirm Delete',
+                //     content: `Are you sure you want to delete ${record.name}?`,
+                //     onOk: () => handleDelete(record.id)
+                // })}
+                >
+                    Delete
+                </Menu.Item>
+            </Popconfirm>
         </Menu>
     );
 
@@ -266,6 +279,29 @@ const PositionManagement = () => {
         },
     ];
 
+    const menu = (
+        <Menu
+            items={[
+                {
+                    key: 'download',
+                    label: 'Download Template',
+                    onClick: () => {
+                        dispatch(getPositionDownloadTemplate());
+                    },
+                },
+                {
+                    key: 'import',
+                    label: 'Import Template',
+                    onClick: () => {
+                        fileInputRef.current?.click(); // 🔥 opens file explorer
+                    },
+                },
+            ]}
+        />
+    );
+
+
+
     return (
         <div className="page-wrapper">
             <div className="content">
@@ -299,13 +335,61 @@ const PositionManagement = () => {
                             </div>
 
                             <Space>
-                                <Button
-                                    type="primary"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => navigate('/positions/create')}
-                                >
-                                    Create Position
-                                </Button>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+                                    <Button
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => navigate('/positions/create')}
+                                    >
+                                        Create Position
+                                    </Button>
+
+                                    {/* <Dropdown overlay={menu} trigger={['click']}>
+                                        <Button className="three-dot-btn" >
+                                            <EllipsisOutlined />
+                                        </Button>
+                                    </Dropdown>
+                                     */}
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={
+                                            <BootstrapTooltip id="dot-tooltip" className="custom-tooltip">
+                                                Import or export bulk templates
+                                            </BootstrapTooltip>
+                                        }
+                                    >
+                                        <span style={{ display: 'inline-block' }}>
+                                            <Dropdown overlay={menu} trigger={['click']}>
+                                                <Button className="three-dot-btn">
+                                                    <EllipsisOutlined />
+                                                </Button>
+                                            </Dropdown>
+                                        </span>
+                                    </OverlayTrigger>
+                                    {/* Hidden File Input */}
+                                    <input
+                                        type="file"
+                                        accept=".xlsx"
+                                        ref={fileInputRef}
+                                        style={{ display: 'none' }}
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+
+                                            if (file) {
+                                                if (!file.name.endsWith('.xlsx')) {
+                                                    setAlertMessage("Only .xlsx files are allowed");
+                                                    setShowAlertModal(true);
+                                                    return;
+                                                }
+
+                                                dispatch(getPositionBulkUpload(file));
+                                                e.target.value = ''; // reset
+                                            }
+                                        }}
+                                    />
+
+                                </div>
                             </Space>
                         </div>
 
@@ -515,6 +599,12 @@ const PositionManagement = () => {
                     </Card>
                 </div>
             </div>
+            {showAlertModal && (
+                <JobPostAlertModal
+                    message={alertMessage}
+                    onClose={() => setShowAlertModal(false)}
+                />
+            )}
         </div>
     );
 };

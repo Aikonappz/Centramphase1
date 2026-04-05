@@ -256,6 +256,9 @@ const CreateRequisition = (props: any) => {
             const competencyText = jobDetails?.competencies
                 ?.map((c: any) => c.competencyName)
                 .join(', ');
+                form.setFieldsValue({
+                     jobTitle: jobDetails?.jobRoleName,
+                })
 
             // 3. Recruiter API
             const criteria = {

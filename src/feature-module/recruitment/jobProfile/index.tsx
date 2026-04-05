@@ -23,10 +23,12 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined, ProfileOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
-import { createCompentancy, createJobFamily, createJobRole, getCompentancy, getJobFamily, getJobProfile, getJobRole, postJobProfile } from '../../../core/data/redux/actions/jobProfileActions';
+import { createCompentancy, createJobFamily, createJobRole, getCompentancy, getJobCode_NextCode, getJobFamily, getJobProfile, getJobRole, postJobProfile } from '../../../core/data/redux/actions/jobProfileActions';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
 import { deleteJobFamily, deleteJobRole, deleteJobProfile, deleteCompetency } from '../../../core/data/redux/actions/jobProfileActions';
+import { OverlayTrigger, Tooltip as BootstrapTooltip } from "react-bootstrap";
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
@@ -97,6 +99,8 @@ const JobProfilePage: React.FC = () => {
     const [jobFamilies, setJobFamilies] = useState<any>(profile.jobFamilyList?.content || []);
     const [jobProfiles, setjobProfiles] = useState<any>(profile.jobProfile?.content || []);
 
+    const [nextJobCode, setNextJobCode] = useState('');
+
     console.log(jobRoles)
     console.log(jobProfiles)
 
@@ -106,6 +110,25 @@ const JobProfilePage: React.FC = () => {
         dispatch(getCompentancy());
         dispatch(getJobProfile());
     }, []);
+
+    const fetchNextJobCode = async () => {
+        const response: any = await dispatch(getJobCode_NextCode());
+
+        if (response?.data) {
+            const code = String(response.data);
+
+            jobRoleForm.setFieldsValue({
+                jobCodeId: code
+            });
+
+            setNextJobCode(code);
+        }
+    };
+
+    useEffect(() => {
+        fetchNextJobCode();
+    }, [dispatch]);
+
 
     // Reset all forms
     const resetForms = () => {
@@ -278,12 +301,15 @@ const JobProfilePage: React.FC = () => {
     };
 
     // Handlers for Job Role
-    const showJobRoleModal = (jobRole: JobRole | null = null) => {
+    const showJobRoleModal = async (jobRole: JobRole | null = null) => {
         setSelectedJobRoleForEdit(jobRole);
         if (jobRole) {
             jobRoleForm.setFieldsValue(jobRole);
         } else {
             jobRoleForm.resetFields();
+
+            // 🔥 Always get fresh code when creating
+            await fetchNextJobCode();
         }
         setJobRoleModalVisible(true);
     };
@@ -317,6 +343,9 @@ const JobProfilePage: React.FC = () => {
                     // navigate('/positions');
                     setJobRoleModalVisible(false);
                     resetForms();
+                    // 🔥 CALL AGAIN HERE
+                    await fetchNextJobCode();
+
                     const res: any = await dispatch(getJobRole());
                     setJobRoles(res.data.content)
                 } else {
@@ -939,13 +968,39 @@ const JobProfilePage: React.FC = () => {
                                     </Form.Item>
                                 </Col>
                             </Row>
-                            <Form.Item
+                            {/* <Form.Item
                                 name="jobCodeId"
                                 label="Job Code"
                                 rules={[{ required: true, message: 'Please input the description!' }]}
                             >
                                 <Input />
+                            </Form.Item> */}
+                            <Form.Item
+                                name="jobCodeId"
+                                label={
+                                    <span>
+                                        Job Code{" "}
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={
+                                                <BootstrapTooltip className="custom-tooltip">
+                                                    Job Code is automatically generated and cannot be edited
+                                                </BootstrapTooltip>
+                                            }
+                                        >
+                                            <InfoCircleOutlined
+                                                style={{ color: '#ffbb3c', cursor: 'pointer' }}
+                                            />
+                                        </OverlayTrigger>
+                                    </span>
+                                }
+                                rules={[
+                                    { required: true, message: 'Please enter the job code!' }
+                                ]}
+                            >
+                                <Input placeholder="Auto-generated" readOnly />
                             </Form.Item>
+
                         </Form>
                     </Modal>
 

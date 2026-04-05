@@ -363,6 +363,27 @@ button {
 
   }
 
+  &.three-dot-btn {
+    border: 1px solid #d9d9d9;
+    /* light border */
+    background: #fff;
+    border-radius: 6px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.three-dot-btn:hover {
+    border-color: #ff4d4f;
+    /* orange-red */
+    color: #ff4d4f;
+  }
+
+  &.three-dot-btn .anticon {
+    font-size: 18px;
+  }
+
 
   &.btn-warning-light {
     background-color: rgba($warning, 0.1);

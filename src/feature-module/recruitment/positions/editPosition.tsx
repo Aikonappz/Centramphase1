@@ -7,7 +7,8 @@ import { useAppDispatch, RootState } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
 import { getJobFamily, getAllJobCode, getReqruiterDetails_BasedCriteria } from '../../../core/data/redux/actions/jobProfileActions';
-
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const { Option } = Select;
 
@@ -455,21 +456,44 @@ const EditPosition = () => {
                                     <Form.Item
                                         name="costCenter"
                                         label="Cost Center"
-                                        rules={[{ required: true, message: 'Please input the cost center!' }]}
+                                        rules={[
+                                            { required: true, message: 'Please enter the cost center!' },
+                                            { len: 8, message: 'Cost Center must be exactly 8 characters' }
+                                        ]}
                                     >
-                                        <Input placeholder="e.g. CC-TECH" />
+                                        <Input placeholder="e.g. CC-TECH" maxLength={8} />
                                     </Form.Item>
-
                                 </Col>
 
                                 {/* Employment Details */}
                                 <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                                     <h3 style={{ marginBottom: '16px', visibility: 'hidden' }}>Employment Details</h3>
 
-                                    <Form.Item
+                                    {/* <Form.Item
                                         name="code"
                                         label="Position Code"
                                         rules={[{ required: true, message: 'Please input the position code!' }]}
+                                    >
+                                        <Input placeholder="e.g. POS020" readOnly />
+                                    </Form.Item> */}
+                                    <Form.Item
+                                        name="code"
+                                        label={
+                                            <span>
+                                                Position Code{"  "}
+                                                <OverlayTrigger
+                                                    placement="top"
+                                                    overlay={
+                                                        <Tooltip className="custom-tooltip">
+                                                            Position Code is auto generated, cannot be edited
+                                                        </Tooltip>
+                                                    }
+                                                >
+                                                    <InfoCircleOutlined style={{ color: '#ffbb3c', cursor: 'pointer' }} />
+                                                </OverlayTrigger>
+                                            </span>
+                                        }
+                                        rules={[{ required: true, message: 'Please enter the position code!' }]}
                                     >
                                         <Input placeholder="e.g. POS020" readOnly />
                                     </Form.Item>

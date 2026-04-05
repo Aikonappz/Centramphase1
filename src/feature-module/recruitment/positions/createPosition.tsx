@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, Row, Col, Card } from 'antd';
+import { Form, Input, Button, DatePicker, InputNumber, Select, Switch, message, Row, Col, Card, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { savePosition, getLocations, getPositionNextCode } from '../../../core/data/redux/actions/requisitionActions';
@@ -7,6 +7,9 @@ import { RootState, useAppDispatch } from '../../../core/data/redux/store';
 import { transformArrayToLabelValue } from '../../../utils/misc';
 import { useSelector } from 'react-redux';
 import { getJobFamily, getAllJobCode, getReqruiterDetails_BasedCriteria } from '../../../core/data/redux/actions/jobProfileActions';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { OverlayTrigger, Tooltip as BootstrapTooltip } from "react-bootstrap";
+
 
 const { Option } = Select;
 
@@ -70,8 +73,8 @@ const CreatePosition = () => {
         const fetchPositionNextCode = async () => {
             const response: any = await dispatch(getPositionNextCode());
             form.setFieldsValue({
-            code: response.data
-        });
+                code: response.data
+            });
 
         };
         fetchPositionNextCode();
@@ -270,6 +273,10 @@ const CreatePosition = () => {
             });
     };
 
+    const handleSaveDraft = () => {
+        alert("Success");
+    };
+
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
@@ -299,6 +306,32 @@ const CreatePosition = () => {
         }
     };
 
+    const [country, setCountry] = useState("India"); // default
+
+    const getDateFormat = (country: any) => {
+        const ddmmyyyyCountries = [
+            "India", "United Arab Emirates", "Qatar", "Oman", "Yemen",
+            "Saudi Arabia", "Kuwait", "Iraq", "Egypt", "Syria",
+            "Lebanon", "Israel", "Jordan"
+        ];
+
+        const mmddyyyyCountries = ["United States"];
+
+        const yyyymmddCountries = [
+            "Bhutan", "China", "Hungary", "Japan",
+            "Lithuania", "Mongolia", "North Korea",
+            "South Korea", "Taiwan"
+        ];
+
+        if (ddmmyyyyCountries.includes(country)) return "DD-MM-YYYY";
+        if (mmddyyyyCountries.includes(country)) return "MM-DD-YYYY";
+        if (yyyymmddCountries.includes(country)) return "YYYY-MM-DD";
+
+        return "DD-MM-YYYY"; // fallback
+    };
+
+
+
     return (
         <div className="page-wrapper">
             <div className="content">
@@ -307,7 +340,7 @@ const CreatePosition = () => {
                         title="Create a Position"
                         bordered={false}
                         style={{ maxWidth: '1200px', margin: '0 auto' }}
-                        headStyle={{ borderBottom: 'none' }}
+                        headStyle={{ borderBottom: 'none', fontWeight: 'bold', fontSize: '22px' }}
                     >
                         <Form
                             form={form}
@@ -357,15 +390,21 @@ const CreatePosition = () => {
                                         label="Start Date"
                                         rules={[{ required: true, message: 'Please enter the start date!' }]}
                                     >
-                                        <DatePicker style={{ width: '100%' }} />
+                                        <DatePicker
+                                            style={{ width: '100%' }}
+                                            format={getDateFormat(country)}
+                                        />
                                     </Form.Item>
+
 
                                     <Form.Item
                                         name="payGrad"
                                         label="Pay Grade"
-                                        rules={[{ message: 'Please enter the pay grade!' }]}
+                                        rules={[{ message: 'Please enter the pay grade!' },
+                                            { len: 20, message: 'Maximum 20 characters allowed for Pay Grade' }
+                                        ]}
                                     >
-                                        <Input placeholder="e.g. G7" />
+                                        <Input placeholder="e.g. G7" maxLength={20}/>
                                     </Form.Item>
 
                                     <Form.Item
@@ -380,9 +419,12 @@ const CreatePosition = () => {
                                     <Form.Item
                                         name="costCenter"
                                         label="Cost Center"
-                                        rules={[{ required: true, message: 'Please enter the cost center!' }]}
+                                        rules={[
+                                            { required: true, message: 'Please enter the cost center!' },
+                                            { len: 8, message: 'Maximum 8 characters allowed for Cost Center' }
+                                        ]}
                                     >
-                                        <Input placeholder="e.g. CC-TECH" />
+                                        <Input placeholder="e.g. CC-TECH" maxLength={8} />
                                     </Form.Item>
                                 </Col>
 
@@ -392,10 +434,24 @@ const CreatePosition = () => {
 
                                     <Form.Item
                                         name="code"
-                                        label="Position Code"
+                                        label={
+                                            <span>
+                                                Position Code{"  "}
+                                                <OverlayTrigger
+                                                    placement="top"
+                                                    overlay={
+                                                        <BootstrapTooltip className="custom-tooltip">
+                                                            Position Code is auto generated, cannot be edited
+                                                        </BootstrapTooltip>
+                                                    }
+                                                >
+                                                    <InfoCircleOutlined style={{ color: '#ffbb3c', cursor: 'pointer' }} />
+                                                </OverlayTrigger>
+                                            </span>
+                                        }
                                         rules={[{ required: true, message: 'Please enter the position code!' }]}
                                     >
-                                        <Input placeholder="e.g. POS020" readOnly/>
+                                        <Input placeholder="e.g. POS020" readOnly />
                                     </Form.Item>
 
                                     <Form.Item
@@ -683,6 +739,17 @@ const CreatePosition = () => {
                                 >
                                     Cancel
                                 </Button>
+                                {/* <Button
+                                    style={{
+                                        marginRight: '8px',
+                                        backgroundColor: '#ff830f',
+                                        borderColor: '#fc9d0f',
+                                        color: '#ffffff'
+                                    }}
+                                    onClick={handleSaveDraft}
+                                >
+                                    Save as Draft
+                                </Button> */}
                                 <Button
                                     type="primary"
                                     htmlType="submit"

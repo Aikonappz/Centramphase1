@@ -51,6 +51,14 @@ export const GET_POSITION_BY_ID_REQUEST = 'GET_POSITION_BY_ID_REQUEST';
 export const GET_POSITION_BY_ID_SUCCESS = 'GET_POSITION_BY_ID_SUCCESS';
 export const GET_POSITION_BY_ID_FAILURE = 'GET_POSITION_BY_ID_FAILURE';
 
+export const GET_POSITION_TEMPLATE_REQUEST = 'GET_POSITION_TEMPLATE_REQUEST';
+export const GET_POSITION_TEMPLATE_SUCCESS = 'GET_POSITION_TEMPLATE_SUCCESS';
+export const GET_POSITION_TEMPLATE_FAILURE = 'GET_POSITION_TEMPLATE_FAILURE';
+
+export const GET_POSITION_BULK_UPLOAD_REQUEST = 'GET_POSITION_BULK_UPLOAD_REQUEST';
+export const GET_POSITION_BULK_UPLOAD_SUCCESS = 'GET_POSITION_BULK_UPLOAD_SUCCESS';
+export const GET_POSITION_BULK_UPLOAD_FAILURE = 'GET_POSITION_BULK_UPLOAD_FAILURE';
+
 export const GET_JOB_DETAILS_BY_JOB_CODE_REQUEST = 'GET_JOB_DETAILS_BY_JOB_CODE_REQUEST';
 export const GET_JOB_DETAILS_BY_JOB_CODE_SUCCESS = 'GET_JOB_DETAILS_BY_JOB_CODE_SUCCESS';
 export const GET_JOB_DETAILS_BY_JOB_CODE_FAILURE = 'GET_JOB_DETAILS_BY_JOB_CODE_FAILURE';
@@ -235,6 +243,34 @@ interface GetPositionByIdSuccessAction {
 
 interface GetPositionByIdFailureAction {
   type: typeof GET_POSITION_BY_ID_FAILURE;
+  payload: string;
+}
+
+interface GetPositionTemplateRequestAction {
+  type: typeof GET_POSITION_TEMPLATE_REQUEST;
+}
+
+interface GetPositionTemplateSuccessAction {
+  type: typeof GET_POSITION_TEMPLATE_SUCCESS;
+  payload: any;
+}
+
+interface GetPositionTemplateFailureAction {
+  type: typeof GET_POSITION_TEMPLATE_FAILURE;
+  payload: string;
+}
+
+interface GetPositionBulkTemplateRequestAction {
+  type: typeof GET_POSITION_BULK_UPLOAD_REQUEST;
+}
+
+interface GetPositionBulkTemplateSuccessAction {
+  type: typeof GET_POSITION_BULK_UPLOAD_SUCCESS;
+  payload: any;
+}
+
+interface GetPositionBulkTemplateFailureAction {
+  type: typeof GET_POSITION_BULK_UPLOAD_FAILURE;
   payload: string;
 }
 
@@ -426,6 +462,12 @@ export type JobActionTypes =
   | GetPositionByIdRequestAction
   | GetPositionByIdSuccessAction
   | GetPositionByIdFailureAction
+  | GetPositionTemplateRequestAction
+  | GetPositionTemplateSuccessAction
+  | GetPositionTemplateFailureAction
+  | GetPositionBulkTemplateRequestAction
+  | GetPositionBulkTemplateSuccessAction
+  | GetPositionBulkTemplateFailureAction
   | GetJobDetailsByJobCodeRequestAction
   | GetJobDetailsByJobCodeSuccessAction
   | GetJobDetailsByJobCodeFailureAction
@@ -808,6 +850,91 @@ export const getPositionById = (id: any) => {
     }
   };
 };
+
+export const getPositionDownloadTemplate = () => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_POSITION_TEMPLATE_REQUEST });
+
+    try {
+      const response = await api.get('/position/bulk/template', {
+        responseType: 'blob', // IMPORTANT for file download
+      });
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+
+      // file name (you can change)
+      link.setAttribute('download', 'Position_Template.xlsx');
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      dispatch({
+        type: GET_POSITION_TEMPLATE_SUCCESS,
+        payload: response.data
+      });
+
+      return response;
+
+    } catch (error) {
+      let errorMessage = 'Failed to download template';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      dispatch({
+        type: GET_POSITION_TEMPLATE_FAILURE,
+        payload: errorMessage
+      });
+
+      return error;
+    }
+  };
+};
+
+export const getPositionBulkUpload = (file: File) => {
+  return async (dispatch: Dispatch<JobActionTypes>) => {
+    dispatch({ type: GET_POSITION_BULK_UPLOAD_REQUEST });
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file); // backend key must match (usually 'file')
+
+      const response = await api.post('/position/bulk/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      dispatch({
+        type: GET_POSITION_BULK_UPLOAD_SUCCESS,
+        payload: response.data,
+      });
+
+      return response;
+
+    } catch (error) {
+      let errorMessage = 'Bulk upload failed';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      dispatch({
+        type: GET_POSITION_BULK_UPLOAD_FAILURE,
+        payload: errorMessage,
+      });
+
+      return error;
+    }
+  };
+};
+
+
 
 export const getJobByJobCode = (id: any) => {
   return async (dispatch: Dispatch<JobActionTypes>) => {
