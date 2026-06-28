@@ -34,7 +34,17 @@ const CreateRequisition = (props: any) => {
     //     handleSubmit(formattedValues, 'Approver 1');
     // };
     const jobs: any = useSelector((state: RootState) => state.jobs) || [];
-    const [jobLevel, setJobLevel] = useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
+    // console.log(
+    //     "jobs.positionList formatted:",
+    //     JSON.stringify(jobs?.positionList, null, 2)
+    // );
+    // const [jobLevel, setJobLevel] = useState<any>(transformArrayToLabelValue(jobs.positionList?.content || []));
+    const jobLevel = transformArrayToLabelValue(
+        (jobs.positionList?.content || []).map((job: any) => ({
+            ...job,
+            name: `${job.name} - ${job.code}`
+        }))
+    );
     const [jobDepartment, setJobDepartment] = useState<any>(transformArrayToLabelValue(jobs.department?.content || []));
     const [businessUnit, setBusinessUnit] = useState<any>(transformArrayToLabelValue(jobs.businessUnit?.content || []));
     const [organisation, setOrganisation] = useState<any>(transformArrayToLabelValue(jobs.organisation?.content || []));
@@ -70,6 +80,7 @@ const CreateRequisition = (props: any) => {
         // { value: "Select", label: "Select" },
         { value: "Open", label: "Open" },
         { value: "Closed", label: "Closed" },
+        { value: "Cancelled", label: "Cancelled" },
     ];
     // const recruiterName = [
     //     // { value: "Select", label: "Select" },
@@ -256,9 +267,9 @@ const CreateRequisition = (props: any) => {
             const competencyText = jobDetails?.competencies
                 ?.map((c: any) => c.competencyName)
                 .join(', ');
-                form.setFieldsValue({
-                     jobTitle: jobDetails?.jobRoleName,
-                })
+            form.setFieldsValue({
+                jobTitle: jobDetails?.jobRoleName,
+            })
 
             // 3. Recruiter API
             const criteria = {
@@ -355,7 +366,7 @@ const CreateRequisition = (props: any) => {
         } else {
             console.log(response);
             setIsLoading(false);
-             setIsSaveLoading(false);
+            setIsSaveLoading(false);
             messageApi.open({
                 key,
                 type: 'error',
@@ -457,7 +468,7 @@ const CreateRequisition = (props: any) => {
                     </Col> */}
                     <Col className="gutter-row" span={12}>
                         {/* Display only */}
-                        <Form.Item name="organisationName" label="Organisation">
+                        <Form.Item name="organisationName" label="Organization">
                             <Input
                                 readOnly
                                 value={organisationName}
@@ -584,7 +595,7 @@ const CreateRequisition = (props: any) => {
                     </Col>
                     <Col className="gutter-row" span={12}>
                         {/* Display only */}
-                        <Form.Item name="recruiterName" label="Recruiter Name">
+                        <Form.Item name="recruiterName" label="Recruiter">
                             <Input
                                 readOnly
                                 value={recruiterName}
@@ -627,7 +638,7 @@ const CreateRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="headOfRecruitment"
-                            label="Head Of Recruitment"
+                            label="Talent Acquisition Head"
                         >
                             <Select
                                 showSearch
@@ -660,7 +671,7 @@ const CreateRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="requisitionStatus"
-                            label="Requisition Status"
+                            label="Job Requisition Status"
                             rules={[{ required: true, message: 'Please enter requisition status!' }]}
                         >
                             <Select
@@ -746,7 +757,7 @@ const CreateRequisition = (props: any) => {
                         <Form.Item
                             name="payRangeMin"
                             label="Min. Salary"
-                            rules={[{ required: true, message: 'Please enter minimum salary!' }]}
+                            rules={[{ required: false, message: 'Please enter minimum salary!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -755,7 +766,7 @@ const CreateRequisition = (props: any) => {
                         <Form.Item
                             name="payRangeMid"
                             label="Mid. Salary"
-                            rules={[{ required: true, message: 'Please enter middle salary!' }]}
+                            rules={[{ required: false, message: 'Please enter middle salary!' }]}
                         >
                             <input type="number" className="form-control" name='payRangeMid' step={0.01} />
                         </Form.Item>
@@ -764,7 +775,7 @@ const CreateRequisition = (props: any) => {
                         <Form.Item
                             name="payRangeMax"
                             label="Max. Salary"
-                            rules={[{ required: true, message: 'Please enter maximum salary!' }]}
+                            rules={[{ required: false, message: 'Please enter maximum salary!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -773,12 +784,12 @@ const CreateRequisition = (props: any) => {
                         <Form.Item
                             name="approvedBudget"
                             label="Approved Budget"
-                            rules={[{ required: true, message: 'Please enter approved budget!' }]}
+                            rules={[{ required: false, message: 'Please enter approved budget!' }]}
                         >
                             <Input />
                         </Form.Item>
                     </Col>
-                    <Col className="gutter-row" span={12}>
+                    {/* <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="jobPostingBoard"
                             label="Job Posting Board"
@@ -794,12 +805,12 @@ const CreateRequisition = (props: any) => {
                                 options={jobpostBoard}
                             />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="jobPostingEndDate"
                             label="End Date"
-                            rules={[{ required: true, message: 'Please select job expired date!' }]}
+                            rules={[{ required: false, message: 'Please select job expired date!' }]}
                         >
                             <DatePicker style={{ width: '100%', pointerEvents: 'none' }} />
                         </Form.Item>

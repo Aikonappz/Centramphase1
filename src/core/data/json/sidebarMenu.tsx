@@ -701,7 +701,7 @@ export const SidebarDataTest = [
     separateRoute: false,
     submenuItems: [
       {
-        label: 'Manage Job Profile',
+        label: 'Manage Job Hierarchy',
         link: routes.jobProfile,
         submenu: false,
         showSubRoute: false,
@@ -750,6 +750,16 @@ export const SidebarDataTest = [
         materialicons: 'account_balance_wallet',
         submenuItems: [],
       },
+      {
+        label: 'Budget Allocation',
+        link: routes.budget_allocation,
+        submenu: false,
+        showSubRoute: false,
+        icon: 'wallet',
+        base: 'budget-allocation',
+        materialicons: 'account_balance',
+        submenuItems: [],
+      }
 
     ],
   },

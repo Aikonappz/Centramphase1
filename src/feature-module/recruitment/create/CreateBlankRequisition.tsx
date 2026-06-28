@@ -72,9 +72,9 @@ const CreateBlankRequisition = (props: any) => {
         { value: "LinkedIn", label: "LinkedIn" },
     ];
     const requisitionStatus = [
-        // { value: "Select", label: "Select" },
-        { value: "Open", label: "Open" },
+        { value: "Cancelled", label: "Cancelled" },
         { value: "Closed", label: "Closed" },
+        { value: "Open", label: "Open" },
     ];
 
     useEffect(() => {
@@ -458,7 +458,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="organisationId"
-                            label="Organization Name"
+                            label="Organization"
                             rules={[{ required: true, message: 'Please select Organization Name!' }]}
                         >
                             <Select
@@ -480,7 +480,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="locationId"
-                            label="Location Name"
+                            label="Location"
                             rules={[{ required: true, message: 'Please select Location Name!' }]}
                         >
                             <Select
@@ -497,7 +497,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="businessUnitId"
-                            label="Business Unit Name"
+                            label="Business Unit"
                             rules={[{ required: true, message: 'Please select Business Unit Name!' }]}
                         >
                             <Select
@@ -518,7 +518,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="divisionId"
-                            label="Division Name"
+                            label="Division"
                             rules={[{ required: true, message: 'Please select Division Name!' }]}
                         >
                             <Select
@@ -539,7 +539,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="departmentId"
-                            label="Department Name"
+                            label="Department"
                             rules={[{ required: true, message: 'Please select Department Name!' }]}
                         >
                             <Select
@@ -593,7 +593,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="headOfRecruitment"
-                            label="Head Of Recruitment"
+                            label="Talent Acquisition Head"
                             rules={[{ required: true, message: 'Please select Head Of Recruitment!' }]}
                         >
                             <Select
@@ -630,7 +630,7 @@ const CreateBlankRequisition = (props: any) => {
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="requisitionStatus"
-                            label="Requisition Status"
+                            label="Job Requisition Status"
                             rules={[{ required: true, message: 'Please enter requisition status!' }]}
                         >
                             <Select
@@ -703,7 +703,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="payRangeMin"
                             label="Min. Salary"
-                            rules={[{ required: true, message: 'Please enter minimum salary!' }]}
+                            rules={[{ required: false, message: 'Please enter minimum salary!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -712,7 +712,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="payRangeMid"
                             label="Mid. Salary"
-                            rules={[{ required: true, message: 'Please enter middle salary!' }]}
+                            rules={[{ required: false, message: 'Please enter middle salary!' }]}
                         >
                             <input type="number" className="form-control" name='payRangeMid' step={0.01} />
                         </Form.Item>
@@ -721,7 +721,7 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="payRangeMax"
                             label="Max. Salary"
-                            rules={[{ required: true, message: 'Please enter maximum salary!' }]}
+                            rules={[{ required: false, message: 'Please enter maximum salary!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -730,12 +730,12 @@ const CreateBlankRequisition = (props: any) => {
                         <Form.Item
                             name="approvedBudget"
                             label="Approved Budget"
-                            rules={[{ required: true, message: 'Please enter approved budget!' }]}
+                            rules={[{ required: false, message: 'Please enter approved budget!' }]}
                         >
                             <Input />
                         </Form.Item>
                     </Col>
-                    <Col className="gutter-row" span={12}>
+                    {/* <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="jobPostingBoard"
                             label="Job Posting Board"
@@ -751,12 +751,12 @@ const CreateBlankRequisition = (props: any) => {
                                 options={jobpostBoard}
                             />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col className="gutter-row" span={12}>
                         <Form.Item
                             name="jobPostingEndDate"
                             label="End Date"
-                            rules={[{ required: true, message: 'Please select job expired date!' }]}
+                            rules={[{ required: false, message: 'Please select job expired date!' }]}
                         >
                             <DatePicker style={{ width: '100%' }} />
                         </Form.Item>

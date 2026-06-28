@@ -36,19 +36,24 @@ const Login = () => {
     } else {
       setIsLoading(true);
       const response: any = await dispatch(userSignIn(data));
+      // console.log(response);
+      // alert(JSON.stringify(response, null, 2));
+      const role = response.data.roles?.[0];
+      sessionStorage.setItem("login_role", role);
       if (response.status === 200) {
         const promise1 = dispatch(getPositions());
         const promise2 = dispatch(getDepartmentLists());
         const promise3 = dispatch(getBusinessUnit());
         const promise4 = dispatch(getOrganisation());
         const promise5 = dispatch(getDivision());
-        
+
         // Wait for all promises to resolve
         const results = await Promise.all([promise1, promise2, promise3, promise4, promise5]);
         if (results) {
           console.log(results);
           localStorage.setItem("token", response.data.jwtToken);
           setIsLoading(false);
+
           setTimeout(() => {
             // navigation(routes.adminDashboard);
             window.location.href = routes.adminDashboard
@@ -73,9 +78,9 @@ const Login = () => {
   const handleChange = (e: any, name: string) => {
     const value = e.target.value;
     console.log(value);
-    if(name === "password"){
+    if (name === "password") {
       setPassword(value);
-    } else if(name === "rememberMe"){
+    } else if (name === "rememberMe") {
       console.log(value);
       setRememberMe(value);
     } else {
@@ -97,7 +102,7 @@ const Login = () => {
           <div className="col-lg-7 col-md-12 col-sm-12">
             <div className="row justify-content-center align-items-center vh-100 overflow-auto flex-wrap ">
               <div className="col-md-7 mx-auto vh-100">
-                <form className="vh-100" onSubmit={(e) => {e.preventDefault(); signIn();}}>
+                <form className="vh-100" onSubmit={(e) => { e.preventDefault(); signIn(); }}>
                   <div className="vh-100 d-flex flex-column justify-content-between p-4 pb-0">
                     <div className=" mx-auto mb-5 text-center">
                       <ImageWithBasePath
@@ -178,7 +183,7 @@ const Login = () => {
                           type="submit"
                           className="btn btn-primary w-100"
                         >
-                          {isLoading && <i className="fas fa-spinner fa-spin me-2"/>}
+                          {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
                           Sign In
                         </button>
                       </div>

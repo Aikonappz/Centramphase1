@@ -81,7 +81,7 @@
     "yet-another-react-lightbox": "^3.21.7"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start --no-cache",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -380,6 +380,7 @@ export const all_routes = {
   candidateslist: "/candidates",
   candidateskanban: "/candidates-kanban",
   refferal: "/refferals",
+  budget_allocation: "/budget_allocation",
   //FINANCE & ACCOUNTS
   estimate: "/estimates",
   invoices:"/invoices",

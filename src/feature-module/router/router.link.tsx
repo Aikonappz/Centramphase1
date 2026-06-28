@@ -301,6 +301,7 @@ import RecruitmentDashboard from "../recruitment/dashboard";
 import JobProfilePage from "../recruitment/jobProfile";
 import RequisitionBlankPage from "../recruitment/create/jobRequisitionBlank";
 import JobPortalProfile from "../recruitment/create/jobPortal";
+import Budget_Allocate from "../recruitment/budget_allocation/Budget_Allocate";
 const routes = all_routes;
 
 export const publicRoutes = [
@@ -1417,6 +1418,11 @@ export const publicRoutes = [
   {
     path: routes.refferal,
     element: <RefferalList />,
+    route: Route,
+  },
+  {
+    path: routes.budget_allocation,
+    element: <Budget_Allocate />,
     route: Route,
   },
   {

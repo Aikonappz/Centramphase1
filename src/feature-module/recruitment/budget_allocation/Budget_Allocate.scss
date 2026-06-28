@@ -1,0 +1,217 @@
+.content {
+    min-height: calc(100vh - 140px);
+}
+
+.budget-page {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+}
+
+.budget-form-card {
+
+    width: 100%;
+
+    max-width: 950px;
+
+    background: #fff;
+
+    border-radius: 24px;
+
+    padding: 35px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, .08);
+
+    border-top: 5px solid #F97316;
+}
+
+/* Header */
+
+.allocation-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.allocation-header h3 {
+
+    margin: 0;
+
+    color: #F97316;
+
+    font-weight: 700;
+}
+
+.allocation-header p {
+
+    margin-top: 6px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.allocation-badge {
+
+    width: 70px;
+
+    height: 70px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #FB923C,
+            #F97316
+        );
+
+    color: white;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 30px;
+}
+
+/* Labels */
+
+.budget-form-card label {
+
+    font-weight: 600;
+
+    margin-bottom: 8px;
+
+    color: #1e293b;
+
+    display: block;
+}
+
+/* Inputs */
+
+.budget-select {
+
+    height: 50px;
+
+    border-radius: 12px;
+
+    border: 1px solid #dbe2ea;
+
+    transition: .3s;
+}
+
+.budget-select:focus {
+
+    border-color: #F97316;
+
+    box-shadow:
+        0 0 0 4px rgba(249,115,22,.15);
+}
+
+/* Text Area */
+
+.budget-textarea {
+
+    border-radius: 12px;
+
+    border: 1px solid #dbe2ea;
+
+    padding: 12px;
+}
+
+.budget-textarea:focus {
+
+    border-color: #F97316;
+
+    box-shadow:
+        0 0 0 4px rgba(249,115,22,.15);
+}
+
+/* Buttons */
+
+.budget-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+.btn-budget {
+
+    background:
+        linear-gradient(
+            135deg,
+            #FB923C,
+            #F97316
+        );
+
+    border: none;
+
+    color: white;
+
+    padding: 10px 24px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    transition: .3s;
+}
+
+.btn-budget:hover {
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 20px rgba(249,115,22,.25);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+    .budget-form-card {
+
+        padding: 25px;
+    }
+
+    .allocation-header {
+
+        flex-direction: column;
+
+        gap: 15px;
+
+        text-align: center;
+    }
+
+    .allocation-badge {
+
+        width: 60px;
+
+        height: 60px;
+    }
+}
