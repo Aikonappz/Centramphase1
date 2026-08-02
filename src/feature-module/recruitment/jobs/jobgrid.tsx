@@ -216,6 +216,8 @@ const JobGrid = () => {
         }
     };
 
+    const loginRole = sessionStorage.getItem("login_role");
+
     return (
         <>
             {/* Page Wrapper */}
@@ -523,16 +525,18 @@ const JobGrid = () => {
                                                 <i className="ti ti-bell-share me-2" />
                                                 Job Posting
                                             </Link> */}
-                                            <Link
-                                                to="#"
-                                                onClick={(e) => handleClick(e, job.id)}
-                                                className={`btn btn-job-portal d-flex align-items-center btn-space ${job.finalStatus !== "4" ? "disabled-btn" : ""
-                                                    }`}
-                                            >
-                                                <i className="ti ti-bell-share me-2" />
-                                                Job Posting
-                                            </Link>
 
+                                            {loginRole !== "HIRING_MANAGER" ?
+                                                <Link
+                                                    to="#"
+                                                    onClick={(e) => handleClick(e, job.id)}
+                                                    className={`btn btn-job-portal d-flex align-items-center btn-space ${job.finalStatus !== "4" ? "disabled-btn" : ""
+                                                        }`}
+                                                >
+                                                    <i className="ti ti-bell-share me-2" />
+                                                    Job Posting
+                                                </Link>
+                                                : ""}
                                         </div>
                                         <div>
                                             <Link

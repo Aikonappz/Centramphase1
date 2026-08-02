@@ -38,8 +38,14 @@ const Login = () => {
       const response: any = await dispatch(userSignIn(data));
       // console.log(response);
       // alert(JSON.stringify(response, null, 2));
-      const role = response.data.roles?.[0];
-      sessionStorage.setItem("login_role", role);
+      const roles = response?.data?.roles;
+      const name = response?.data?.name;
+      if (!Array.isArray(roles) || roles.length === 0) {
+        alert("No role assigned to this user. Please contact the administrator.");
+        return;
+      }
+      sessionStorage.setItem("login_role", roles[0]);
+      sessionStorage.setItem("username", name[0]);
       if (response.status === 200) {
         const promise1 = dispatch(getPositions());
         const promise2 = dispatch(getDepartmentLists());

@@ -694,14 +694,18 @@ export const SidebarDataTest = [
   //     },
   //   ],
   // },
+  // (loginRole === "ADMIN" ?
+  //   [
   {
     title: 'RECRUITMENT',
+    roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'],
     icon: 'file',
     showAsTab: false,
     separateRoute: false,
     submenuItems: [
       {
         label: 'Manage Job Hierarchy',
+        roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER'],
         link: routes.jobProfile,
         submenu: false,
         showSubRoute: false,
@@ -712,6 +716,7 @@ export const SidebarDataTest = [
       },
       {
         label: 'Manage Position',
+        roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'],
         link: routes.positions,
         submenu: false,
         showSubRoute: false,
@@ -722,6 +727,7 @@ export const SidebarDataTest = [
       },
       {
         label: 'Jobs Requisitions',
+        roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'],
         link: routes.jobgrid,
         submenu: false,
         showSubRoute: false,
@@ -732,6 +738,7 @@ export const SidebarDataTest = [
       },
       {
         label: 'Candidates',
+        roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'],
         link: routes.candidatesGrid,
         submenu: false,
         showSubRoute: false,
@@ -742,6 +749,7 @@ export const SidebarDataTest = [
       },
       {
         label: 'Refferals',
+        roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'],
         link: routes.refferal,
         submenu: false,
         showSubRoute: false,
@@ -752,6 +760,7 @@ export const SidebarDataTest = [
       },
       {
         label: 'Budget Allocation',
+        roles: ['SUPER_ADMIN'],
         link: routes.budget_allocation,
         submenu: false,
         showSubRoute: false,
@@ -760,8 +769,7 @@ export const SidebarDataTest = [
         materialicons: 'account_balance',
         submenuItems: [],
       }
-
-    ],
+    ]
   },
   {
     title: 'Finance & Accounts',

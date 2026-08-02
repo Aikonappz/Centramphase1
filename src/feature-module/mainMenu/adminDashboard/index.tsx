@@ -599,6 +599,7 @@ import CollapseHeader from "../../../core/common/collapse-header/collapse-header
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/data/redux/store";
 import { useNavigate } from "react-router";
+import "../../../style/css/hrms_dashboard.css"
 
 const AdminDashboard = () => {
 
@@ -836,7 +837,7 @@ const AdminDashboard = () => {
   }, []);
 
 
-
+  const loginRole = sessionStorage.getItem("login_role");
 
   return (
     <>
@@ -908,119 +909,284 @@ const AdminDashboard = () => {
           </div>
           {/* /Breadcrumb */}
           {/* Welcome Wrap */}
-          <div className="border-0">
-            <div className="row">
-              <div className="col-xxl-12 d-flex">
-                <div className="row flex-fill">
+          {/*------------------------------------------------------------*/}
+          <div className="container-fluid">
+            <div className="row dashboard-card-row g-4">
 
-                  <div className="col-md-3 d-flex flex-column position-relative recruitment-wrapper">
-                    <div className="card flex-fill">
-                      <div className="card-field bg-primary card-style text-white text-center p-3">
-                        <i className="ti ti-user-star fs-1" />
-                        <h4>RECRUITMENT</h4>
+              {/* Recruitment */}
+              {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'].includes(loginRole ?? "") && (
+
+                <div className="col-lg-3 col-md-6 card-pos card-one">
+                  <div className="module-card">
+
+                    <div className="module-front module-recruitment">
+                      <div className="module-icon">
+                        <i className="ti ti-user-star"></i>
                       </div>
+
+                      <h4 className="module-title">RECRUITMENT</h4>
+
+                      <p className="module-description">
+                        Hiring • Candidates • Referrals
+                      </p>
+
+                      <span className="module-badge">
+                        6 Modules
+                      </span>
                     </div>
 
-                    <div className="bg-primary dropdown-hover-content bg-light border rounded p-3 shadow-sm">
-                      <ul className="main-submenu">
-                        <li>Manage Job Profile</li>
-                        <li>Manage Position</li>
-                        <li> <Link to="/job-grid">Jobs Requisitions</Link>
-                          {/* <ul>
-                              <li>Create via Position</li>
-                              <li>Create via Blank Template</li>
-                            </ul> */}
-                        </li>
-                        <li>Candidates</li>
-                        <li>Refferals</li>
+                    <div className="module-back module-recruitment">
+                      <ul className="module-menu">
+
+                        {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER'].includes(loginRole ?? "") && (
+                          <li>
+                            <Link to={routes.jobProfile}>Manage Job Hierarchy</Link>
+                          </li>
+                        )}
+
+                        {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'].includes(loginRole ?? "") && (
+                          <li>
+                            <Link to={routes.positions}>Manage Position</Link>
+                          </li>
+                        )}
+
+                        {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'].includes(loginRole ?? "") && (
+                          <li>
+                            <Link to={routes.jobgrid}>Jobs Requisitions</Link>
+                          </li>
+                        )}
+
+                        {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'].includes(loginRole ?? "") && (
+                          <li>
+                            <Link to={routes.candidatesGrid}>Candidates</Link>
+                          </li>
+                        )}
+
+                        {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'].includes(loginRole ?? "") && (
+                          <li>
+                            <Link to={routes.refferal}>Referrals</Link>
+                          </li>
+                        )}
+
+                        {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER', 'RECRUITER'].includes(loginRole ?? "") && (
+                          <li>
+                            <Link to={routes.budget_allocation}>Budget Allocation</Link>
+                          </li>
+                        )}
+
                       </ul>
                     </div>
+
                   </div>
-                  {user_role !== "USER" ?
-                    <div className="col-md-3 d-flex flex-column position-relative recruitment-wrapper">
-                      <div className="card flex-fill">
-                        <div className="card-field bg-secondary card-style text-white text-center p-3">
-                          <i className="ti ti-user-star fs-1" />
-                          <h4>FINANCE & ACCOUNTS</h4>
-                        </div>
-                      </div>
+                </div>
+              )}
+              {/* Finance */}
+              <div className="col-lg-3 col-md-6 card-pos card-one">
+                <div className="module-card">
 
-                      <div className="bg-secondary dropdown-hover-content border rounded p-3 shadow-sm">
-                        <ul className="main-submenu">
-                          <li>Sales</li>
-                          <li>Accounting</li>
-                          <li>Payroll</li>
-                        </ul>
-                      </div>
-                    </div>
-                    : ""}
-                  {/* <div className="col-md-3 d-flex">
-                    <div className="card flex-fill">
-                      <div className="card-field bg-secondary card-style">
-                          <i className="ti ti-moneybag fs-1" />
-                          <h4>FINANCE & ACCOUNTS</h4>
-                      </div>
-                    </div>
-                  </div> */}
+                  <div className="module-front module-finance">
 
-                  <div className="col-md-3 d-flex flex-column position-relative recruitment-wrapper">
-                    <div className="card flex-fill">
-                      <div className="card-field bg-info card-style text-white text-center p-3">
-                        <i className="ti ti-user-star fs-1" />
-                        <h4>ADMINISTRATION</h4>
-                      </div>
+                    <div className="module-icon">
+                      <i className="ti ti-wallet"></i>
                     </div>
 
-                    <div className="bg-info dropdown-hover-content border rounded p-3 shadow-sm">
-                      <ul className="main-submenu">
-                        <li>Assets</li>
-                        <li>Helo & Support</li>
-                        <li>User Management</li>
-                        <li>Reports</li>
+                    <h4 className="module-title">
+                      FINANCE & ACCOUNTS
+                    </h4>
+
+                    <p className="module-description">
+                      Sales • Accounting • Payroll
+                    </p>
+
+                    <span className="module-badge">
+                      13 Modules
+                    </span>
+
+                  </div>
+
+                  <div className="module-back module-finance">
+
+                    <div className="finance-group">
+                      <h6>Sales</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={routes.estimate}>Estimates</Link></li>
+                        <li><Link to={routes.invoices}>Invoices</Link></li>
+                        <li><Link to={routes.payments}>Payments</Link></li>
+                        <li><Link to={routes.expenses}>Expenses</Link></li>
+                        <li><Link to={routes.providentfund}>Provident Fund</Link></li>
+                        <li><Link to={routes.taxes}>Taxes</Link></li>
                       </ul>
                     </div>
-                  </div>
 
-                  {/* <div className="col-md-3 d-flex">
-                    <div className="card flex-fill">
-                      <div className="card-field bg-info card-style">
-                          <i className="ti ti-users-group fs-1" />
-                          <h4>ADMINISTRATION</h4>
-                      </div>
-                    </div>
-                  </div> */}
+                    <div className="finance-group">
+                      <h6>Accounting</h6>
 
-                  <div className="col-md-3 d-flex flex-column position-relative recruitment-wrapper">
-                    <div className="card flex-fill">
-                      <div className="card-field bg-purple card-style text-white text-center p-3">
-                        <i className="ti ti-user-star fs-1" />
-                        <h4>ADMINISTRATION</h4>
-                      </div>
-                    </div>
-
-                    <div className="bg-purple dropdown-hover-content border rounded p-3 shadow-sm">
-                      <ul className="main-submenu">
-                        <li>General Settings</li>
-                        <li>Websit Settings</li>
-                        <li>App Settings</li>
-                        <li>System Settings</li>
+                      <ul className="module-menu">
+                        <li><Link to={routes.categories}>Categories</Link></li>
+                        <li><Link to={routes.budgets}>Budgets</Link></li>
+                        <li><Link to={routes.budgetexpenses}>Budget Expenses</Link></li>
+                        <li><Link to={routes.budgetrevenues}>Budget Revenues</Link></li>
                       </ul>
                     </div>
-                  </div>
 
-                  {/* <div className="col-md-3 d-flex">
-                    <div className="card flex-fill">
-                      <div className="card-field bg-purple card-style">
-                          <i className="ti ti-settings fs-1" />
-                          <h4>SETTINGS</h4>
-                      </div>
+                    <div className="finance-group">
+                      <h6>Payroll</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={routes.employeesalary}>Employee Salary</Link></li>
+                        <li><Link to={routes.payslip}>Payslip</Link></li>
+                        <li><Link to={routes.payrollAddition}>Payroll Items</Link></li>
+                      </ul>
                     </div>
-                  </div> */}
+
+                  </div>
 
                 </div>
               </div>
+              {/* Third card here */}
+              <div className="col-lg-3 col-md-6 card-pos card-three">
+
+                <div className="module-card">
+
+                  {/* Front */}
+
+                  <div className="module-front module-admin">
+
+                    <div className="module-icon">
+                      <i className="ti ti-building-community"></i>
+                    </div>
+
+                    <h4 className="module-title">
+                      ADMINISTRATION
+                    </h4>
+
+                    <p className="module-description">
+                      Assets • Support • Users
+                    </p>
+
+                    <span className="module-badge">
+                      8 Modules
+                    </span>
+
+                  </div>
+
+                  {/* Back */}
+
+                  <div className="module-back module-admin">
+
+                    <div className="finance-group">
+
+                      <h6>Assets</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={"#"}>Assets</Link></li>
+                        <li><Link to={"#"}>Asset Categories</Link></li>
+                      </ul>
+
+                    </div>
+
+                    <div className="finance-group">
+
+                      <h6>Help & Supports</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={routes.knowledgebase}>Knowledge Base</Link></li>
+                        <li><Link to={routes.activities}>Activities</Link></li>
+                      </ul>
+
+                    </div>
+
+                    <div className="finance-group">
+
+                      <h6>User Management</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={routes.users}>Users</Link></li>
+                        <li><Link to={routes.rolesPermissions}>Roles & Permissions</Link></li>
+                      </ul>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* Fourth card here */}
+              <div className="col-lg-3 col-md-6 card-pos card-three">
+
+                <div className="module-card">
+
+                  {/* Front */}
+
+                  <div className="module-front module-settings">
+
+                    <div className="module-icon">
+                      <i className="ti ti-settings"></i>
+                    </div>
+
+                    <h4 className="module-title">
+                      REPORTS & SETTINGS
+                    </h4>
+
+                    <p className="module-description">
+                      Reports • Configuration
+                    </p>
+
+                    <span className="module-badge">
+                      16 Modules
+                    </span>
+
+                  </div>
+
+                  {/* Back */}
+
+                  <div className="module-back module-settings">
+
+                    <div className="finance-group">
+
+                      <h6>Reports</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={"#"}>Expense Report</Link></li>
+                        <li><Link to={"#"}>Invoice Report</Link></li>
+                        <li><Link to={"#"}>Payment Report</Link></li>
+                        <li><Link to={"#"}>Project Report</Link></li>
+                        <li><Link to={"#"}>Task Report</Link></li>
+                        <li><Link to={"#"}>User Report</Link></li>
+                        <li><Link to={"#"}>Employee Report</Link></li>
+                        <li><Link to={"#"}>Payslip Report</Link></li>
+                        <li><Link to={"#"}>Attendance Report</Link></li>
+                        <li><Link to={"#"}>Leave Report</Link></li>
+                        <li><Link to={"#"}>Daily Report</Link></li>
+                      </ul>
+
+                    </div>
+
+                    <div className="finance-group">
+
+                      <h6>Settings</h6>
+
+                      <ul className="module-menu">
+                        <li><Link to={"#"}>General Settings</Link></li>
+                        <li><Link to={"#"}>Website Settings</Link></li>
+                        <li><Link to={"#"}>App Settings</Link></li>
+                        <li><Link to={"#"}>System Settings</Link></li>
+                        <li><Link to={"#"}>Financial Settings</Link></li>
+                      </ul>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
             </div>
           </div>
+          {/*------------------------------------------------------------*/}
         </div>
         <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
           <p className="mb-0">2014 - 2025 © Centram.</p>

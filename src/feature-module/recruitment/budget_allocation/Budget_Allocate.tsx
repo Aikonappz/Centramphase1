@@ -5,6 +5,8 @@ import { all_routes } from "../../router/all_routes";
 import CollapseHeader from "../../../core/common/collapse-header/collapse-header";
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../../core/data/redux/store';
+import ReactApexChart from "react-apexcharts";
+import { ApexOptions } from "apexcharts";
 
 
 const Budget_Allocate = () => {
@@ -134,6 +136,50 @@ const Budget_Allocate = () => {
         }));
     };
 
+    const totalBudget = 1000000;
+    const allocatedBudget = 600000;
+    const remainingBudget = totalBudget - allocatedBudget;
+
+    const budgetSeries = [
+        allocatedBudget,
+        remainingBudget
+    ];
+
+    const budgetOptions: ApexOptions = {
+        chart: {
+            type: "donut"
+        },
+        labels: [
+            "Allocated",
+            "Remaining"
+        ],
+        colors: [
+            "#F97316",
+            "#22C55E"
+        ],
+        legend: {
+            position: "bottom"
+        },
+        dataLabels: {
+            enabled: true
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: "70%",
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: "Total",
+                            formatter: () => `₹${totalBudget.toLocaleString()}`
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     return (
 
         <div className="page-wrapper">
@@ -181,203 +227,255 @@ const Budget_Allocate = () => {
 
                 <div className="budget-page">
 
-                    <div className="budget-form-card">
+                    <div className="row g-4 w-100">
 
-                        <div className="allocation-header">
+                        {/* Left Form */}
 
-                            <div>
+                        <div className="col-xl-8">
 
-                                <h3>Budget Allocation</h3>
+                            <div className="budget-form-card">
 
-                                <p>
-                                    Allocate department budgets across your organization hierarchy
-                                </p>
+                                <div className="allocation-header">
 
-                            </div>
+                                    <div>
 
-                            <div className="allocation-badge">
-                                <i className="ti ti-cash"></i>
+                                        <h3>Budget Allocation</h3>
+
+                                        <p>
+                                            Allocate department budgets across your organization hierarchy
+                                        </p>
+
+                                    </div>
+
+                                    <div className="allocation-badge">
+                                        <i className="ti ti-cash"></i>
+                                    </div>
+
+                                </div>
+
+                                <div className="row">
+
+                                    <div className="col-md-6 mb-4">
+
+                                        <label>
+                                            <i className="ti ti-building me-2"></i>
+                                            Organization
+                                        </label>
+
+                                        <select
+                                            className="form-control budget-select"
+                                            value={filters.organisationId ?? ""}
+                                            onChange={(e) =>
+                                                handleOrganisationChange(Number(e.target.value))
+                                            }
+                                        >
+                                            <option value="">
+                                                Select Organization
+                                            </option>
+                                            {organisationOptions.map((item) => (
+                                                <option
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                    </div>
+
+                                    <div className="col-md-6 mb-4">
+
+                                        <label>
+                                            <i className="ti ti-sitemap me-2"></i>
+                                            Business Unit
+                                        </label>
+
+                                        <select
+                                            className="form-control budget-select"
+                                            value={filters.businessUnitId ?? ""}
+                                            onChange={(e) =>
+                                                handleBusinessUnitChange(Number(e.target.value))
+                                            }
+                                        >
+                                            <option value="">
+                                                Select Business Unit
+                                            </option>
+                                            {businessUnitOptions.map((item) => (
+                                                <option
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                    </div>
+
+                                    <div className="col-md-6 mb-4">
+
+                                        <label>
+                                            <i className="ti ti-git-branch me-2"></i>
+                                            Division
+                                        </label>
+
+                                        <select
+                                            className="form-control budget-select"
+                                            value={filters.divisionId ?? ""}
+                                            onChange={(e) =>
+                                                handleDivisionChange(Number(e.target.value))
+                                            }
+                                        >
+                                            <option value="">
+                                                Select Division
+                                            </option>
+                                            {divisionOptions.map((item) => (
+
+                                                <option
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                    </div>
+
+                                    <div className="col-md-6 mb-4">
+
+                                        <label>
+                                            <i className="ti ti-users-group me-2"></i>
+                                            Department
+                                        </label>
+
+                                        <select
+                                            className="form-control budget-select"
+                                            value={filters.departmentId ?? ""}
+                                            onChange={(e) =>
+                                                handleDepartmentChange(Number(e.target.value))
+                                            }
+                                        >
+
+                                            <option value="">
+                                                Select Department
+                                            </option>
+
+                                            {departmentOptions.map((item) => (
+                                                <option
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                    </div>
+
+                                    <div className="col-md-6 mb-4">
+
+                                        <label>
+                                            <i className="ti ti-currency-rupee me-2"></i>
+                                            Currency
+                                        </label>
+
+                                        <select className="form-control budget-select">
+                                            <option>INR</option>
+                                            <option>USD</option>
+                                            <option>EUR</option>
+                                        </select>
+
+                                    </div>
+
+                                    <div className="col-md-6 mb-4">
+
+                                        <label>
+                                            <i className="ti ti-wallet me-2"></i>
+                                            Budget Amount
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            className="form-control budget-select"
+                                            placeholder="Enter Budget Amount"
+                                        />
+
+                                    </div>
+
+                                    <div className="col-12">
+
+                                        <label>
+                                            <i className="ti ti-file-description me-2"></i>
+                                            Description
+                                        </label>
+
+                                        <textarea
+                                            rows={4}
+                                            className="form-control budget-textarea"
+                                            placeholder="Enter Budget Allocation Description"
+                                        ></textarea>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="budget-actions">
+
+                                    <button className="btn btn-light">
+                                        Cancel
+                                    </button>
+
+                                    <button className="btn btn-budget">
+                                        Save Allocation
+                                    </button>
+
+                                </div>
+
                             </div>
 
                         </div>
 
-                        <div className="row">
+                        {/* Right Chart */}
 
-                            <div className="col-md-6 mb-4">
+                        <div className="col-xl-4">
 
-                                <label>
-                                    <i className="ti ti-building me-2"></i>
-                                    Organization
-                                </label>
+                            <div className="budget-chart-card">
 
-                                <select
-                                    className="form-control budget-select"
-                                    value={filters.organisationId ?? ""}
-                                    onChange={(e) =>
-                                        handleOrganisationChange(Number(e.target.value))
-                                    }
-                                >
-                                    <option value="">
-                                        Select Organization
-                                    </option>
-                                    {organisationOptions.map((item) => (
-                                        <option
-                                            key={item.value}
-                                            value={item.value}
-                                        >
-                                            {item.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                <h5>Budget Overview</h5>
 
-                            </div>
-
-                            <div className="col-md-6 mb-4">
-
-                                <label>
-                                    <i className="ti ti-sitemap me-2"></i>
-                                    Business Unit
-                                </label>
-
-                                <select
-                                    className="form-control budget-select"
-                                    value={filters.businessUnitId ?? ""}
-                                    onChange={(e) =>
-                                        handleBusinessUnitChange(Number(e.target.value))
-                                    }
-                                >
-                                    <option value="">
-                                        Select Business Unit
-                                    </option>
-                                    {businessUnitOptions.map((item) => (
-                                        <option
-                                            key={item.value}
-                                            value={item.value}
-                                        >
-                                            {item.label}
-                                        </option>
-                                    ))}
-                                </select>
-
-                            </div>
-
-                            <div className="col-md-6 mb-4">
-
-                                <label>
-                                    <i className="ti ti-git-branch me-2"></i>
-                                    Division
-                                </label>
-
-                                <select
-                                    className="form-control budget-select"
-                                    value={filters.divisionId ?? ""}
-                                    onChange={(e) =>
-                                        handleDivisionChange(Number(e.target.value))
-                                    }
-                                >
-                                    <option value="">
-                                        Select Division
-                                    </option>
-                                    {divisionOptions.map((item) => (
-
-                                        <option
-                                            key={item.value}
-                                            value={item.value}
-                                        >
-                                            {item.label}
-                                        </option>
-                                    ))}
-                                </select>
-
-                            </div>
-
-                            <div className="col-md-6 mb-4">
-
-                                <label>
-                                    <i className="ti ti-users-group me-2"></i>
-                                    Department
-                                </label>
-
-                                <select
-                                    className="form-control budget-select"
-                                    value={filters.departmentId ?? ""}
-                                    onChange={(e) =>
-                                        handleDepartmentChange(Number(e.target.value))
-                                    }
-                                >
-
-                                    <option value="">
-                                        Select Department
-                                    </option>
-
-                                    {departmentOptions.map((item) => (
-                                        <option
-                                            key={item.value}
-                                            value={item.value}
-                                        >
-                                            {item.label}
-                                        </option>
-                                    ))}
-                                </select>
-
-                            </div>
-
-                            <div className="col-md-6 mb-4">
-
-                                <label>
-                                    <i className="ti ti-currency-rupee me-2"></i>
-                                    Currency
-                                </label>
-
-                                <select className="form-control budget-select">
-                                    <option>INR</option>
-                                    <option>USD</option>
-                                    <option>EUR</option>
-                                </select>
-
-                            </div>
-
-                            <div className="col-md-6 mb-4">
-
-                                <label>
-                                    <i className="ti ti-wallet me-2"></i>
-                                    Budget Amount
-                                </label>
-
-                                <input
-                                    type="number"
-                                    className="form-control budget-select"
-                                    placeholder="Enter Budget Amount"
+                                <ReactApexChart
+                                    options={budgetOptions}
+                                    series={budgetSeries}
+                                    type="donut"
+                                    height={320}
                                 />
 
+                                <div className="budget-summary">
+
+                                    <div>
+                                        <span>Total Budget</span>
+                                        <h6>₹10,00,000</h6>
+                                    </div>
+
+                                    <div>
+                                        <span>Allocated</span>
+                                        <h6 className="allocated">
+                                            ₹6,50,000
+                                        </h6>
+                                    </div>
+
+                                    <div>
+                                        <span>Remaining</span>
+                                        <h6 className="remaining">
+                                            ₹3,50,000
+                                        </h6>
+                                    </div>
+
+                                </div>
+
                             </div>
-
-                            <div className="col-12">
-
-                                <label>
-                                    <i className="ti ti-file-description me-2"></i>
-                                    Description
-                                </label>
-
-                                <textarea
-                                    rows={4}
-                                    className="form-control budget-textarea"
-                                    placeholder="Enter Budget Allocation Description"
-                                ></textarea>
-
-                            </div>
-
-                        </div>
-
-                        <div className="budget-actions">
-
-                            <button className="btn btn-light">
-                                Cancel
-                            </button>
-
-                            <button className="btn btn-budget">
-                                Save Allocation
-                            </button>
 
                         </div>
 

@@ -445,6 +445,30 @@ export const getReqruiterDetails_BasedCriteria = (data: any) => {
   };
 };
 
+export const getReqruitingManagerDetails_BasedCriteria = (data: any) => {
+  return async (dispatch: Dispatch<JobProfileActionTypes>) => {
+    dispatch({ type: GET_REQRUITER_DETAILS_REQUEST });
+    try {
+      const response = await api.post(`/position/get-all/recruing-manager`, data);
+      dispatch({
+        type: GET_REQRUITER_DETAILS_SUCCESS,
+        payload: response.data
+      });
+      return response;
+    } catch (error) {
+      let errorMessage = 'Failed to login';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({
+        type: GET_REQRUITER_DETAILS_FAILURE,
+        payload: errorMessage
+      });
+      return error;
+    }
+  };
+};
+
 export const deleteposition = (id: any) => {
   return async (dispatch: Dispatch<JobProfileActionTypes>) => {
     dispatch({ type: DELETE_POSITION_REQUEST });

@@ -290,7 +290,7 @@ const Step4 = (props: any) => {
                 <Col className="gutter-row" span={12}>
                     <Form.Item
                         name="internalQuery"
-                        label="Query"
+                        label="Review"
                         rules={[{ required: true, message: 'Please enter a query!' }]}
                     >
                         <Input.TextArea showCount maxLength={100} />

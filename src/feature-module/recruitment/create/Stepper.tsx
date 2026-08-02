@@ -91,22 +91,22 @@ const StepperForm = (props: any) => {
 
   const steps = [
     {
-      title: 'Create Requisition',
+      title: 'Hiring Manager',//Create Requisition
       content: <CreateRequisition currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 1'
     },
     {
-      title: 'Approver 1',
+      title: 'Recruiter',//Approver 1
       content: <Step2 currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 2'
     },
     {
-      title: 'Approver 2',
+      title: 'Recruiting Manager',//Approver 2
       content: <Step3 currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 3'
     },
     {
-      title: 'Approver 3',
+      title: 'Recruiter Review',//Approver 3
       content: <Step4 currentStep={current} setCurrent={setCurrent} prev={prev} />,
       nextButtonText: 'Move to Approver 4'
     },
