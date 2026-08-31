@@ -40,6 +40,10 @@ const Step4 = (props: any) => {
     const key = 'updatable';
     const [stepper3_Status, setStepper3_Status] = useState("");
     const [recruiterReview_Id, setRecruiterReview_Id] = useState("");
+    const [loginRole, setLoginRole] = useState("");
+    useEffect(() => {
+        setLoginRole(sessionStorage.getItem("login_role") || "");
+    }, []);
 
     const joblevel = [
         { value: "Entry-Level", label: "Entry Level" },
@@ -99,7 +103,7 @@ const Step4 = (props: any) => {
             setTimeout(() => {
                 setRecruiterReview_Id(data.id)
                 form.setFieldsValue({
-                   internalQuery: data?.internalQuery
+                    internalQuery: data?.internalQuery
                 });
                 setIsLoading(false);
             }, 500);
@@ -141,7 +145,7 @@ const Step4 = (props: any) => {
             id: jobData?.id
         };
         delete formValues.id;
-         if (recruiterReview_Id !== "") {
+        if (recruiterReview_Id !== "") {
             formValues.id = recruiterReview_Id;
         }
         // if (localStorage.getItem('stepper4Id') !== "") {
@@ -207,7 +211,7 @@ const Step4 = (props: any) => {
         };
         // formValues.id = localStorage.getItem('recruiterReviewId') || undefined;
         delete formValues.id;
-         if (recruiterReview_Id !== "") {
+        if (recruiterReview_Id !== "") {
             formValues.id = recruiterReview_Id;
         }
         formValues.positionId = jobData?.positionId || undefined;
@@ -309,9 +313,11 @@ const Step4 = (props: any) => {
                 </Col>
 
             </Row>
-            <div className="modal-footer">
-                <Space size="middle">
-                    {/* {currentStep > 0 && (
+            {loginRole === "RECRUITER" ?
+
+                <div className="modal-footer">
+                    <Space size="middle">
+                        {/* {currentStep > 0 && (
                         <Button
                             style={{ margin: '0 8px' }}
                             onClick={() => prev()}
@@ -320,64 +326,65 @@ const Step4 = (props: any) => {
                             Send Back to Recruiter
                         </Button>
                     )} */}
-                    <button
-                        type="button"
-                        className="btn btn-light me-2"
-                        onClick={() => { navigate('/job-grid') }}
-                    >
-                        Cancel & Return to Form
-                    </button>
-                    {stepper3_Status === "" && (
-                        <button
-                            className="btn btn-primary ml-5"
-                            onClick={async () => {
-                                setIsSaveLoading(true);
-                                await handleSubmit(form.getFieldsValue(), 'Draft');
-                                setTimeout(() => {
-                                    setIsSaveLoading(false);
-                                    // navigate('/job-grid');
-                                }, 700);
-                            }}
-                        >
-                            {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Save & Close
-                        </button>
-                    )}
-                    {(stepper3_Status === 'Draft' || stepper3_Status === '' || stepper3_Status === 'Approver 2') && (
-                        <button
-                            className="btn btn-primary ml-5"
-                            onClick={async () => {
-                                setIsSendBackLoading(true);
-                                await handleSendBack(form.getFieldsValue());
-                                setTimeout(() => {
-                                    setIsSendBackLoading(false);
-                                    // navigate('/job-grid');
-                                }, 1000);
-                            }}
-                        >
-                            {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Send Back
-                        </button>
-                    )}
-                    {(stepper3_Status === 'Draft' || stepper3_Status === '' || stepper3_Status === 'Approver 2') && (
                         <button
                             type="button"
-                            className="btn btn-primary"
-                            onClick={async () => {
-                                setIsLoading(true);
-                                await handleSubmit(form.getFieldsValue(), 'Approver 4');
-                                setTimeout(() => {
-                                    setIsLoading(false);
-                                    // navigate('/job-grid');
-                                }, 700);
-                            }}
+                            className="btn btn-light me-2"
+                            onClick={() => { navigate('/job-grid') }}
                         >
-                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Create Requisition
+                            Cancel & Return to Form
                         </button>
-                    )}
-                </Space>
-            </div>
+                        {stepper3_Status === "" && (
+                            <button
+                                className="btn btn-primary ml-5"
+                                onClick={async () => {
+                                    setIsSaveLoading(true);
+                                    await handleSubmit(form.getFieldsValue(), 'Draft');
+                                    setTimeout(() => {
+                                        setIsSaveLoading(false);
+                                        // navigate('/job-grid');
+                                    }, 700);
+                                }}
+                            >
+                                {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Save & Close
+                            </button>
+                        )}
+                        {(stepper3_Status === 'Draft' || stepper3_Status === '' || stepper3_Status === 'Approver 2') && (
+                            <button
+                                className="btn btn-primary ml-5"
+                                onClick={async () => {
+                                    setIsSendBackLoading(true);
+                                    await handleSendBack(form.getFieldsValue());
+                                    setTimeout(() => {
+                                        setIsSendBackLoading(false);
+                                        // navigate('/job-grid');
+                                    }, 1000);
+                                }}
+                            >
+                                {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Send Back
+                            </button>
+                        )}
+                        {(stepper3_Status === 'Draft' || stepper3_Status === '' || stepper3_Status === 'Approver 2') && (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    await handleSubmit(form.getFieldsValue(), 'Approver 4');
+                                    setTimeout(() => {
+                                        setIsLoading(false);
+                                        // navigate('/job-grid');
+                                    }, 700);
+                                }}
+                            >
+                                {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Create Requisition
+                            </button>
+                        )}
+                    </Space>
+                </div>
+                : ""}
         </Form>
     )
 }

@@ -744,10 +744,10 @@ const JobProfilePage: React.FC = () => {
     const items: TabsProps['items'] = [
         {
             key: '1',
-            label: 'Job Families',
+            label: 'Job Cluster',
             children: (
                 <Card
-                    title="Job Families"
+                    title="Job Cluster"
                     extra={
                         <Button
                             type="primary"
@@ -769,10 +769,10 @@ const JobProfilePage: React.FC = () => {
         },
         {
             key: '2',
-            label: 'Job Roles',
+            label: 'Talent Role',
             children: (
                 <Card
-                    title="Job Roles"
+                    title="Talent Role"
                     extra={
                         <Button
                             type="primary"
@@ -818,12 +818,12 @@ const JobProfilePage: React.FC = () => {
         },
         {
             key: '4',
-            label: 'Job Profiles',
+            label: 'Talent Architecture Hierarchy',
             children: (
                 <Card
                     title={
                         <Space>
-                            <span>Job Profiles</span>
+                            <span>Talent Architecture Hierarchy</span>
                             <Tag color="blue">{jobProfiles.length} Profiles</Tag>
                         </Space>
                     }

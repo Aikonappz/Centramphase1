@@ -136,6 +136,48 @@ const CreateRequisition = (props: any) => {
         fetchPositionNextCode();
     }, [dispatch]);
 
+    useEffect(() => {
+        if (positionId) {
+            handlePositionChange(Number(positionId));
+        }
+    }, [positionId]);
+
+    useEffect(() => {
+        const fetchRecruitingManager = async () => {
+
+            const formValues = form.getFieldsValue();
+
+            const criteria = {
+                organisationId: formValues.organisationId,
+                businessUnitId: formValues.businessUnitId,
+                divisionId: formValues.divisionId,
+                departmentId: formValues.departmentId
+            };
+
+            console.log("Recruiting Manager Criteria:", criteria);
+
+            const recruitingManagerRes: any = await dispatch(
+                getReqruitingManagerDetails_BasedCriteria(criteria)
+            );
+
+            if (recruitingManagerRes?.status === 200) {
+                const options = mapToSelectOptions(
+                    recruitingManagerRes.data || []
+                );
+
+                setHeadOfRecruitmentOptions(options);
+
+                if (options.length > 0) {
+                    form.setFieldsValue({
+                        headOfRecruitment: options[0].value
+                    });
+                }
+            }
+        };
+
+        fetchRecruitingManager();
+    }, [dispatch]);
+
     const getJobs = async (reqId: any) => {
         setIsLoading(true);
         const response: any = await dispatch(getJobLists(reqId));
@@ -490,7 +532,7 @@ const CreateRequisition = (props: any) => {
                                     showSearch
                                     placeholder="Search to Select"
                                     optionFilterProp="label"
-                                    disabled={loginRole === "HIRING_MANAGER"}
+                                    // disabled={loginRole === "HIRING_MANAGER"}
                                     filterSort={(optionA, optionB) =>
                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                     }
@@ -535,7 +577,7 @@ const CreateRequisition = (props: any) => {
                                     showSearch
                                     placeholder="Search to Select"
                                     optionFilterProp="label"
-                                    disabled={loginRole === "HIRING_MANAGER"}
+                                    // disabled={loginRole === "HIRING_MANAGER"}
                                     filterSort={(optionA: any, optionB: any) =>
                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                     }
@@ -551,7 +593,9 @@ const CreateRequisition = (props: any) => {
                                 label="Job Code"
                                 rules={[{ required: true, message: 'Missing the Job Code!' }]}
                             >
-                                <Input readOnly disabled={loginRole === "HIRING_MANAGER"} style={{ cursor: 'not-allowed' }} />
+                                <Input readOnly
+                                    // disabled={loginRole === "HIRING_MANAGER"} 
+                                    style={{ cursor: 'not-allowed' }} />
                             </Form.Item>
 
                             <Form.Item
@@ -567,7 +611,9 @@ const CreateRequisition = (props: any) => {
                                 label="Job Title"
                                 rules={[{ required: true, message: 'Please enter job title!' }]}
                             >
-                                <Input disabled={loginRole === "HIRING_MANAGER"} />
+                                <Input readOnly
+                                // disabled={loginRole === "HIRING_MANAGER"} 
+                                />
                             </Form.Item>
 
                             <Form.Item
@@ -575,7 +621,9 @@ const CreateRequisition = (props: any) => {
                                 label="Job Description"
                                 rules={[{ required: true, message: 'Please enter job description!' }]}
                             >
-                                <Input.TextArea showCount disabled={loginRole === "HIRING_MANAGER"} />
+                                <Input.TextArea showCount
+                                // disabled={loginRole === "HIRING_MANAGER"} 
+                                />
                             </Form.Item>
 
                             <Form.Item
@@ -583,7 +631,9 @@ const CreateRequisition = (props: any) => {
                                 label="Job Grade"
                                 rules={[{ required: true, message: 'Please enter job grade!' }]}
                             >
-                                <Input disabled={loginRole === "HIRING_MANAGER"} />
+                                <Input
+                                // disabled={loginRole === "HIRING_MANAGER"} 
+                                />
                             </Form.Item>
 
                             <Form.Item
@@ -591,7 +641,9 @@ const CreateRequisition = (props: any) => {
                                 label="Job Level"
                                 rules={[{ required: true, message: 'Please enter job level!' }]}
                             >
-                                <Input disabled={loginRole === "HIRING_MANAGER"} />
+                                <Input
+                                // disabled={loginRole === "HIRING_MANAGER"} 
+                                />
                             </Form.Item>
 
                             <Form.Item name="locationName" label="Job Locations">
@@ -890,58 +942,60 @@ const CreateRequisition = (props: any) => {
                     </Col>
 
                 </Row>
-                <div className="modal-footer">
-                    <Space size="middle">
-                        <button
-                            type="button"
-                            className="btn btn-light me-2"
-                            onClick={() => { navigate('/job-grid') }}
-                        >
-                            Cancel Job Requisition
-                        </button>
-                        {form_notifyStatus === "" && (
-                            <button
-                                className="btn btn-primary ml-5"
-                                onClick={async () => {
-                                    setIsSaveLoading(true);
-                                    const formattedValues = {
-                                        ...form.getFieldsValue(),
-                                        jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
-                                    };
-                                    await handleSubmit(formattedValues, 'Draft');
-                                    setTimeout(() => {
-                                        setIsSaveLoading(false);
-                                        // navigate('/job-grid');
-                                    }, 2000);
-                                }}
-                            >
-                                {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                                Save & Close
-                            </button>
-                        )}
-                        {(form_notifyStatus === 'Draft' || form_notifyStatus === '') && (
+                {loginRole === "HIRING_MANAGER" ?
+                    <div className="modal-footer">
+                        <Space size="middle">
                             <button
                                 type="button"
-                                className="btn btn-primary"
-                                onClick={async () => {
-                                    setIsLoading(true);
-                                    const formattedValues = {
-                                        ...form.getFieldsValue(),
-                                        jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
-                                    };
-                                    await handleSubmit(formattedValues, 'Approver 1');
-                                    setTimeout(() => {
-                                        setIsLoading(false);
-                                        // navigate('/job-grid');
-                                    }, 2000);
-                                }}
+                                className="btn btn-light me-2"
+                                onClick={() => { navigate('/job-grid') }}
                             >
-                                {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                                Create & Send to Approver 1
+                                Cancel Job Requisition
                             </button>
-                        )}
-                    </Space>
-                </div>
+                            {form_notifyStatus === "" && (
+                                <button
+                                    className="btn btn-primary ml-5"
+                                    onClick={async () => {
+                                        setIsSaveLoading(true);
+                                        const formattedValues = {
+                                            ...form.getFieldsValue(),
+                                            jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
+                                        };
+                                        await handleSubmit(formattedValues, 'Draft');
+                                        setTimeout(() => {
+                                            setIsSaveLoading(false);
+                                            // navigate('/job-grid');
+                                        }, 2000);
+                                    }}
+                                >
+                                    {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                    Save & Close
+                                </button>
+                            )}
+                            {(form_notifyStatus === 'Draft' || form_notifyStatus === '') && (
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={async () => {
+                                        setIsLoading(true);
+                                        const formattedValues = {
+                                            ...form.getFieldsValue(),
+                                            jobPostingEndDate: form.getFieldsValue().jobPostingEndDate?.format('YYYY-MM-DD') || null
+                                        };
+                                        await handleSubmit(formattedValues, 'Approver 1');
+                                        setTimeout(() => {
+                                            setIsLoading(false);
+                                            // navigate('/job-grid');
+                                        }, 2000);
+                                    }}
+                                >
+                                    {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                    Create & Send to Approver 1
+                                </button>
+                            )}
+                        </Space>
+                    </div>
+                    : ""}
             </Form>
         </>
     )

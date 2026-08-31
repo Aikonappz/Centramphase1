@@ -738,84 +738,87 @@ const Step3 = (props: any) => {
                 </Col>
 
             </Row>
-            <div className="modal-footer">
-                <Space size="middle">
-                    {currentStep > 0 && (
-                        <Button
-                            style={{ margin: '0 8px' }}
-                            onClick={() => prev()}
-                            icon={<ArrowLeftOutlined />}
-                        >
-                            Previous
-                        </Button>
-                    )}
-                    <button
-                        type="button"
-                        className="btn btn-light me-2"
-                        onClick={() => { navigate('/job-grid') }}
-                    >
-                        Cancel Job Requisition
-                    </button>
-                    <button
-                        id="post_job_success"
-                        type="button"
-                        hidden
-                        data-bs-toggle="modal"
-                        data-bs-target="#success_modal"
-                    >
-                        Post
-                    </button>
-                    {stepper2_Status === "" && (
-                        <button
-                            className="btn btn-primary ml-5"
-                            onClick={async () => {
-                                setIsSaveLoading(true);
-                                await handleSubmit(form.getFieldsValue(), 'Draft');
-                                setTimeout(() => {
-                                    setIsSaveLoading(false);
-                                    // navigate('/job-grid');
-                                }, 700);
-                            }}
-                        >
-                            {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Save & Close
-                        </button>
-                    )}
-                    {(stepper2_Status === 'Draft' || stepper2_Status === '' || stepper2_Status === 'Approver 1') && (
-                        <button
-                            className="btn btn-primary ml-5"
-                            onClick={async () => {
-                                setIsSendBackLoading(true);
-                                await handleSendBack(form.getFieldsValue());
-                                setTimeout(() => {
-                                    setIsSendBackLoading(false);
-                                    // navigate('/job-grid');
-                                }, 1000);
-                            }}
-                        >
-                            {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Send Back
-                        </button>
-                    )}
-                    {(stepper2_Status === 'Draft' || stepper2_Status === '' || stepper2_Status === 'Approver 1') && (
+            {loginRole === "RECRUITING_MANAGER" ?
+
+                <div className="modal-footer">
+                    <Space size="middle">
+                        {currentStep > 0 && (
+                            <Button
+                                style={{ margin: '0 8px' }}
+                                onClick={() => prev()}
+                                icon={<ArrowLeftOutlined />}
+                            >
+                                Previous
+                            </Button>
+                        )}
                         <button
                             type="button"
-                            className="btn btn-primary"
-                            onClick={async () => {
-                                setIsLoading(true);
-                                await handleSubmit(form.getFieldsValue(), 'Approver 3');
-                                setTimeout(() => {
-                                    setIsLoading(false);
-                                    // navigate('/job-grid');
-                                }, 700);
-                            }}
+                            className="btn btn-light me-2"
+                            onClick={() => { navigate('/job-grid') }}
                         >
-                            {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
-                            Create & Send to Approver 3
+                            Cancel Job Requisition
                         </button>
-                    )}
-                </Space>
-            </div>
+                        <button
+                            id="post_job_success"
+                            type="button"
+                            hidden
+                            data-bs-toggle="modal"
+                            data-bs-target="#success_modal"
+                        >
+                            Post
+                        </button>
+                        {stepper2_Status === "" && (
+                            <button
+                                className="btn btn-primary ml-5"
+                                onClick={async () => {
+                                    setIsSaveLoading(true);
+                                    await handleSubmit(form.getFieldsValue(), 'Draft');
+                                    setTimeout(() => {
+                                        setIsSaveLoading(false);
+                                        // navigate('/job-grid');
+                                    }, 700);
+                                }}
+                            >
+                                {isSaveLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Save & Close
+                            </button>
+                        )}
+                        {(stepper2_Status === 'Draft' || stepper2_Status === '' || stepper2_Status === 'Approver 1') && (
+                            <button
+                                className="btn btn-primary ml-5"
+                                onClick={async () => {
+                                    setIsSendBackLoading(true);
+                                    await handleSendBack(form.getFieldsValue());
+                                    setTimeout(() => {
+                                        setIsSendBackLoading(false);
+                                        // navigate('/job-grid');
+                                    }, 1000);
+                                }}
+                            >
+                                {isSendBackLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Send Back
+                            </button>
+                        )}
+                        {(stepper2_Status === 'Draft' || stepper2_Status === '' || stepper2_Status === 'Approver 1') && (
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    await handleSubmit(form.getFieldsValue(), 'Approver 3');
+                                    setTimeout(() => {
+                                        setIsLoading(false);
+                                        // navigate('/job-grid');
+                                    }, 700);
+                                }}
+                            >
+                                {isLoading && <i className="fas fa-spinner fa-spin me-2" />}
+                                Create & Send to Approver 3
+                            </button>
+                        )}
+                    </Space>
+                </div>
+                : ""}
         </Form>
     )
 }

@@ -145,7 +145,7 @@ const PositionManagement = () => {
                 View Details
             </Menu.Item>
             <Menu.Item icon={<FileAddOutlined />} onClick={() => handleCreateJob(record.id)}>
-                Create Job
+                Create Job Requisitions
             </Menu.Item>
             {/* <Menu.Item icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>
                 Edit

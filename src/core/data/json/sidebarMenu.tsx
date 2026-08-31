@@ -704,7 +704,8 @@ export const SidebarDataTest = [
     separateRoute: false,
     submenuItems: [
       {
-        label: 'Manage Job Hierarchy',
+        // label: 'Manage Job Hierarchy',
+        label: 'Talent Architecture',
         roles: ['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER'],
         link: routes.jobProfile,
         submenu: false,

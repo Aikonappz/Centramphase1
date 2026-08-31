@@ -940,7 +940,7 @@ const AdminDashboard = () => {
 
                         {['SUPER_ADMIN', 'RECRUITING_ADMIN', 'HIRING_MANAGER'].includes(loginRole ?? "") && (
                           <li>
-                            <Link to={routes.jobProfile}>Manage Job Hierarchy</Link>
+                            <Link to={routes.jobProfile}>Talent Architecture</Link>
                           </li>
                         )}
 
